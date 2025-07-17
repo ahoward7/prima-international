@@ -1,47 +1,79 @@
 <template>
-  <div class="flex flex-col border-t border-x">
-    <div v-for="machine in machines" class="text-sm font-semibold">
-      <div class="flex w-full border-b">
-         <div class="w-20 flex justify-center items-center text-normal font-extrabold text-prima-red bg-gray-100 p-1">
+  <div class="flex flex-col border-t border-x border-prima-red min-w-[870px] font-[verdana]">
+    <div class="w-full flex text-white font-extrabold text-xs bg-prima-red border-b border-white">
+      <div class="w-20 shrink-0 flex justify-center items-center text-normal p-1">
+        Model
+      </div>
+      <div class="min-w-14 max-w-28 w-full text-center whitespace-nowrap border-l border-white p-1">
+        Serial#
+      </div>
+      <div class="min-w-12 max-w-20 w-full text-center whitespace-nowrap border-l border-white p-1">
+        Year
+      </div>
+      <div class="min-w-12 max-w-24 w-full text-center whitespace-nowrap border-l border-white p-1">
+        Hours
+      </div>
+      <div class="min-w-18 max-w-36 w-full text-center whitespace-nowrap border-l border-white p-1">
+        Price
+      </div>
+      <div class="min-w-24 max-w-48 w-full text-center whitespace-nowrap border-l border-white p-1">
+        Date
+      </div>
+      <div class="min-w-32 max-w-32 w-full text-center whitespace-nowrap border-l border-white p-1">
+        Location
+      </div>
+      <div class="min-w-10 max-w-20 w-full text-center whitespace-nowrap border-l border-white p-1">
+        Salesman
+      </div>
+      <div class="min-w-48 whitespace-nowrap border-l text-center border-white p-1">
+        Company
+      </div>
+      <div class="min-w-40 whitespace-nowrap border-l text-center border-white p-1">
+        Contact
+      </div>
+    </div>
+    <div v-for="machine in machines" class="text-xs font-semibold even:bg-gray-200 odd:bg-gray-50">
+      <div class="flex w-full border-b border-prima-red">
+         <div class="w-20 shrink-0 flex justify-center items-center text-normal font-extrabold text-prima-red p-1 ">
           {{ machine.model }}
         </div>
         <div class="w-full">
-          <div class="flex w-full border-b">
-            <div class="w-16 border-l p-1">
+          <div class="flex w-full border-b border-gray-400">
+            <div class="min-w-14 max-w-28 w-full whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.serialNumber }}
             </div>
-            <div class="w-12 border-l p-1">
+            <div class="min-w-12 max-w-20 w-full whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.year }}
             </div>
-            <div class="w-12 border-l p-1">
+            <div class="min-w-12 max-w-24 w-full whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.hours }}
             </div>
-            <div class="w-16 border-l p-1">
-              {{ machine.price }}
+            <div class="min-w-18 max-w-36 w-full whitespace-nowrap border-l border-gray-400 p-1">
+              ${{ machine.price }}
             </div>
-            <div class="w-24 border-l p-1">
+            <div class="min-w-24 max-w-48 w-full whitespace-nowrap border-l border-gray-400 p-1">
               {{ formatDate(machine.dateCreated) }}
             </div>
-            <div class="w-32 border-l p-1">
+            <div class="min-w-[126px] max-w-32 w-full whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.location }}
             </div>
-            <div class="w-10 border-l p-1">
+            <div class="min-w-10 max-w-20 w-full whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.salesman }}
             </div>
-            <div class="w-48 border-l p-1">
+            <div class="min-w-48 whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.contact.company }}
             </div>
-            <div class="w-40 border-l p-1">
+            <div class="min-w-40 whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.contact.name }}
             </div>
           </div>
           <div>
             <div class="grid grid-cols-2">
-              <div class="border-l p-1">
+              <div class="border-l border-gray-400 p-1">
                 <span class="font-bold">Description: </span>
                 <span>{{ machine.description }}</span>
               </div>
-              <div class="border-l p-1">
+              <div class="border-l border-gray-400 p-1">
                 <span class="font-bold">Notes: </span>
                 <span>{{ machine.notes }}</span>
               </div>

@@ -8,9 +8,9 @@
         <FilterTabs v-model="filters.category" />
       </div>
       <Table :machines="machines" />
-      <div class="grid grid-cols-2 gap-8">
+      <!-- <div class="grid grid-cols-2 gap-8">
         <MachineCard v-for="machine in machines" :key="machine.id" :machine="machine" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

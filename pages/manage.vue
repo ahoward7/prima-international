@@ -1,23 +1,34 @@
 <template>
   <div class="flex justify-center px-4 py-12">
-    <div class="flex flex-col gap-16 w-full max-w-[1200px]">
+    <div class="flex flex-col gap-8 w-full max-w-[1200px]">
       <div class="text-prima-red text-5xl font-prima font-extrabold text-center">
-        Manage Machines
+        Add Machine
       </div>
-      <FilterTabs v-model="activeTab" :categories="categories" />
+      <div>
+        <div class="text-prima-red font-bold text-2xl mb-4">Machine Lookup</div>
+        <InputText v-model="machineSearch" placeholder="Search..." />
+      </div>
+      <div>
+        <div class="text-prima-red font-bold text-2xl mb-4">Machine Type</div>
+        <FilterTabs v-model="activeTab" :categories="categories" />
+      </div>
       <div class="flex justify-center w-full">
-        <FormLocatedMachine v-if="activeTab === 'located'" v-model="machine" />
+        <FormLocatedMachine v-if="['located', 'archived'].includes(activeTab)" v-model="machine" />
         <FormSoldMachine v-if="activeTab === 'sold'" v-model="soldMachine" />
-        <FormArchive v-if="activeTab === 'archive'" v-model="machine" />
+      </div>
+      <DividerLine />
+      <div class="flex justify-end">
+        <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer">Add {{ `${activeTab.substring(0, 1).toUpperCase()}${activeTab.substring(1)}` }} Machine</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const machineSearch: Ref<string> = ref("")
 const activeTab = ref<string>('located')
 
-const categories: Ref<string[]> = ref(['located', 'sold', 'archive'])
+const categories: Ref<string[]> = ref(['located', 'sold', 'archived'])
 
 const contact: ContactForm = {
   company: undefined,

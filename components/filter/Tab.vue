@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  category: MachineCategory
-  activeTab: MachineCategory
+  category: string
+  activeTab: string
 }>()
 
 const isActive = computed(() => props.activeTab === props.category)

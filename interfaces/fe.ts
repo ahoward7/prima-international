@@ -49,6 +49,13 @@ export interface ArchivedMachine extends BaseEntity {
   dateArchived: Date | string
 }
 
-export type LocatedMachineForm = Partial<Machine>
-export type CreateContact = Omit<Contact, 'id'>
-export type CreateMachine = Omit<Machine, 'id'>
+export type ContactForm = Partial<Omit<Contact, 'id'>>
+
+export type MachineForm = Partial<Omit<Machine, 'id' | 'contact'>> & {
+  contact?: ContactForm
+}
+
+export type SoldMachineForm = Partial<Omit<SoldMachine, 'id' | 'machine' | 'buyer'>> & {
+  machine?: MachineForm
+  buyer?: ContactForm
+}

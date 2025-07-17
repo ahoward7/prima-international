@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="machine">
     <div class="grid grid-cols-4 gap-8 w-full">
       <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="XXXXXXXXXXXX" class="col-span-4" />
       <InputText v-model="machine.type" label="Type" placeholder="XXX" class="col-span-1" />
@@ -19,5 +19,5 @@
 </template>
 
 <script setup lang="ts">
-const machine = defineModel<LocatedMachineForm>({ required: true })
+const machine = defineModel<MachineForm>()
 </script>

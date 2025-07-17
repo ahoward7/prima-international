@@ -5,7 +5,7 @@
         Inventory
       </div>
       <div class="flex">
-        <FilterTabs v-model="filters.category" />
+        <FilterTabs v-model="filters.category" :categories="categories" />
       </div>
       <Table :machines="machines" />
       <!-- <div class="grid grid-cols-2 gap-8">
@@ -17,6 +17,8 @@
 
 <script setup lang="ts">
 import machines from '~/temp/machines'
+
+const categories = ref<string[]>(['located', 'sold', 'archived', 'all'])
 
 const filters = ref<MachineFilters>({
   category: 'located'

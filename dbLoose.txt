@@ -1,0 +1,88 @@
+Contact
+- ID
+- Last Modified
+- FirstName
+- LastName
+- Company Name
+- Company City
+- Company Website
+- Contact Notes
+
+Machine (Located)
+- ID
+- Machine Number
+- Owner FK(Contact)
+- Location
+- Type
+- Model
+- Year
+- Hours
+- Current Price
+- Condition
+- Aquired Date
+- Images
+- Description
+- Descrition Documents
+- Inspection Documents
+- Notes
+
+Machine Transaction
+- ID
+- Machine FK(Machine)
+- Seller FK(Contact)
+- Buyer FK(Contact)
+- Transportation Company
+- Sale Price
+- Amount Paid
+- Profit From Sale
+- Notes
+
+Archived Machines
+- ID
+- Machine FK(Machine)
+- Date Archived
+
+
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table contacts {
+  id integer [primary key]
+  first_name varchar
+  last_name varchar
+  company_name varchar
+  company_city varchar
+  company_country varchar
+  company_website varchar
+  notes varchar
+}
+
+Table machines {
+  id integer [primary key]
+  location_id integer
+  owner_company varchar
+  contact_id integer [ref: > contacts.id]
+  type varchar
+  model varchar
+  year integer
+  hours integer
+  current_price varchar
+  condition varchar
+  acquiredDate datetime
+  images array
+  description varchar
+  description_documents array
+  inspection_documents array
+  notes varchar
+}
+
+Table transactions {
+  id integer [primary key]
+  seller_contact_id integer [ref: > contacts.id]
+  buyer_contact_id integer [ref: > contacts.id]
+  transportation_company varchar
+  salePrice varchar
+  amountPaid varchar
+  profitFromSale varchar
+  notes varchar
+}

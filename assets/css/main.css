@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --color-prima-red: #801607;
+  --color-prima-yellow: #efbd00;
+  --font-prima: sans-serif;
+}

@@ -4,7 +4,7 @@
       <HeaderPrimary> Add Machine</HeaderPrimary>
       <div>
         <HeaderSecondary class="mb-4">Machine Lookup</HeaderSecondary>
-        <InputText v-model="machineSearch" placeholder="Search..." />
+        <InputMachineSearch @select="fillInMachine" />
       </div>
       <div>
         <HeaderSecondary class="mb-4">Machine Type</HeaderSecondary>
@@ -63,4 +63,8 @@ const soldMachine: Ref<SoldMachineForm> = ref({
   saleFobPoint: undefined,
   notes: undefined
 })
+
+function fillInMachine(selectedMachine: Machine) {
+  machine.value = selectedMachine
+}
 </script>

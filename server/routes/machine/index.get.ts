@@ -82,5 +82,5 @@ export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => 
   //   )
   // }
 
-  return l.take(filteredMachines, 20)
+  return l.take(filteredMachines, pageSize || 20)
 })

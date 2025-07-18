@@ -12,8 +12,10 @@
       </div>
       <div class="flex flex-col gap-4">
         <HeaderSecondary>Search Filters</HeaderSecondary>
-        <div class="grid grid-cols-4">
+        <div class="grid grid-cols-4 gap-4">
           <InputText v-model="searchInput" label="Universal" placeholder="Search anything..." />
+          <FilterType />
+          <FilterModel />
         </div>
       </div>
       <Table :machines="machines" />
@@ -47,4 +49,19 @@ const { data: machines } = await useFetch<Machine[]>('/machine', {
 })
 
 const categories = ref<string[]>(['located', 'sold', 'archived', 'all'])
+
+function extractPropertySet<T>(
+  data: T[],
+  property: keyof T
+): Set<T[keyof T]> {
+  const result = new Set<T[keyof T]>();
+  for (const item of data) {
+    if (item[property] !== undefined) {
+      result.add(item[property]);
+    }
+  }
+  return result;
+}
+
+console.log(extractPropertySet(machines.value, 'model'))
 </script>

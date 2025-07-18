@@ -50,7 +50,7 @@ const machine: Ref<MachineForm> = ref({
 })
 
 const soldMachine: Ref<SoldMachineForm> = ref({
-  machine: machine.value,
+  machine,
   buyer: contact,
   buyerLocation: undefined,
   truckingCompany: undefined,

@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import l from 'lodash'
-import jsonMachines from '~/temp/machines.json'
+import jsonMachines from '~/tenmachines.json'
 
 interface DBMachineCamelCase extends Omit<Machine, 'contact'> {
   contactId: number

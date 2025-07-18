@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "@types/lodash": "^4.17.20",
+    "@vueuse/core": "^13.5.0",
     "lodash": "^4.17.21",
     "nuxt": "^3.17.7",
     "tailwindcss": "^4.1.11",

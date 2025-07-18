@@ -32,7 +32,7 @@
         Contact
       </div>
     </div>
-    <div v-for="machine in machines" class="text-sm font-semibold even:bg-gray-200 odd:bg-gray-50">
+    <div v-if="machines" v-for="machine in machines" class="text-sm font-semibold even:bg-gray-200 odd:bg-gray-50">
       <div class="flex w-full border-b border-prima-red">
          <div class="w-24 shrink-0 flex justify-center items-center text-lg font-extrabold text-prima-red p-1">
           {{ machine.model }}
@@ -104,6 +104,6 @@ function clampString(str: string, maxLength: number, suffix: string = '...') {
 }
 
 defineProps<{
-  machines: Machine[]
+  machines?: Machine[]
 }>()
 </script>

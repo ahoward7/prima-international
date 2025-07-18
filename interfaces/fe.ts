@@ -14,18 +14,18 @@ export interface Contact extends BaseEntity {
 }
 
 export interface Machine extends BaseEntity {
-  serialNumber?: string
   contact: Contact
-  location?: string
   type?: string
   model?: string
-  year?: number
+  serialNumber?: string
+  year?: string
   hours?: number
-  price?: number
-  salesman: string
   description?: string
-  dateCreated: string
-  dateLastModified: string
+  salesman: string
+  createDate: string
+  lastModDate: string
+  price?: number
+  location?: string
   notes?: string
 }
 

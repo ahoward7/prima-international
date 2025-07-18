@@ -8,18 +8,18 @@ export interface DBContact extends DBBaseEntity {
 }
 
 export interface DBMachine extends DBBaseEntity {
-  serial_number?: number
-  contactId: string
-  location?: string
+  contact_id: number
   type?: string
   model?: string
-  year?: number
+  serial_number?: string
+  year?: string
   hours?: number
-  price?: number
-  salesman: string
   description?: string
-  date_created: string
-  date_last_modified: string
+  salesman: string
+  create_date: string
+  last_mod_date: string
+  price?: number
+  location?: string
   notes?: string
 }
 

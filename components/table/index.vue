@@ -1,70 +1,70 @@
 <template>
-  <div class="flex flex-col border-t border-x border-prima-red min-w-[870px] font-[verdana]">
-    <div class="w-full flex text-white font-extrabold text-xs bg-prima-red border-b border-white">
-      <div class="w-20 shrink-0 flex justify-center items-center text-normal p-1">
+  <div class="flex flex-col border-t border-x border-prima-red min-w-[870px] font-[consolas]">
+    <div class="w-full flex text-white font-extrabold text-sm bg-prima-red border-b border-white">
+      <div class="w-24 shrink-0 flex justify-center items-center text-normal p-1">
         Model
       </div>
-      <div class="min-w-14 max-w-28 w-full text-center whitespace-nowrap border-l border-white p-1">
+      <div class="w-28 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Serial#
       </div>
-      <div class="min-w-12 max-w-20 w-full text-center whitespace-nowrap border-l border-white p-1">
+      <div class="w-20 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Year
       </div>
-      <div class="min-w-12 max-w-24 w-full text-center whitespace-nowrap border-l border-white p-1">
+      <div class="w-20 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Hours
       </div>
-      <div class="min-w-18 max-w-36 w-full text-center whitespace-nowrap border-l border-white p-1">
+      <div class="w-24 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Price
       </div>
-      <div class="min-w-24 max-w-48 w-full text-center whitespace-nowrap border-l border-white p-1">
+      <div class="w-20 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Date
       </div>
-      <div class="min-w-32 max-w-32 w-full text-center whitespace-nowrap border-l border-white p-1">
+      <div class="w-48 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Location
       </div>
-      <div class="min-w-10 max-w-20 w-full text-center whitespace-nowrap border-l border-white p-1">
+      <div class="w-20 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Salesman
       </div>
-      <div class="min-w-48 whitespace-nowrap border-l text-center border-white p-1">
+      <div class="w-48 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Company
       </div>
-      <div class="min-w-40 whitespace-nowrap border-l text-center border-white p-1">
+      <div class="w-40 shrink-0 text-center whitespace-nowrap border-l border-white p-1">
         Contact
       </div>
     </div>
-    <div v-for="machine in machines" class="text-xs font-semibold even:bg-gray-200 odd:bg-gray-50">
+    <div v-for="machine in machines" class="text-sm font-semibold even:bg-gray-200 odd:bg-gray-50">
       <div class="flex w-full border-b border-prima-red">
-         <div class="w-20 shrink-0 flex justify-center items-center text-normal font-extrabold text-prima-red p-1 ">
+         <div class="w-24 shrink-0 flex justify-center items-center text-lg font-extrabold text-prima-red p-1">
           {{ machine.model }}
         </div>
-        <div class="w-full">
-          <div class="flex w-full border-b border-gray-400">
-            <div class="min-w-14 max-w-28 w-full whitespace-nowrap border-l border-gray-400 p-1">
+        <div class="flex-1">
+          <div class="flex w-full border-b border-gray-400 bg-prima-red/10">
+            <div class="w-28 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.serialNumber }}
             </div>
-            <div class="min-w-12 max-w-20 w-full whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.year }}
+            <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
+              {{ machine.year ? machine.year.substring(0, 8) : 'NONE' }}
             </div>
-            <div class="min-w-12 max-w-24 w-full whitespace-nowrap border-l border-gray-400 p-1">
+            <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.hours }}
             </div>
-            <div class="min-w-18 max-w-36 w-full whitespace-nowrap border-l border-gray-400 p-1">
+            <div class="w-24 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
               ${{ machine.price }}
             </div>
-            <div class="min-w-24 max-w-48 w-full whitespace-nowrap border-l border-gray-400 p-1">
-              {{ formatDate(machine.dateCreated) }}
+            <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
+              {{ machine.createDate.substring(0, 8) }}
             </div>
-            <div class="min-w-[126px] max-w-32 w-full whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.location }}
+            <div class="w-48 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
+              {{ machine.location ? clampString(machine.location, 24) : 'NONE' }}
             </div>
-            <div class="min-w-10 max-w-20 w-full whitespace-nowrap border-l border-gray-400 p-1">
+            <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.salesman }}
             </div>
-            <div class="min-w-48 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.contact.company }}
+            <div class="w-48 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
+              {{ machine.contact?.company || 'NONE' }}
             </div>
-            <div class="min-w-40 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.contact.name }}
+            <div class="w-40 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
+              {{ machine.contact?.name || 'NONE' }}
             </div>
           </div>
           <div>
@@ -86,13 +86,21 @@
 </template>
 
 <script setup lang="ts">
-const formatDate = (isoString: string) => {
-  const date = new Date(isoString)
-  return [
-    date.getDate().toString().padStart(2, '0'),
-    (date.getMonth() + 1).toString().padStart(2, '0'),
-    date.getFullYear()
-  ].join('-')
+function clampString(str: string, maxLength: number, suffix: string = '...') {
+  if (typeof str !== 'string') {
+    throw new Error('First argument must be a string');
+  }
+  
+  if (typeof maxLength !== 'number' || maxLength < 0) {
+    throw new Error('maxLength must be a non-negative number');
+  }
+  
+  if (str.length <= maxLength) {
+    return str;
+  }
+  
+  const truncateLength = Math.max(0, maxLength - suffix.length);
+  return str.substring(0, truncateLength) + suffix;
 }
 
 defineProps<{

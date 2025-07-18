@@ -7,7 +7,7 @@
       <div class="flex">
         <FilterTabs v-model="filters.category" :categories="categories" />
       </div>
-      <Table :machines="machines" />
+      <Table v-if="machines" :machines="machines" />
       <!-- <div class="grid grid-cols-2 gap-8">
         <MachineCard v-for="machine in machines" :key="machine.id" :machine="machine" />
       </div> -->
@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import machines from '~/temp/machines'
+const { data: machines } = await useFetch<Machine[]>('/machine', { method: 'GET' })
 
 const categories = ref<string[]>(['located', 'sold', 'archived', 'all'])
 

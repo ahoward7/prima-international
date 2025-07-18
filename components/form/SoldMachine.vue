@@ -4,12 +4,12 @@
 
     <DividerLine class="my-4" />
 
-    <div class="text-prima-red font-bold text-2xl">Machine Information</div>
+    <HeaderSecondary>Machine Information</HeaderSecondary>
     <FormMachine v-model="machine.machine" />
     
     <DividerLine class="my-4" />
 
-    <div class="text-prima-red font-bold text-2xl">Sale Information</div>
+    <HeaderSecondary>Sale Information</HeaderSecondary>
     <FormContact v-model="machine.buyer" :labels="{ company: 'Buyer Company Name', name: 'Buyer Contact Name'}" class="mb-4" />
     <FormSale v-model="machine" />
   </div>

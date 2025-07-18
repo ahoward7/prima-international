@@ -4,7 +4,7 @@
     
     <DividerLine class="my-4" />
 
-    <div class="text-prima-red font-bold text-2xl">Machine Information</div>
+    <HeaderSecondary>Machine Information</HeaderSecondary>
     <FormMachine v-model="machine" />
   </div>
 </template>

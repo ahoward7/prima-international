@@ -1,15 +1,13 @@
 <template>
   <div class="flex justify-center px-4 py-12">
     <div class="flex flex-col gap-8 w-full max-w-[1200px]">
-      <div class="text-prima-red text-5xl font-prima font-extrabold text-center">
-        Add Machine
-      </div>
+      <HeaderPrimary> Add Machine</HeaderPrimary>
       <div>
-        <div class="text-prima-red font-bold text-2xl mb-4">Machine Lookup</div>
+        <HeaderSecondary class="mb-4">Machine Lookup</HeaderSecondary>
         <InputText v-model="machineSearch" placeholder="Search..." />
       </div>
       <div>
-        <div class="text-prima-red font-bold text-2xl mb-4">Machine Type</div>
+        <HeaderSecondary class="mb-4">Machine Type</HeaderSecondary>
         <FilterTabs v-model="activeTab" :categories="categories" />
       </div>
       <div class="flex justify-center w-full">

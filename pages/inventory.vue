@@ -8,9 +8,6 @@
         <FilterTabs v-model="filters.category" :categories="categories" />
       </div>
       <Table v-if="machines" :machines="machines" />
-      <!-- <div class="grid grid-cols-2 gap-8">
-        <MachineCard v-for="machine in machines" :key="machine.id" :machine="machine" />
-      </div> -->
     </div>
   </div>
 </template>
@@ -21,6 +18,7 @@ const { data: machines } = await useFetch<Machine[]>('/machine', { method: 'GET'
 const categories = ref<string[]>(['located', 'sold', 'archived', 'all'])
 
 const filters = ref<MachineFilters>({
-  category: 'located'
+  category: 'located',
+  search: ''
 })
 </script>

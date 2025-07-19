@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col border-t border-x border-prima-red min-w-[870px] font-[consolas] overflow-hidden">
+  <div class="flex flex-col border-t border-x border-prima-red min-w-[870px] font-[consolas] overflow-auto">
     <div class="w-full flex text-white font-extrabold text-sm bg-prima-red border-b border-white">
       <TableHeaderColumn v-for="column in visibleColumns" :key="column.key" :column="column" :sort-by="sortBy" @sort="handleSort" />
     </div>
-    <TableRowOneLine v-if="machines && displayFormat === 'oneLine'" v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="visibleColumns" :display-format="displayFormat" />
-    <TableRowTwoLine v-if="machines && displayFormat === 'twoLine'" v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="visibleColumns" :display-format="displayFormat" />
+    <TableRowOneLine v-if="machines && displayFormat === 'oneLine'" v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="visibleColumns" />
+    <TableRowTwoLine v-if="machines && displayFormat === 'twoLine' || displayFormat === 'twoLineTruncated'" v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="visibleColumns" :display-format="displayFormat" />
   </div>
 </template>
 
@@ -12,7 +12,7 @@
 const sortBy = defineModel('sortBy', { type: String, default: 'model' })
 
 const props = defineProps<{
-  machines?: Machine[],
+  machines: Machine[] | null,
   displayFormat: string
 }>()
 
@@ -26,8 +26,8 @@ const allColumns: TableColumn[] = [
   { key: 'location', label: 'Location', flex: `basis-48 ${props.displayFormat === 'oneLine' ? 'grow-0' : 'grow'}` },
   { key: 'description', label: 'Description', flex: 'basis-48 grow' },
   { key: 'salesman', label: 'Salesman', flex: 'basis-24 grow-0' },
-  { key: 'contact.company', label: 'Company', flex: 'max-w-60 basis-48 grow' },
-  { key: 'contact.name', label: 'Contact', flex: 'max-w-60 basis-40 grow' },
+  { key: 'contact.company', label: 'Company', flex: `${props.displayFormat === 'oneLine' ? 'max-w-60' : ''} basis-48 grow` },
+  { key: 'contact.name', label: 'Contact', flex: `${props.displayFormat === 'oneLine' ? 'max-w-60' : ''} basis-40 grow` },
   { key: 'notes', label: 'Notes', flex: 'basis-48 grow' },
 ]
 

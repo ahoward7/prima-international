@@ -7,7 +7,7 @@
       <div class="w-full">
         <div class="flex w-full">
           <div v-for="column in columnsWithoutModel" :key="column.key" class="shrink-0 border-l border-gray-400 p-1 overflow-hidden" :class="column.flex">
-            <span class="block truncate w-full" :title="getFullValue(column.key)">
+            <span class="block w-full truncate" :title="getFullValue(column.key)">
               {{ getDisplayValue(column.key) }}
             </span>
           </div>
@@ -15,11 +15,11 @@
         <div class="grid grid-cols-2">
           <div class="flex gap-1 p-1 border-l border-t border-gray-400">
             <label class="font-bold">Description:</label>
-            <span class="truncate">{{ machine.description }}</span>
+            <span :class="displayFormat === 'twoLineTruncated' ? 'truncate' : ''">{{ machine.description }}</span>
           </div>
           <div class="flex gap-1 p-1 border-l border-t border-gray-400">
             <label class="font-bold">Notes:</label>
-            <span class="truncate">{{ machine.notes }}</span>
+            <span :class="displayFormat === 'twoLineTruncated' ? 'truncate' : ''">{{ machine.notes }}</span>
           </div>
         </div>
       </div>
@@ -31,6 +31,7 @@
 const props = defineProps<{
   machine: Machine
   columns: TableColumn[]
+  displayFormat: string
 }>()
 
 function getNestedValue(obj: any, path: string): any {

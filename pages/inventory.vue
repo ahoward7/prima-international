@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex justify-center px-4 md:px-8 py-12">
-    <div class="flex flex-col gap-8 w-full" :class="displayFormat === 'oneLine' ? '' : 'max-w-[1600px]'">
+    <div class="flex flex-col gap-8 w-full">
       <HeaderPrimary>
         Inventory
       </HeaderPrimary>
@@ -35,12 +35,12 @@ import { useDebounceFn } from '@vueuse/core'
 const filters = ref<MachineFilters>({
   category: 'located',
   search: '',
-  pageSize: '',
+  pageSize: 10,
   sortBy: 'model'
 })
 
 const searchInput = ref('')
-const displayFormat = ref('twoLine')
+const displayFormat = ref('oneLine')
 
 const debouncedSearch = useDebounceFn((value: string) => {
   filters.value.search = value
@@ -57,7 +57,7 @@ const { data: machines } = await useFetch<Machine[]>('/machine', {
 })
 
 const machineCategories: string[] = ['located', 'sold', 'archived', 'all']
-const displayFormats: string[] = ['oneLine', "twoLine"]
+const displayFormats: string[] = ['oneLine', "twoLine", "twoLineTruncated"]
 
 function extractPropertySet<T>(data: T[], property: keyof T): Set<T[keyof T]> {
   const result = new Set<T[keyof T]>();

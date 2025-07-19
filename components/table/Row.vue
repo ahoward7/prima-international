@@ -1,24 +1,29 @@
-<!-- TableRow.vue -->
 <template>
-  <div class="text-sm font-semibold even:bg-gray-200 odd:bg-gray-50">
-    <div class="flex w-full border-b border-prima-red">
-      <div class="basis-24 grow-0 shrink-0 flex justify-center items-center text-lg font-extrabold text-prima-red" :class="displayFormat === 'twoLine' ? 'p-1' : ''">
+  <div class="odd:bg-gray-200">
+    <div class="flex w-full border-b border-gray-400">
+      <div v-if="displayFormat === 'twoLine'" class="text-prima-red font-bold p-1" :class="columns[0].flex">
         {{ machine.model }}
       </div>
-      <div class="flex-1">
-        <div class="flex items-center w-full" :class="displayFormat === 'twoLine' ? 'bg-prima-red/10 border-b border-gray-400' : 'h-full'">
-          <TableColumn v-for="column in columns.filter(c => c.key !== 'model')" :key="column.key" :column="column" :machine="machine" />
+      <div>
+        <div class="flex w-full">
+          <template v-for="column in columns" :key="column.key">
+            <div v-if="displayFormat !== 'twoLine' || column.key !== 'model'"
+              class="shrink-0 border-l border-gray-400 p-1 overflow-hidden"
+              :class="[column.flex, displayFormat === 'oneLine' ? 'first:border-l-0' : '']">
+              <span class="block truncate w-full" :title="getFullValue(column.key)">
+                {{ getDisplayValue(column.key) }}
+              </span>
+            </div>
+          </template>
         </div>
-        <div v-if="displayFormat === 'twoLine'">
-          <div class="grid grid-cols-2">
-            <div class="border-l border-gray-400 p-1">
-              <span class="font-bold">Description: </span>
-              <span>{{ machine.description || 'NONE' }}</span>
-            </div>
-            <div class="border-l border-gray-400 p-1">
-              <span class="font-bold">Notes: </span>
-              <span>{{ machine.notes || 'NONE' }}</span>
-            </div>
+        <div v-if="displayFormat === 'twoLine'" class="grid grid-cols-2">
+          <div class="p-1">
+            <label class="font-bold">Description: </label>
+            <span>{{ machine.description }}</span>
+          </div>
+          <div class="p-1 border-l">
+            <label class="font-bold">Notes: </label>
+            <span>{{ machine.notes }}</span>
           </div>
         </div>
       </div>
@@ -28,8 +33,31 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  machine: MachineFilters
-  columns: Column[],
+  machine: Machine
+  columns: TableColumn[]
   displayFormat: string
 }>()
+
+function getNestedValue(obj: any, path: string): any {
+  return path.split('.').reduce((current, key) => {
+    return current && current[key] !== undefined ? current[key] : null;
+  }, obj);
+}
+
+function getFullValue(key: string): string {
+  if (key === 'year') {
+    return props.machine[key] ? props.machine[key].substring(0, 8) : 'NONE';
+  }
+  else if (key === 'lastModDate') {
+    return props.machine[key] ? props.machine[key].substring(0, 8) : 'NONE';
+  }
+  else {
+    const value = getNestedValue(props.machine, key);
+    return value || 'NONE';
+  }
+}
+
+function getDisplayValue(key: string): string {
+  return getFullValue(key);
+}
 </script>

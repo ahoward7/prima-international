@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-4">
-    <FilterTab v-for="category in categories" :key="category" :active-tab="activeTab" :category="category" @click="activeTab = category" />
+    <FilterTab v-for="option in options" :key="option" :active-tab="activeTab" :option="option" @click="activeTab = option" />
   </div>
 </template>
 
@@ -8,6 +8,6 @@
 const activeTab = defineModel<string>({ required: true })
 
 defineProps<{
-  categories: string[]
+  options: string[]
 }>()
 </script>

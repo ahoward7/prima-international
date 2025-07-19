@@ -1,5 +1,5 @@
 <template>
-  <div class="shrink-0 text-center whitespace-nowrap border-l border-gray-400 p-1" :class="column.flex">
+  <div class="shrink-0 whitespace-nowrap border-l border-gray-400 p-1" :class="column.flex">
     <template v-if="column.key === 'year'">
       {{ machine[column.key] ? machine[column.key].substring(0, 8) : 'NONE' }}
     </template>
@@ -7,7 +7,13 @@
       {{ machine[column.key].substring(0, 8) }}
     </template>
     <template v-else-if="column.key === 'location'">
-      {{ machine[column.key] ? clampString(machine[column.key], 24) : 'NONE' }}
+      {{ machine[column.key] ? clampString(machine[column.key], 23) : 'NONE' }}
+    </template>
+    <template v-else-if="column.key === 'description'">
+      {{ machine[column.key] ? clampString(machine[column.key], 30) : 'NONE' }}
+    </template>
+    <template v-else-if="column.key === 'notes'">
+      {{ machine[column.key] ? clampString(machine[column.key], 30) : 'NONE' }}
     </template>
     <template v-else>
       {{ getNestedValue(machine, column.key) || 'NONE' }}

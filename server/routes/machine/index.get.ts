@@ -64,15 +64,62 @@ function universalSearch(machines: Machine[], searchTerm: string): Machine[] {
   })
 }
 
+function sortMachines(machines: Machine[], sortBy: string): Machine[] {
+  if (!sortBy || sortBy.trim() === '') {
+    return machines
+  }
+
+  const isDescending = sortBy.startsWith('-')
+  const fieldName = isDescending ? sortBy.slice(1) : sortBy
+  
+  return [...machines].sort((a, b) => {
+    const aValue = getNestedValue(a, fieldName)
+    const bValue = getNestedValue(b, fieldName)
+    
+    // Handle null/undefined values
+    if (aValue === null || aValue === undefined) return 1
+    if (bValue === null || bValue === undefined) return -1
+    
+    let comparison = 0
+    
+    // Handle different data types
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      comparison = aValue.localeCompare(bValue)
+    } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+      comparison = aValue - bValue
+    } else if (aValue instanceof Date && bValue instanceof Date) {
+      comparison = aValue.getTime() - bValue.getTime()
+    } else {
+      // Convert to strings for comparison
+      comparison = String(aValue).localeCompare(String(bValue))
+    }
+    
+    return isDescending ? -comparison : comparison
+  })
+}
+
+// Helper function to get nested object values by dot notation
+function getNestedValue(obj: any, path: string): any {
+  return path.split('.').reduce((current, key) => {
+    return current && current[key] !== undefined ? current[key] : undefined
+  }, obj)
+}
+
+
 export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => {
   const machines = convertToFrontEnd(jsonMachines)
-  const { category, search, pageSize } = getQuery(event)
+  const { category, search, pageSize, sortBy } = getQuery(event)
   
   let filteredMachines = machines
 
   // Apply universal search if search term exists
   if (search && typeof search === 'string') {
     filteredMachines = universalSearch(filteredMachines, search)
+  }
+
+  // Apply sorting if sortBy exists
+  if (sortBy && typeof sortBy === 'string') {
+    filteredMachines = sortMachines(filteredMachines, sortBy)
   }
 
   return l.take(filteredMachines, (pageSize || 20) as number)

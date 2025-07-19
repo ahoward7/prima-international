@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex justify-center px-4 py-12">
-    <div class="flex flex-col gap-8 w-full max-w-[1200px]">
+    <div class="flex flex-col gap-8 w-full max-w-[1600px]">
       <HeaderPrimary>
         Inventory
       </HeaderPrimary>
@@ -18,7 +18,7 @@
           <FilterModel />
         </div>
       </div>
-      <Table :machines="machines" />
+      <Table :machines="machines" v-model:sort-by="filters.sortBy" />
     </div>
   </div>
 </template>

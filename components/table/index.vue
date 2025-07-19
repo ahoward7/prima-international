@@ -16,7 +16,7 @@ const props = defineProps<{
   displayFormat: string
 }>()
 
-const allColumns: TableColumn[] = [
+const allColumns = computed((): TableColumn[] => [
   { key: 'model', label: 'Model', flex: 'basis-24 grow-0' },
   { key: 'serialNumber', label: 'Serial#', flex: 'basis-28 grow-0' },
   { key: 'year', label: 'Year', flex: 'basis-20 grow-0' },
@@ -29,16 +29,17 @@ const allColumns: TableColumn[] = [
   { key: 'contact.company', label: 'Company', flex: `${props.displayFormat === 'oneLine' ? 'max-w-60' : ''} basis-48 grow` },
   { key: 'contact.name', label: 'Contact', flex: `${props.displayFormat === 'oneLine' ? 'max-w-60' : ''} basis-40 grow` },
   { key: 'notes', label: 'Notes', flex: 'basis-48 grow' },
-]
+])
 
 const visibleColumns = computed(() => {
-  if (props.displayFormat === 'twoLine') {
-    return allColumns.filter(col => !['description', 'notes'].includes(col.key))
+  if (['twoLine', 'twoLineTruncated'].includes(props.displayFormat)) {
+    return allColumns.value.filter(col => !['description', 'notes'].includes(col.key))
   }
-  return allColumns
+  return allColumns.value
 })
 
 function handleSort(column: string) {
   sortBy.value = sortBy.value === column ? `-${column}` : column
 }
 </script>
+

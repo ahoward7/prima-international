@@ -6,8 +6,8 @@
       </div>
       <div class="w-full">
         <div class="flex w-full">
-          <div v-for="column in columnsWithoutModel" :key="column.key" class="shrink-0 border-l border-gray-400 p-1 overflow-hidden" :class="column.flex">
-            <span class="block w-full truncate" :title="getFullValue(column.key)">
+          <div v-for="column in columnsWithoutModel" :key="column.key" class="border-l border-gray-400 p-1 overflow-hidden" :class="column.flex">
+            <span class="block w-full whitespace-nowrap" :title="getFullValue(column.key)">
               {{ getDisplayValue(column.key) }}
             </span>
           </div>
@@ -57,5 +57,5 @@ function getDisplayValue(key: string): string {
   return getFullValue(key);
 }
 
-const columnsWithoutModel = props.columns.filter(column => column.key !== 'model');
+const columnsWithoutModel = computed(() => props.columns.filter(column => column.key !== 'model'));
 </script>

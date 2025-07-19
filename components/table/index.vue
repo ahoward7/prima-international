@@ -1,8 +1,11 @@
 <template>
   <div class="flex flex-col border-t border-x border-prima-red min-w-[870px] font-[consolas]">
     <div class="w-full flex text-white font-extrabold text-sm bg-prima-red border-b border-white">
-      <div v-for="column in columns" class="shrink-0 text-center whitespace-nowrap border-l border-white p-1 cursor-pointer select-none" :class="column.width" @click="handleSort(column.key)">
+      <div v-for="column in columns" class="flex items-center justify-center shrink-0 whitespace-nowrap border-l first:border-l-0 border-white p-1 cursor-pointer select-none" :class="column.width" @click="handleSort(column.key)">
         <span>{{ column.label }}</span>
+        <div class="flex items-center duration-300" :class="sortBy.includes(column.key) ? 'w-5 opacity-100' : 'w-0 opacity-0'">
+          <Icon v-if="sortBy.includes(column.key)" name="carbon:chevron-down" class="shrink-0 inline-block ml-1 duration-300" :class="{ '-rotate-180': sortBy.includes('-')}" size="20" />
+        </div>
       </div>
     </div>
     <div v-if="machines" v-for="machine in machines" class="text-sm font-semibold even:bg-gray-200 odd:bg-gray-50">
@@ -13,10 +16,7 @@
         <div class="flex-1">
           <div class="flex w-full border-b border-gray-400 bg-prima-red/10">
             <div v-for="column in columns.filter(c => c.key !== 'model')" class="shrink-0 text-center whitespace-nowrap border-l border-gray-400 p-1" :class="column.width">
-              <template v-if="column.key === 'serial'">
-                {{ machine.serialNumber }}
-              </template>
-              <template v-else-if="column.key === 'year'">
+              <template v-if="column.key === 'year'">
                 {{ machine[column.key] ? machine[column.key].substring(0, 8) : 'NONE' }}
               </template>
               <template v-else-if="column.key === 'lastModDate'">
@@ -57,13 +57,13 @@ const props = defineProps<{
 
 const columns = [
   { key: 'model', label: 'Model', width: 'w-24' },
-  { key: 'serial', label: 'Serial#', width: 'w-28' },
+  { key: 'serialNumber', label: 'Serial#', width: 'w-28' },
   { key: 'year', label: 'Year', width: 'w-20' },
   { key: 'hours', label: 'Hours', width: 'w-20' },
   { key: 'price', label: 'Price', width: 'w-24' },
   { key: 'lastModDate', label: 'Date', width: 'w-20' },
   { key: 'location', label: 'Location', width: 'w-48' },
-  { key: 'salesman', label: 'Salesman', width: 'w-20' },
+  { key: 'salesman', label: 'Salesman', width: 'w-24' },
   { key: 'contact.company', label: 'Company', width: 'w-48' },
   { key: 'contact.name', label: 'Contact', width: 'w-40' },
 ]

@@ -59,3 +59,9 @@ export type SoldMachineForm = Partial<Omit<SoldMachine, 'id' | 'machine' | 'buye
   machine?: MachineForm
   buyer?: ContactForm
 }
+
+export type TableColumn = {
+  key: string
+  label: string
+  flex: string
+}

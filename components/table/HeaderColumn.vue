@@ -6,7 +6,7 @@
   >
     <span>{{ column.label }}</span>
     <div class="flex items-center duration-300" :class="sortBy.includes(column.key) ? 'w-5 opacity-100' : 'w-0 opacity-0'">
-      <Icon v-if="sortBy.includes(column.key)" name="carbon:chevron-down" class="shrink-0 inline-block ml-1 duration-300" :class="{ '-rotate-180': sortBy.includes('-')}" size="20" />
+      <Icon v-if="sortBy.includes(column.key)" name="carbon:chevron-down" class="shrink-0 inline-block ml-1 duration-300" :class="{ '-rotate-180': !sortBy.includes('-')}" size="20" />
     </div>
   </div>
 </template>

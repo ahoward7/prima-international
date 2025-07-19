@@ -9,30 +9,30 @@ export interface DBContact extends DBBaseEntity {
 
 export interface DBMachine extends DBBaseEntity {
   contact_id: number
-  type?: string
-  model?: string
-  serial_number?: string
-  year?: string
-  hours?: number
-  description?: string
-  salesman: string
-  create_date: string
-  last_mod_date: string
-  price?: number
-  location?: string
-  notes?: string
+  type: string | null
+  model: string | null
+  serial_number: string | null
+  year: string | null
+  hours: number | null
+  description: string | null
+  salesman: string | null
+  create_date: string | null
+  last_mod_date: string | null
+  price: number | null
+  location: string | null
+  notes: string | null
 }
 
 export interface DBSoldMachine extends DBBaseEntity {
   machine_id: number
   buyer: Contact
   trucking_company: string
-  total_cost: number
-  machine_cost: number
-  freight_cost: number
-  paint_cost: number
-  profit_from_sale: number
-  notes?: string
+  total_cost: number | null
+  machine_cost: number | null
+  freight_cost: number | null
+  paint_cost: number | null
+  profit_from_sale: number | null
+  notes?: string | null
 }
 
 export interface DBArchivedMachine extends DBBaseEntity {

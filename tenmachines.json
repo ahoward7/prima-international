@@ -27,7 +27,7 @@
     "salesman": "JA",
     "create_date": "06/07/22 00:00:00",
     "last_mod_date": "06/07/22 00:00:00",
-    "price": 0,
+    "price": null,
     "location": "FRANCE",
     "notes": "EPA, NEED LABEL PHOTO"
   },
@@ -91,7 +91,7 @@
     "salesman": "JA",
     "create_date": "07/07/22 00:00:00",
     "last_mod_date": "07/21/22 00:00:00",
-    "price": 0,
+    "price": null,
     "location": "",
     "notes": "Chris offered 157.5k del to the port of Nova Scotia\n7/21 exchange would put it at 143k"
   },
@@ -150,7 +150,7 @@
     "model": "950M",
     "serial_number": "XJC20341",
     "year": "01/01/20 00:00:00",
-    "hours": 0,
+    "hours": null,
     "description": "EROPS/AC, GP/FORKS/QC, EXTRA VLV, SCALE, C LUBE",
     "salesman": "JA",
     "create_date": "08/04/22 00:00:00",

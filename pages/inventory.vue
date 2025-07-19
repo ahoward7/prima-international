@@ -40,7 +40,7 @@ const filters = ref<MachineFilters>({
 })
 
 const searchInput = ref('')
-const displayFormat = ref('oneLine')
+const displayFormat = ref('twoLine')
 
 const debouncedSearch = useDebounceFn((value: string) => {
   filters.value.search = value

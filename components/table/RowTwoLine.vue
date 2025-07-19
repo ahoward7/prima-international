@@ -1,29 +1,25 @@
 <template>
   <div class="odd:bg-gray-200">
     <div class="flex w-full border-b border-gray-400">
-      <div v-if="displayFormat === 'twoLine'" class="text-prima-red font-bold p-1" :class="columns[0].flex">
+      <div class="flex justify-center items-center shrink-0 text-prima-red font-bold p-1" :class="columns[0].flex">
         {{ machine.model }}
       </div>
-      <div>
+      <div class="w-full">
         <div class="flex w-full">
-          <template v-for="column in columns" :key="column.key">
-            <div v-if="displayFormat !== 'twoLine' || column.key !== 'model'"
-              class="shrink-0 border-l border-gray-400 p-1 overflow-hidden"
-              :class="[column.flex, displayFormat === 'oneLine' ? 'first:border-l-0' : '']">
-              <span class="block truncate w-full" :title="getFullValue(column.key)">
-                {{ getDisplayValue(column.key) }}
-              </span>
-            </div>
-          </template>
-        </div>
-        <div v-if="displayFormat === 'twoLine'" class="grid grid-cols-2">
-          <div class="p-1">
-            <label class="font-bold">Description: </label>
-            <span>{{ machine.description }}</span>
+          <div v-for="column in columnsWithoutModel" :key="column.key" class="shrink-0 border-l border-gray-400 p-1 overflow-hidden" :class="column.flex">
+            <span class="block truncate w-full" :title="getFullValue(column.key)">
+              {{ getDisplayValue(column.key) }}
+            </span>
           </div>
-          <div class="p-1 border-l">
-            <label class="font-bold">Notes: </label>
-            <span>{{ machine.notes }}</span>
+        </div>
+        <div class="grid grid-cols-2">
+          <div class="flex gap-1 p-1 border-l border-t border-gray-400">
+            <label class="font-bold">Description:</label>
+            <span class="truncate">{{ machine.description }}</span>
+          </div>
+          <div class="flex gap-1 p-1 border-l border-t border-gray-400">
+            <label class="font-bold">Notes:</label>
+            <span class="truncate">{{ machine.notes }}</span>
           </div>
         </div>
       </div>
@@ -35,7 +31,6 @@
 const props = defineProps<{
   machine: Machine
   columns: TableColumn[]
-  displayFormat: string
 }>()
 
 function getNestedValue(obj: any, path: string): any {
@@ -60,4 +55,6 @@ function getFullValue(key: string): string {
 function getDisplayValue(key: string): string {
   return getFullValue(key);
 }
+
+const columnsWithoutModel = props.columns.filter(column => column.key !== 'model');
 </script>

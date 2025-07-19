@@ -3,7 +3,8 @@
     <div class="w-full flex text-white font-extrabold text-sm bg-prima-red border-b border-white">
       <TableHeaderColumn v-for="column in visibleColumns" :key="column.key" :column="column" :sort-by="sortBy" @sort="handleSort" />
     </div>
-    <TableRow v-if="machines" v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="visibleColumns" :display-format="displayFormat" />
+    <TableRowOneLine v-if="machines && displayFormat === 'oneLine'" v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="visibleColumns" :display-format="displayFormat" />
+    <TableRowTwoLine v-if="machines && displayFormat === 'twoLine'" v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="visibleColumns" :display-format="displayFormat" />
   </div>
 </template>
 

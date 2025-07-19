@@ -52,7 +52,7 @@
               ${{ machine.price }}
             </div>
             <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.createDate.substring(0, 8) }}
+              {{ machine.lastModDate.substring(0, 8) }}
             </div>
             <div class="w-48 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.location ? clampString(machine.location, 24) : 'NONE' }}

@@ -29,7 +29,8 @@ import { useDebounceFn } from '@vueuse/core'
 const filters = ref<MachineFilters>({
   category: 'located',
   search: '',
-  pageSize: ''
+  pageSize: '',
+  sortBy: 'model'
 })
 
 const searchInput = ref('')
@@ -45,7 +46,7 @@ watch(searchInput, (newValue) => {
 const { data: machines } = await useFetch<Machine[]>('/machine', { 
   method: 'GET', 
   query: filters,
-  watch: [filters] // Re-fetch when filters change
+  watch: [filters]
 })
 
 const categories = ref<string[]>(['located', 'sold', 'archived', 'all'])
@@ -62,6 +63,4 @@ function extractPropertySet<T>(
   }
   return result;
 }
-
-console.log(extractPropertySet(machines.value, 'model'))
 </script>

@@ -75,12 +75,5 @@ export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => 
     filteredMachines = universalSearch(filteredMachines, search)
   }
 
-  // You can add category filtering here if needed
-  // if (category && typeof category === 'string') {
-  //   filteredMachines = filteredMachines.filter(machine => 
-  //     machine.category?.toLowerCase() === category.toLowerCase()
-  //   )
-  // }
-
-  return l.take(filteredMachines, pageSize || 20)
+  return l.take(filteredMachines, (pageSize || 20) as number)
 })

@@ -19,7 +19,7 @@
             :key="machine.serialNumber"
             :machine="machine"
             :columns="filteredColumns"
-            @click="selectMachine(machine)"
+            @select="selectMachine(machine)"
           />
         </template>
         <template v-else>
@@ -49,8 +49,8 @@ const props = defineProps<{
 }>()
 
 const columns: TableColumnC[] = [
-  { key: 'model', label: 'Model' },
   { key: 'serialNumber', label: 'Serial#' },
+  { key: 'model', label: 'Model' },
   { key: 'year', label: 'Year' },
   { key: 'hours', label: 'Hours' },
   { key: 'price', label: 'Price' },

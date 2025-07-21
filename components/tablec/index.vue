@@ -3,11 +3,16 @@
     <table class="font-[consolas] border-x border-b border-gray-400">
       <thead>
         <tr>
-          <TablecHeaderColumn v-for="column in columns" :key="column.key" :column="column" :sort-by="sortBy" @sort="handleSort" />
+          <TablecHeaderColumn v-for="column in filteredColumns" :key="column.key" :column="column" :sort-by="sortBy" @sort="handleSort" />
         </tr>
       </thead>
       <tbody>
-        <TablecRow v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="columns" />
+        <template v-if="displayFormat === 'oneLine'">
+          <TablecRow v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="filteredColumns" />
+        </template>
+        <template v-else>
+          <TablecRowTwoLine v-for="machine, index in machines" :key="machine.serialNumber" :machine="machine" :columns="filteredColumns" :display-format="displayFormat" :index="index" />
+        </template>
       </tbody>
     </table>
   </div>
@@ -18,6 +23,7 @@ const sortBy = defineModel('sortBy', { type: String, default: 'model' })
 
 const props = defineProps<{
   machines: Machine[] | null,
+  displayFormat: string
 }>()
 
 const columns: TableColumnC[] = [
@@ -34,6 +40,9 @@ const columns: TableColumnC[] = [
   { key: 'contact.name', label: 'Contact' },
   { key: 'notes', label: 'Notes' },
 ]
+
+
+const filteredColumns = computed(() => props.displayFormat === 'oneLine' ? columns : columns.filter(column => !['Description', 'Notes'].includes(column.label)))
 
 function handleSort(column: string) {
   sortBy.value = sortBy.value === column ? `-${column}` : column

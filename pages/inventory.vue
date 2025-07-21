@@ -25,7 +25,7 @@
         </div>
       </div>
       <!-- <Table :machines="machines" v-model:sort-by="filters.sortBy" :display-format="displayFormat" /> -->
-      <Tablec v-model:sort-by="filters.sortBy" :machines="machines" />
+      <Tablec v-model:sort-by="filters.sortBy" :machines="machines" :display-format="displayFormat" />
     </div>
   </div>
 </template>

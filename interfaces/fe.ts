@@ -68,3 +68,8 @@ export type TableColumn = {
   label: string
   flex: string
 }
+
+export type TableColumnC = {
+  key: string
+  label: string
+}

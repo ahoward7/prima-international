@@ -7,7 +7,7 @@
       <div class="flex flex-col gap-4">
         <HeaderSecondary>Category</HeaderSecondary>
         <div class="flex">
-          <FilterTabs v-model="filters.category" :options="machineCategories" />
+          <FilterTabs v-if="filters.category" v-model="filters.category" :options="machineCategories" />
         </div>
       </div>
       <div class="flex flex-col gap-4">
@@ -24,6 +24,7 @@
           <FilterTabs v-model="displayFormat" :options="displayFormats" />
         </div>
       </div>
+      <DividerLine />
       <Table :machines="machines" v-model:sort-by="filters.sortBy" :display-format="displayFormat" />
     </div>
   </div>
@@ -58,14 +59,4 @@ const { data: machines } = await useFetch<Machine[]>('/machine', {
 
 const machineCategories: string[] = ['located', 'sold', 'archived', 'all']
 const displayFormats: string[] = ['oneLine', "twoLine", "twoLineTruncated"]
-
-function extractPropertySet<T>(data: T[], property: keyof T): Set<T[keyof T]> {
-  const result = new Set<T[keyof T]>();
-  for (const item of data) {
-    if (item[property] !== undefined) {
-      result.add(item[property]);
-    }
-  }
-  return result;
-}
 </script>

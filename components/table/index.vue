@@ -3,15 +3,35 @@
     <table class="font-[consolas] border-x border-b border-gray-400">
       <thead>
         <tr>
-          <TableHeaderColumn v-for="column in filteredColumns" :key="column.key" :column="column" :sort-by="sortBy" @sort="handleSort" />
+          <TableHeaderColumn
+            v-for="column in filteredColumns"
+            :key="column.key"
+            :column="column"
+            :sort-by="sortBy"
+            @sort="handleSort"
+          />
         </tr>
       </thead>
       <tbody>
         <template v-if="displayFormat === 'oneLine'">
-          <TableRow v-for="machine in machines" :key="machine.serialNumber" :machine="machine" :columns="filteredColumns" />
+          <TableRow
+            v-for="machine in machines"
+            :key="machine.serialNumber"
+            :machine="machine"
+            :columns="filteredColumns"
+            @click="selectMachine(machine)"
+          />
         </template>
         <template v-else>
-          <TableRowTwoLine v-for="machine, index in machines" :key="machine.serialNumber" :machine="machine" :columns="filteredColumns" :display-format="displayFormat" :index="index" />
+          <TableRowTwoLine
+            v-for="machine, index in machines"
+            :key="machine.serialNumber"
+            :machine="machine"
+            :columns="filteredColumns"
+            :display-format="displayFormat"
+            :index="index"
+            @select="selectMachine(machine)"
+          />
         </template>
       </tbody>
     </table>
@@ -19,6 +39,8 @@
 </template>
 
 <script setup lang="ts">
+const machineStore = useMachineStore()
+
 const sortBy = defineModel('sortBy', { type: String, default: 'model' })
 
 const props = defineProps<{
@@ -41,10 +63,14 @@ const columns: TableColumnC[] = [
   { key: 'notes', label: 'Notes' },
 ]
 
-
 const filteredColumns = computed(() => props.displayFormat === 'oneLine' ? columns : columns.filter(column => !['Description', 'Notes'].includes(column.label)))
 
 function handleSort(column: string) {
   sortBy.value = sortBy.value === column ? `-${column}` : column
+}
+
+function selectMachine(machine: Machine) {
+  machineStore.setMachine(machine)
+  navigateTo('/view')
 }
 </script>

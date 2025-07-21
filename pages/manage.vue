@@ -23,48 +23,14 @@
 </template>
 
 <script setup lang="ts">
-const machineSearch: Ref<string> = ref("")
+const machineStore = useMachineStore()
+const { machine, soldMachine } = storeToRefs(useMachineStore())
+
 const activeTab = ref<string>('located')
 
 const categories: Ref<string[]> = ref(['located', 'sold', 'archived'])
 
-const contact: ContactForm = {
-  company: undefined,
-  name: undefined
-}
-
-const machine: Ref<MachineForm> = ref({
-  serialNumber: undefined,
-  contact: contact,
-  location: undefined,
-  type: undefined,
-  model: undefined,
-  year: undefined,
-  hours: undefined,
-  price: undefined,
-  salesman: undefined,
-  description: undefined,
-  dateCreated: undefined,
-  dateLastModified: undefined,
-  notes: undefined,
-})
-
-const soldMachine: Ref<SoldMachineForm> = ref({
-  machine,
-  buyer: contact,
-  buyerLocation: undefined,
-  truckingCompany: undefined,
-  totalCost: undefined,
-  machineCost: undefined,
-  freightCost: undefined,
-  paintCost: undefined,
-  profitFromSale: undefined,
-  purchaseFob: undefined,
-  saleFobPoint: undefined,
-  notes: undefined
-})
-
 function fillInMachine(selectedMachine: Machine) {
-  machine.value = selectedMachine
+  machineStore.setMachine(selectedMachine)
 }
 </script>

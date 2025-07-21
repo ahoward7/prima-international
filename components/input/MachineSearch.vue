@@ -3,7 +3,7 @@
     <InputText v-model="searchInput" label="Universal" placeholder="Search anything..." />
     <div class="relative">
       <div v-if="searchInput.length !== 0" class="absolute w-full">
-        <div v-for="machine in machines" @click="selectMachine(machine)" class="odd:bg-gray-100 even:bg-gray-200">
+        <div v-for="machine in machines" @click="selectMachine(machine)" class="odd:bg-gray-100 even:bg-gray-100">
           <div class="flex w-full hover:bg-gray-300 border-b border-r border-gray-400 cursor-pointer">
             <div class="w-28 font-bold shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
               {{ machine.serialNumber }}

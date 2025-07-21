@@ -1,6 +1,6 @@
 <template>
   <tr class="border-b border-gray-400" :class="rowClass">
-    <td rowspan="2" class="font-bold px-1 py-1">
+    <td rowspan="2" class="text-prima-link text-center font-bold px-1 py-1 cursor-pointer" @click="emit('select')">
       {{ getFullValue(machine, 'model') }}
     </td>
     <td v-for="column in filteredColumns" :key="column.key" class="border-l px-1 py-1 border-gray-400">
@@ -34,8 +34,10 @@ const props = defineProps<{
   index: number
 }>()
 
+const emit = defineEmits(['select'])
+
 const filteredColumns = computed(() => props.columns.filter(column => column.label !== 'Model'))
-const rowClass = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-white'
+const rowClass = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-50'
 const displayClass = computed(() => props.displayFormat === "twoLine" ? '' : 'h-6 overflow-hidden')
 
 function getNestedValue(obj: any, path: string): any {

@@ -54,11 +54,11 @@
       </div>
       <div class="flex gap-2 text-lg">
         <span>Date Created:</span>
-        <span class="font-semibold">{{ formatDate(machine.dateCreated) }}</span>
+        <span class="font-semibold">{{ formatDate(machine.createDate) }}</span>
       </div>
       <div class="flex gap-2 text-lg">
         <span>Last Modified:</span>
-        <span class="font-semibold">{{ formatDate(machine.dateLastModified) }}</span>
+        <span class="font-semibold">{{ formatDate(machine.lastModDate) }}</span>
       </div>
 
       <div class="border border-prima-red/50 col-span-2 my-1"></div>

@@ -1,10 +1,10 @@
 export type MachineCategory = 'located' | 'sold' | 'archived' | 'all'
 
 export interface MachineFilters {
-  category: MachineCategory
-  search: string
-  pageSize: number
-  sortBy: string
+  category?: MachineCategory
+  search?: string
+  pageSize?: number
+  sortBy?: string
 }
 
 interface BaseEntity {

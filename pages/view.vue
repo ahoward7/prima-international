@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen flex justify-center">
-    <div class="w-full flex flex-col gap-16 p-8 max-w-[1200px]">
+    <div class="w-full flex flex-col gap-8 p-8 max-w-[1200px]">
       <HeaderPrimary>{{ machine.serialNumber}}</HeaderPrimary>
       <div class="grid grid-cols-2 gap-16">
         <div class="flex flex-col gap-2 bg-gray-200 px-4 py-3 border border-prima-red">
@@ -55,17 +55,14 @@
         </div>
       </div>
       <DividerLine />
-      <div class="flex flex-col gap-4">
-        <HeaderSecondary>Other Information</HeaderSecondary>
-        <div class="flex flex-col gap-2">
-          <div class="flex justify-between font-bold">
-            <label class="shrink-0 w-32">Description</label>
-            <span class="text-prima-red">{{ machine.description }}</span>
-          </div>
-          <div class="flex justify-between font-bold">
-            <label class="shrink-0 w-32">Notes</label>
-            <span class="text-prima-red">{{ machine.notes }}</span>
-          </div>
+      <div class="flex flex-col gap-8 font-bold">
+        <div class="flex flex-col gap-1">
+          <HeaderSecondary>Description</HeaderSecondary>
+          <span>{{ machine.description }}</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <HeaderSecondary>Notes</HeaderSecondary>
+          <span>{{ machine.notes }}</span>
         </div>
       </div>
     </div>

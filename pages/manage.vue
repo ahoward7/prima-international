@@ -8,7 +8,7 @@
       </div>
       <div>
         <HeaderSecondary class="mb-4">Machine Type</HeaderSecondary>
-        <FilterTabs v-model="activeTab" :categories="categories" />
+        <FilterTabs v-model="activeTab" :options="categories" />
       </div>
       <div class="flex justify-center w-full">
         <FormLocatedMachine v-if="['located', 'archived'].includes(activeTab)" v-model="machine" />

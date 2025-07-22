@@ -4,16 +4,11 @@
       <HeaderPrimary>
         Inventory
       </HeaderPrimary>
-      <div class="flex flex-col gap-4">
-        <HeaderSecondary>Category</HeaderSecondary>
-        <div class="flex">
-          <FilterTabs v-if="filters.category" v-model="filters.category" :options="machineCategories" />
-        </div>
-      </div>
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
         <HeaderSecondary>Search Filters</HeaderSecondary>
         <div class="flex gap-4">
           <InputText class="w-60" v-model="searchInput" label="Universal" placeholder="Search anything..." />
+          <FilterLocation class="w-40" v-model="filters.location" />
           <FilterModel class="w-40" v-model="filters.model" />
           <FilterType class="w-40" v-model="filters.type" />
         </div>
@@ -34,7 +29,7 @@
 import { useDebounceFn } from '@vueuse/core'
 
 const filters = ref<MachineFilters>({
-  category: 'located',
+  location: 'located',
   search: '',
   pageSize: 10,
   sortBy: 'model',

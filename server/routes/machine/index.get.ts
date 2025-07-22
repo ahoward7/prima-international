@@ -129,7 +129,7 @@ function filterByProperty(machines: Machine[], path: string, propertyValue: stri
 
 export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => {
   const machines = convertToFrontEnd(jsonMachines)
-  const { category, search, pageSize, sortBy, model, type } = getQuery(event)
+  const { location, search, pageSize, sortBy, model, type } = getQuery(event)
 
   let filteredMachines = machines
 

@@ -49,19 +49,18 @@ const props = defineProps<{
 }>()
 
 const columns: TableColumnC[] = [
-  { key: 'model', label: 'Model' },
-  { key: 'serialNumber', label: 'Serial#' },
-  { key: 'type', label: 'Type' },
-  { key: 'year', label: 'Year' },
-  { key: 'hours', label: 'Hours' },
-  { key: 'price', label: 'Price' },
-  { key: 'lastModDate', label: 'Date' },
-  { key: 'location', label: 'Location' },
-  { key: 'description', label: 'Description' },
-  { key: 'salesman', label: 'Salesman' },
-  { key: 'contact.company', label: 'Company' },
-  { key: 'contact.name', label: 'Contact' },
-  { key: 'notes', label: 'Notes' },
+  { key: 'model', label: 'Model', sort: true },
+  { key: 'serialNumber', label: 'Serial#', sort: true },
+  { key: 'type', label: 'Type', sort: true },
+  { key: 'year', label: 'Year', sort: true },
+  { key: 'hours', label: 'Hours', sort: true },
+  { key: 'price', label: 'Price', sort: true },
+  { key: 'lastModDate', label: 'Date', sort: true },
+  { key: 'location', label: 'Location', sort: false },
+  { key: 'description', label: 'Description', sort: false },
+  { key: 'contact.company', label: 'Company', sort: false },
+  { key: 'notes', label: 'Notes', sort: false },
+  { key: 'salesman', label: 'Sm', sort: false },
 ]
 
 const filteredColumns = computed(() => props.displayFormat === 'oneLine' ? columns : columns.filter(column => !['Description', 'Notes'].includes(column.label)))

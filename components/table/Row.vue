@@ -1,8 +1,11 @@
 <template>
   <tr class="even:bg-gray-200 border-b border-gray-400">
-    <td v-for="column in columns" :key="column.key" class="border-l px-1 py-1 border-gray-400">
-      <div v-if="column.key === 'model'" class="font-bold text-prima-link border-l-0 cursor-pointer" @click="emit('select')">
+    <td v-for="column in columns" :key="column.key" class="border-l px-1 py-1 border-gray-400" :class="column.key === 'salesman' ? 'w-6' : ''">
+      <div v-if="column.key === 'model'" class="border-l-0 cursor-pointer" @click="emit('select')">
         {{ getFullValue(machine, column.key) }}
+      </div>
+      <div v-else-if="['price', 'hours'].includes(column.key)" class="h-6 overflow-hidden">
+        {{ formatCommas(parseInt(getFullValue(machine, column.key))) }}
       </div>
       <div v-else class="h-6 overflow-hidden">
         {{ getFullValue(machine, column.key) }}
@@ -36,5 +39,16 @@ function getFullValue(machine: Machine, key: string): string {
     const value = getNestedValue(machine, key)
     return value || 'NONE'
   }
+}
+
+function formatCommas(num: number = 0): string {
+  if (!num) {
+    return ''
+  }
+
+  return num.toLocaleString('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
 }
 </script>

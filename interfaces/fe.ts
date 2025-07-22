@@ -74,4 +74,5 @@ export type TableColumn = {
 export type TableColumnC = {
   key: string
   label: string
+  sort: boolean
 }

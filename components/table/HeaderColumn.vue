@@ -1,6 +1,6 @@
 <template>
-  <th @click="handleSort(column.key)" class="bg-prima-red text-white py-1 border-l first:border-l-0 border-white" :class="isSorting ? 'px-2' : 'px-5'">
-    <div class="flex justify-center cursor-pointer select-none">
+  <th @click="handleSort(column.key)" class="bg-prima-red text-white py-1 border-l first:border-l-0 border-white" :class="[isSorting ? 'px-2' : 'px-5', column.key === 'salesman' ? 'w-10' : '']">
+    <div class="flex justify-center select-none" :class="column.sort ? 'cursor-pointer' : ''">
       <span>{{ column.label }}</span>
       <div v-if="isSorting" class="flex items-center">
         <Icon v-if="sortBy.includes('-')" name="carbon:chevron-down" class="shrink-0 inline-block ml-1" size="20" />
@@ -21,8 +21,10 @@ const emit = defineEmits<{
 }>()
 
 function handleSort(column: string) {
-  emit('sort', column)
+  if (props.column.sort) {
+    emit('sort', column)
+  }
 }
 
-const isSorting = computed(() => props.sortBy.includes(props.column.key))
+const isSorting = computed(() => props.column.sort && props.sortBy.includes(props.column.key))
 </script>

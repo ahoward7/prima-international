@@ -1,6 +1,6 @@
 <template>
   <tr class="border-b border-gray-400" :class="rowClass">
-    <td rowspan="2" class="text-prima-link text-center font-bold px-1 py-1 cursor-pointer" @click="emit('select')">
+    <td rowspan="2" class="text-center font-bold px-1 py-1 cursor-pointer" @click="emit('select')">
       {{ getFullValue(machine, 'model') }}
     </td>
     <td v-for="column in filteredColumns" :key="column.key" class="border-l px-1 py-1 border-gray-400">

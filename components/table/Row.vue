@@ -7,7 +7,7 @@
       <div v-else-if="['price', 'hours'].includes(column.key)" class="h-6 overflow-hidden">
         {{ formatCommas(parseInt(getFullValue(machine, column.key))) }}
       </div>
-      <div v-else class="h-6 overflow-hidden">
+      <div v-else class="h-6 overflow-hidden" :class="column.key === 'description' ? 'min-w-80' : ''">
         {{ getFullValue(machine, column.key) }}
       </div>
     </td>

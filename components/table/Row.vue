@@ -1,7 +1,7 @@
 <template>
   <tr class="even:bg-gray-200 border-b border-gray-400">
     <td v-for="column in columns" :key="column.key" class="border-l px-1 py-1 border-gray-400">
-      <div v-if="column.key === 'serialNumber'" class="font-bold text-prima-link border-l-0 cursor-pointer" @click="emit('select')">
+      <div v-if="column.key === 'model'" class="font-bold text-prima-link border-l-0 cursor-pointer" @click="emit('select')">
         {{ getFullValue(machine, column.key) }}
       </div>
       <div v-else class="h-6 overflow-hidden">

@@ -51,6 +51,7 @@ const props = defineProps<{
 const columns: TableColumnC[] = [
   { key: 'model', label: 'Model' },
   { key: 'serialNumber', label: 'Serial#' },
+  { key: 'type', label: 'Type' },
   { key: 'year', label: 'Year' },
   { key: 'hours', label: 'Hours' },
   { key: 'price', label: 'Price' },

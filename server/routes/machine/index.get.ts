@@ -71,22 +71,22 @@ function sortMachines(machines: Machine[], sortBy: string): Machine[] {
 
   const isDescending = sortBy.startsWith('-')
   const fieldName = isDescending ? sortBy.slice(1) : sortBy
-  
+
   return [...machines].sort((a, b) => {
     const aValue = getNestedValue(a, fieldName)
     const bValue = getNestedValue(b, fieldName)
-    
+
     // Handle falsy values - always put them at the end (null, undefined, empty string, NaN)
     // Keep 0 and false as valid values for sorting
     const aIsFalsy = aValue === null || aValue === undefined || aValue === '' || (typeof aValue === 'number' && isNaN(aValue))
     const bIsFalsy = bValue === null || bValue === undefined || bValue === '' || (typeof bValue === 'number' && isNaN(bValue))
-    
+
     if (aIsFalsy && bIsFalsy) return 0
     if (aIsFalsy) return 1
     if (bIsFalsy) return -1
-    
+
     let comparison = 0
-    
+
     // Handle different data types
     if (typeof aValue === 'string' && typeof bValue === 'string') {
       comparison = aValue.localeCompare(bValue)
@@ -98,11 +98,10 @@ function sortMachines(machines: Machine[], sortBy: string): Machine[] {
       // Convert to strings for comparison
       comparison = String(aValue).localeCompare(String(bValue))
     }
-    
+
     return isDescending ? -comparison : comparison
   })
 }
-
 
 // Helper function to get nested object values by dot notation
 function getNestedValue(obj: any, path: string): any {
@@ -111,10 +110,26 @@ function getNestedValue(obj: any, path: string): any {
   }, obj)
 }
 
+function filterByProperty(machines: Machine[], path: string, propertyValue: string): Machine[] {
+  if (!path || !propertyValue) {
+    return machines
+  }
+
+  const normalizedPropertyValue = String(propertyValue).toLowerCase()
+
+  return machines.filter(machine => {
+    const value = getNestedValue(machine, path)
+    if (value === null || value === undefined) {
+      return false
+    }
+    return String(value).toLowerCase() === normalizedPropertyValue
+  })
+}
+
 
 export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => {
   const machines = convertToFrontEnd(jsonMachines)
-  const { category, search, pageSize, sortBy } = getQuery(event)
+  const { category, search, pageSize, sortBy, model, type } = getQuery(event)
 
   let filteredMachines = machines
 
@@ -126,6 +141,14 @@ export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => 
   // Apply sorting if sortBy exists
   if (sortBy && typeof sortBy === 'string') {
     filteredMachines = sortMachines(filteredMachines, sortBy)
+  }
+
+  if (model && model !== 'All') {
+    filteredMachines = filterByProperty(filteredMachines, 'model', model as string)
+  }
+
+  if (type && type !== 'All') {
+    filteredMachines = filterByProperty(filteredMachines, 'type', type as string)
   }
 
   return l.take(filteredMachines, (pageSize || 20) as number)

@@ -5,6 +5,8 @@ export interface MachineFilters {
   search?: string
   pageSize?: number
   sortBy?: string
+  model?: string
+  type?: string
 }
 
 interface BaseEntity {

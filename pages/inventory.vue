@@ -12,10 +12,10 @@
       </div>
       <div class="flex flex-col gap-4">
         <HeaderSecondary>Search Filters</HeaderSecondary>
-        <div class="grid grid-cols-4 gap-4">
-          <InputText v-model="searchInput" label="Universal" placeholder="Search anything..." />
-          <FilterType />
-          <FilterModel />
+        <div class="flex gap-4">
+          <InputText class="w-60" v-model="searchInput" label="Universal" placeholder="Search anything..." />
+          <FilterModel class="w-40" v-model="filters.model" />
+          <FilterType class="w-40" v-model="filters.type" />
         </div>
       </div>
       <div class="flex flex-col gap-4">
@@ -37,7 +37,9 @@ const filters = ref<MachineFilters>({
   category: 'located',
   search: '',
   pageSize: 10,
-  sortBy: 'model'
+  sortBy: 'model',
+  model: 'All',
+  type: 'All',
 })
 
 const searchInput = ref('')

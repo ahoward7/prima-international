@@ -21,7 +21,7 @@
         </div>
       </div>
       <DividerLine />
-      <Table :machines="machines" v-model:sort-by="filters.sortBy" :display-format="displayFormat" :page-size="filters.pageSize" />
+      <Table :machines="machines" v-model:sort-by="filters.sortBy" :display-format="displayFormat" :page-size="filters.pageSize" :page="filters.page" />
     </div>
   </div>
 </template>
@@ -34,6 +34,7 @@ const filters = ref<MachineFilters>({
   location: '',
   search: '',
   pageSize: 20,
+  page: 1,
   sortBy: 'model',
   model: '',
   type: '',

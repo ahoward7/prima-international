@@ -25,10 +25,4 @@ export default defineNuxtConfig({
       dirs: ['./interfaces']
     }
   },
-  mongoose: {
-    uri: process.env.MONGODB_URI,
-    options: {},
-    modelsDir: 'models',
-    devtools: false
-  }
 })

@@ -1,5 +1,8 @@
 <template>
-  <div class="relative min-w-[1400px] overflow-x-auto">
+  <div class="flex flex-col gap-2 relative min-w-[1400px] overflow-x-auto">
+    <div class="flex justify-center">
+      <TablePagination :page-size="pageSize" :page="page" />
+    </div>
     <div v-show="!machines">
       <div class="w-full top-0 h-8 bg-prima-red" />
       <div v-for="p in pageSize" class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400" :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'" />
@@ -51,6 +54,7 @@ const props = defineProps<{
   machines: Machine[] | null
   displayFormat: string
   pageSize: number
+  page: number
 }>()
 
 const columns: TableColumnC[] = [

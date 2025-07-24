@@ -50,7 +50,7 @@ export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => 
   
   const contactMap = new Map(contacts.map(contact => [contact.c_id, contact]))
 
-  const transformedMachines = machines.map(machine => {
+  const transformedMachines: Machine[] = machines.map(machine => {
     const machineObj = machine.toObject ? machine.toObject() : machine
     
     const contact = contactMap.get(machineObj.contactId)
@@ -58,7 +58,7 @@ export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => 
     return {
       ...machineObj,
       contact: contact || null,
-    }
+    } as Machine
   })
 
   return transformedMachines

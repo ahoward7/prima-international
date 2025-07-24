@@ -19,6 +19,7 @@ export interface Contact {
 
 export interface Machine {
   m_id: string
+  contactId: string
   contact: Contact
   type?: string
   model?: string

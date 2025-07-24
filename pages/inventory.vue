@@ -8,9 +8,9 @@
         <HeaderSecondary>Search Filters</HeaderSecondary>
         <div class="flex gap-4">
           <InputText class="w-60" v-model="searchInput" label="Universal" placeholder="Search anything..." />
-          <InputSelect v-model="filters.location" label="Location" :options="filterOptions.location" class="w-40" />
-          <InputSelect v-model="filters.model" label="Model" :options="filterOptions.model" class="w-40" />
-          <InputSelect v-model="filters.type" label="Type" :options="filterOptions.type" class="w-40" />
+          <InputSelect v-model="filters.location" label="Location" :options="filterOptions.location" />
+          <InputSelect v-model="filters.model" label="Model" :options="filterOptions.model" />
+          <InputSelect v-model="filters.type" label="Type" :options="filterOptions.type" />
         </div>
       </div>
       <div class="flex flex-col gap-4">

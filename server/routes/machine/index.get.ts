@@ -1,65 +1,68 @@
 import type { H3Event } from 'h3'
+import type { Query, Document } from 'mongoose'
 
-export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => {
-  const { location, search, pageSize, sortBy, model, type }: MachineFilters = getQuery(event)
+type DBMachineDocument = DBMachine & Document
+type MachineQuery = Query<DBMachineDocument[], DBMachineDocument>
 
-  // Build the filter object
-  const filter: any = {}
+function buildQuery(machineFilters: MachineFilters): MachineQuery {
+  const { search, model, type } = machineFilters
+  const filters: Record<string, any> = {}
 
-  // Add model filter if provided
-  if (model) {
-    filter.model = model
-  }
+  if (model) filters.model = model
+  if (type) filters.type = type
 
-  // Add type filter if provided
-  if (type) {
-    filter.type = type
-  }
-
-  // Add universal search filter if provided
   if (search) {
-    filter.$or = [
-      { name: { $regex: search, $options: 'i' } },
+    filters.$or = [
+      { serialNumber: { $regex: search, $options: 'i' } },
       { model: { $regex: search, $options: 'i' } },
       { type: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } }
+      { description: { $regex: search, $options: 'i' } },
     ]
   }
 
-  // Build the query
-  let query = MachineSchema.find(filter)
+  let query = MachineSchema.find<DBMachineDocument>(filters)
+  query = sortMachines(query, filters.sortBy)
+  query = limitMachines(query, filters.pageSize)
 
-  // Add sorting if provided
-  if (sortBy) {
-    query = query.sort(sortBy)
+  return query
+}
+
+function sortMachines(machineQuery: MachineQuery, sortBy: string = ''): MachineQuery {
+  return sortBy ? machineQuery.sort(sortBy) : machineQuery
+}
+
+function limitMachines(machineQuery: MachineQuery, pageSize: number = 20): MachineQuery {
+  if (!isNaN(pageSize) && pageSize > 0) {
+    return machineQuery.limit(pageSize)
   }
+  return machineQuery
+}
 
-  // Add pagination if provided
-  if (pageSize) {
-    const limit = pageSize
-    if (!isNaN(limit) && limit > 0) {
-      query = query.limit(limit)
-    }
-  }
-
-  const machines = await query
-
+async function joinContacts(machines: DBMachineDocument[]) {
   const contactIds = [...new Set(machines.map(m => m.contactId).filter(Boolean))]
-  
   const contacts = await ContactSchema.find({ c_id: { $in: contactIds } })
-  
   const contactMap = new Map(contacts.map(contact => [contact.c_id, contact]))
 
-  const transformedMachines: Machine[] = machines.map(machine => {
-    const machineObj = machine.toObject ? machine.toObject() : machine
-    
-    const contact = contactMap.get(machineObj.contactId)
-    
+  const joinedMachines: Machine[] = machines.map(machineDoc => {
+    const machine = machineDoc.toObject()
+
+    const contact = contactMap.get(machine.contactId ?? '')
+
     return {
-      ...machineObj,
+      ...machine,
       contact: contact || null,
     } as Machine
   })
 
-  return transformedMachines
+  return joinedMachines
+}
+
+export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => {
+  const filters: MachineFilters = getQuery(event)
+
+  const query = buildQuery(filters)
+  const machines = await query
+  const joinedMachines = await joinContacts(machines)
+
+  return joinedMachines
 })

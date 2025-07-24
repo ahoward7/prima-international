@@ -3,12 +3,12 @@
     <label class="text-prima-red font-semibold">{{ label }}</label>
     <div class="relative">
       <select ref="selectRef" class="w-44 h-[34px] bg-gray-100 px-1 pr-4 border border-prima-red" @change="selectOption">
-        <option v-for="option, index in options" :selected="index === 0" :disabled="index === 0">
+        <option v-for="option, index in options" :selected="index === selectedIndex" :disabled="clearable && index === 0">
           {{ option.label }}
         </option>
       </select>
       <Icon 
-        v-if="selectedOption && selectedOption !== options[0]?.data" 
+        v-if="clearable && selectedOption && selectedOption !== options[0]?.data" 
         name="carbon:close" 
         class="absolute right-5 top-2 text-prima-red cursor-pointer" 
         size="20" 
@@ -19,18 +19,23 @@
 </template>
 
 <script setup lang="ts">
-const selectedOption = defineModel<string>()
+const selectedOption = defineModel<string | number>()
 const selectRef = ref<HTMLSelectElement>()
 
 interface SelectOption {
   label: string
-  data: string
+  data: string | number
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   label: string
   options: SelectOption[]
-}>()
+  clearable?: boolean
+  selectedIndex?: number
+}>(), {
+  clearable: true,
+  selectedIndex: 0
+})
 
 function selectOption(event: Event) {
   const target = event.target as HTMLSelectElement

@@ -1,6 +1,10 @@
 <template>
-  <div class="min-w-[1400px] overflow-x-auto">
-    <table class="font-[consolas] border-x border-b border-gray-400">
+  <div class="relative min-w-[1400px] overflow-x-auto">
+    <div v-show="!machines">
+      <div class="w-full top-0 h-8 bg-prima-red" />
+      <div v-for="p in pageSize" class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400" :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'" />
+    </div>
+    <table v-show="machines" class="font-[consolas] border-x border-b border-gray-400">
       <thead>
         <tr>
           <TableHeaderColumn
@@ -44,8 +48,9 @@ const machineStore = useMachineStore()
 const sortBy = defineModel('sortBy', { type: String, default: 'model' })
 
 const props = defineProps<{
-  machines: Machine[] | null,
+  machines: Machine[] | null
   displayFormat: string
+  pageSize: number
 }>()
 
 const columns: TableColumnC[] = [

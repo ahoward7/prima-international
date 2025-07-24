@@ -33,5 +33,18 @@ export const filterOptions = {
     { label: 'TTT', data: 'TTT' },
     { label: 'EX', data: 'EX' },
     { label: 'MG', data: 'MG' }
+  ],
+  displayFormat: [
+    { label: 'One Line', data: 'oneLine'},
+    { label: 'Two Line', data: 'twoLine'},
+    { label: 'Two Line Truncated', data: 'twoLineTruncated'},
+  ],
+  pageSize: [
+    { label: '10', data: 10},
+    { label: '20', data: 20},
+    { label: '30', data: 30},
+    { label: '40', data: 40},
+    { label: '50', data: 50},
+    { label: '100', data: 100},
   ]
 }

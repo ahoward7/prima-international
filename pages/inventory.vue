@@ -14,13 +14,14 @@
         </div>
       </div>
       <div class="flex flex-col gap-4">
-        <HeaderSecondary>Display Format</HeaderSecondary>
-        <div class="flex">
-          <FilterTabs v-model="displayFormat" :options="displayFormats" />
+        <HeaderSecondary>Table Display</HeaderSecondary>
+        <div class="flex gap-4">
+          <InputSelect v-model="displayFormat" label="Display Format" :options="filterOptions.displayFormat" :clearable="false" />
+          <InputSelect v-model="filters.pageSize" label="Page Size" :options="filterOptions.pageSize" :clearable="false" :selected-index="1" />
         </div>
       </div>
       <DividerLine />
-      <Table :machines="machines" v-model:sort-by="filters.sortBy" :display-format="displayFormat" />
+      <Table :machines="machines" v-model:sort-by="filters.sortBy" :display-format="displayFormat" :page-size="filters.pageSize" />
     </div>
   </div>
 </template>

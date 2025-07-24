@@ -2,10 +2,61 @@ import type { H3Event } from 'h3'
 import type { Query, Document } from 'mongoose'
 
 type DBMachineDocument = DBMachine & Document
-type MachineQuery = Query<DBMachineDocument[], DBMachineDocument>
+type MachineFilterStrings = {[key: string]: string}
 
-function buildQuery(machineFilters: MachineFilters): MachineQuery {
-  const { search, model, type } = machineFilters
+function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string) {
+  let sortField = ''
+  let sortDir = 1
+  if (sortBy) {
+    if (sortBy.startsWith('-')) {
+      sortField = sortBy.slice(1)
+      sortDir = -1
+    } else {
+      sortField = sortBy
+      sortDir = 1
+    }
+  }
+
+  const pipeline: any[] = [
+    { $match: filters }
+  ]
+
+  if (sortField) {
+    pipeline.push({
+      $addFields: {
+        _sortNull: {
+          $cond: [
+            { $or: [
+              { $eq: [`$${sortField}`, null] },
+              { $eq: [`$${sortField}`, ''] },
+              { $eq: [`$${sortField}`, '0'] },
+              { $not: [`$${sortField}`] }
+            ] },
+            1,
+            0
+          ]
+        }
+      }
+    })
+    pipeline.push({
+      $sort: {
+        _sortNull: 1, // falsey values at the end
+        [sortField]: sortDir
+      }
+    })
+  }
+
+  const pageSizeInt = parseInt(pageSize)
+
+  if (pageSizeInt && !isNaN(pageSizeInt) && pageSizeInt > 0) {
+    pipeline.push({ $limit: pageSizeInt })
+  }
+
+  return pipeline
+}
+
+function buildQuery(machineFilters: MachineFilterStrings) {
+  const { search, model, type, sortBy, pageSize } = machineFilters
   const filters: Record<string, any> = {}
 
   if (model) filters.model = model
@@ -20,22 +71,9 @@ function buildQuery(machineFilters: MachineFilters): MachineQuery {
     ]
   }
 
-  let query = MachineSchema.find<DBMachineDocument>(filters)
-  query = sortMachines(query, filters.sortBy)
-  query = limitMachines(query, filters.pageSize)
+  const pipeline = buildPipeline(filters, sortBy, pageSize)
 
-  return query
-}
-
-function sortMachines(machineQuery: MachineQuery, sortBy: string = ''): MachineQuery {
-  return sortBy ? machineQuery.sort(sortBy) : machineQuery
-}
-
-function limitMachines(machineQuery: MachineQuery, pageSize: number = 20): MachineQuery {
-  if (!isNaN(pageSize) && pageSize > 0) {
-    return machineQuery.limit(pageSize)
-  }
-  return machineQuery
+  return MachineSchema.aggregate(pipeline)
 }
 
 async function joinContacts(machines: DBMachineDocument[]) {
@@ -43,9 +81,7 @@ async function joinContacts(machines: DBMachineDocument[]) {
   const contacts = await ContactSchema.find({ c_id: { $in: contactIds } })
   const contactMap = new Map(contacts.map(contact => [contact.c_id, contact]))
 
-  const joinedMachines: Machine[] = machines.map(machineDoc => {
-    const machine = machineDoc.toObject()
-
+  const joinedMachines: Machine[] = machines.map(machine => {
     const contact = contactMap.get(machine.contactId ?? '')
 
     return {
@@ -58,7 +94,7 @@ async function joinContacts(machines: DBMachineDocument[]) {
 }
 
 export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => {
-  const filters: MachineFilters = getQuery(event)
+  const filters: MachineFilterStrings = getQuery(event)
 
   const query = buildQuery(filters)
   const machines = await query

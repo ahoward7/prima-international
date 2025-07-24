@@ -37,16 +37,16 @@ const page = defineModel<number>('page')
 
 const props = defineProps<{
   pageSize: number
+  total: number
 }>()
 
-const { data: count } = await useFetch('/machine/count')
-
-const pageCount = computed(() => Math.ceil(count.value / props.pageSize))
+const pageCount = computed(() => Math.ceil(props.total / props.pageSize))
 const computedPageSize = computed(() => props.pageSize)
+const computedTotal = computed(() => props.total)
 
 function getDisplayPages() {
   const pages = []
-  const pc = Math.ceil(count.value / props.pageSize)
+  const pc = Math.ceil(props.total / props.pageSize)
   const p = page.value
 
   // Always show first page
@@ -83,7 +83,7 @@ function getDisplayPages() {
 
 const displayPages = ref(getDisplayPages())
 
-watch([page, computedPageSize], () => {
+watch([page, computedPageSize, computedTotal], () => {
   displayPages.value = getDisplayPages()
 })
 

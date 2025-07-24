@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-2 relative min-w-[1400px] overflow-x-auto">
     <div class="flex justify-center">
-      <TablePagination v-model:page="page" :page-size="pageSize" />
+      <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
     </div>
     <div v-show="!machines">
       <div class="w-full top-0 h-8 bg-prima-red" />
@@ -22,7 +22,7 @@
       <tbody>
         <template v-if="displayFormat === 'oneLine'">
           <TableRow
-            v-for="machine in machines"
+            v-for="machine in machines?.data"
             :key="machine.id"
             :machine="machine"
             :columns="filteredColumns"
@@ -31,7 +31,7 @@
         </template>
         <template v-else>
           <TableRowTwoLine
-            v-for="machine, index in machines"
+            v-for="machine, index in machines?.data"
             :key="machine.id"
             :machine="machine"
             :columns="filteredColumns"
@@ -43,7 +43,7 @@
       </tbody>
     </table>
     <div class="flex justify-center">
-      <TablePagination v-model:page="page" :page-size="pageSize" />
+      <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
     </div>
   </div>
 </template>
@@ -55,7 +55,7 @@ const sortBy = defineModel('sortBy', { type: String, default: 'model' })
 const page = defineModel('page')
 
 const props = defineProps<{
-  machines: Machine[] | null
+  machines?: { data: Machine[], total: string }
   displayFormat: string
   pageSize: number
 }>()

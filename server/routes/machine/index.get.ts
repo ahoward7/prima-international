@@ -57,7 +57,7 @@ function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string
   return pipeline
 }
 
-function buildQuery(machineFilters: MachineFilterStrings) {
+async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data: DBMachineDocument[]; total: number }> {
   const { search, model, type, sortBy, pageSize, page } = machineFilters
   const filters: Record<string, any> = {}
 
@@ -73,10 +73,25 @@ function buildQuery(machineFilters: MachineFilterStrings) {
     ]
   }
 
+  // Build the main pipeline (with pagination and sort)
   const pipeline = buildPipeline(filters, sortBy, pageSize, page)
 
-  return MachineSchema.aggregate(pipeline)
+  // Build the total count pipeline
+  const countPipeline = [
+    { $match: filters },
+    { $count: 'total' }
+  ]
+
+  const [data, totalResult] = await Promise.all([
+    MachineSchema.aggregate(pipeline),
+    MachineSchema.aggregate(countPipeline),
+  ])
+
+  const total = totalResult[0]?.total || 0
+
+  return { data, total }
 }
+
 
 async function joinContacts(machines: DBMachineDocument[]) {
   const contactIds = [...new Set(machines.map(m => m.contactId).filter(Boolean))]
@@ -95,12 +110,15 @@ async function joinContacts(machines: DBMachineDocument[]) {
   return joinedMachines
 }
 
-export default defineEventHandler(async (event: H3Event): Promise<Machine[]> => {
+export default defineEventHandler(async (event: H3Event): Promise<{ data: Machine[]; total: number }> => {
   const filters: MachineFilterStrings = getQuery(event)
 
-  const query = buildQuery(filters)
-  const machines = await query
+  const { data: machines, total } = await buildQuery(filters)
   const joinedMachines = await joinContacts(machines)
 
-  return joinedMachines
+  return {
+    data: joinedMachines,
+    total
+  }
 })
+

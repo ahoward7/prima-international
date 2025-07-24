@@ -47,15 +47,7 @@ function getNestedValue(obj: any, path: string): any {
 }
 
 function getFullValue(machine: Machine, key: string): string {
-  if (key === 'year') {
-    return machine[key] ? machine[key].substring(0, 8) : 'NONE'
-  }
-  else if (key === 'lastModDate') {
-    return machine[key] ? machine[key].substring(0, 8) : 'NONE'
-  }
-  else {
-    const value = getNestedValue(machine, key)
-    return value || 'NONE'
-  }
+  const value = getNestedValue(machine, key)
+  return value || 'NONE'
 }
 </script>

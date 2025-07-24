@@ -3,6 +3,7 @@ import { defineMongooseModel } from '#nuxt/mongoose'
 export const MachineSchema = defineMongooseModel<DBMachine>({
   name: 'Machine',
   schema: {
+    m_id: { type: String, required: true },
     contactId: { type: String, ref: 'Contact', required: true },
     serialNumber: { type: String, required: false },
     model: { type: String, required: true },

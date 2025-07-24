@@ -1,16 +1,6 @@
-import type { ObjectId } from 'mongoose'
-
-interface DBBaseEntity {
-  id: number
-}
-
-export interface DBContact extends DBBaseEntity {
-  company: string
-  name?: string
-}
-
-export interface DBMachine extends DBBaseEntity {
-  contactId: ObjectId
+export interface DBMachine {
+  m_id: string
+  contactId: string
   type: string | null
   model: string | null
   serialNumber: string | null
@@ -25,9 +15,10 @@ export interface DBMachine extends DBBaseEntity {
   notes: string | null
 }
 
-export interface DBSoldMachine extends DBBaseEntity {
+export interface DBSoldMachine {
+  s_id: string
   machineId: number
-  buyer: Contact
+  buyer_id: string
   truckingCompany: string
   totalCost: number | null
   machineCost: number | null
@@ -37,7 +28,8 @@ export interface DBSoldMachine extends DBBaseEntity {
   notes?: string | null
 }
 
-export interface DBArchivedMachine extends DBBaseEntity {
+export interface DBArchivedMachine {
+  a_id: string
   machineId: number
   dateArchived: string
 }

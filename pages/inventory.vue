@@ -31,10 +31,10 @@ import { useDebounceFn } from '@vueuse/core'
 const filters = ref<MachineFilters>({
   location: '',
   search: '',
-  pageSize: 10,
+  pageSize: 20,
   sortBy: 'model',
-  model: 'All',
-  type: 'All',
+  model: '',
+  type: '',
 })
 
 const filterOptions = {

@@ -9,16 +9,16 @@ export interface MachineFilters {
   type?: string
 }
 
-interface BaseEntity {
-  id: string | number
-}
-
-export interface Contact extends BaseEntity {
-  company: string
+export interface Contact {
+  c_id: string
+  company?: string
   name?: string
+  createDate: string
+  lastModDate: string
 }
 
-export interface Machine extends BaseEntity {
+export interface Machine {
+  m_id: string
   contact: Contact
   type?: string
   model?: string
@@ -34,7 +34,8 @@ export interface Machine extends BaseEntity {
   notes?: string
 }
 
-export interface SoldMachine extends BaseEntity {
+export interface SoldMachine {
+  s_id: string
   machine: Machine
   buyer: Contact
   buyerLocation: string
@@ -49,7 +50,8 @@ export interface SoldMachine extends BaseEntity {
   notes?: string
 }
 
-export interface ArchivedMachine extends BaseEntity {
+export interface ArchivedMachine {
+  a_id: string
   machine: Machine
   dateArchived: Date | string
 }

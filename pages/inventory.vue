@@ -13,7 +13,7 @@
           <InputSelect v-model="filters.type" label="Type" :options="filterOptions.type" />
         </div>
       </div>
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
         <HeaderSecondary>Table Display</HeaderSecondary>
         <div class="flex gap-4">
           <InputSelect v-model="displayFormat" label="Display Format" :options="filterOptions.displayFormat" :clearable="false" />

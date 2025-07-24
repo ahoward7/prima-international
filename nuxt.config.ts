@@ -3,7 +3,11 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
-  modules: ["@nuxt/icon", "@pinia/nuxt"],
+  modules: [
+    "@nuxt/icon",
+    "@pinia/nuxt",
+    "nuxt-mongoose",
+  ],
   css: ['~/assets/css/main.css'],
   vite: {
     plugins: [
@@ -21,4 +25,10 @@ export default defineNuxtConfig({
       dirs: ['./interfaces']
     }
   },
+  mongoose: {
+    uri: process.env.MONGODB_URI,
+    options: {},
+    modelsDir: 'models',
+    devtools: false
+  }
 })

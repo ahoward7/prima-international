@@ -16,7 +16,7 @@
         <template v-if="displayFormat === 'oneLine'">
           <TableRow
             v-for="machine in machines"
-            :key="machine.serialNumber"
+            :key="machine.id"
             :machine="machine"
             :columns="filteredColumns"
             @select="selectMachine(machine)"
@@ -25,7 +25,7 @@
         <template v-else>
           <TableRowTwoLine
             v-for="machine, index in machines"
-            :key="machine.serialNumber"
+            :key="machine.id"
             :machine="machine"
             :columns="filteredColumns"
             :display-format="displayFormat"

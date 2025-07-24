@@ -48,7 +48,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue)
 })
 
-const { data: machines } = await useFetch<Machine[]>('/machine', { 
+const { data: machines, pending } = await useFetch<Machine[]>('/machine', { 
   method: 'GET', 
   query: filters,
   watch: [filters]

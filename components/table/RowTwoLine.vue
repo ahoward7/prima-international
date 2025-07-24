@@ -17,7 +17,7 @@
         <span>{{ machine.description }}</span>
       </div>
     </td>
-    <td colspan="5" class="px-1 py-1">
+    <td colspan="5" class="px-1 py-1 border-l border-gray-400">
       <div :class="displayClass">
         <span class="font-bold">Notes: </span>
         <span>{{ machine.notes || 'No notes available' }}</span>

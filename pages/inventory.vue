@@ -21,7 +21,7 @@
         </div>
       </div>
       <DividerLine />
-      <Table :machines="machines" v-model:sort-by="filters.sortBy" :display-format="displayFormat" :page-size="filters.pageSize" :page="filters.page" />
+      <Table :machines="machines" v-model:sort-by="filters.sortBy" v-model:page="filters.page" :display-format="displayFormat" :page-size="filters.pageSize" />
     </div>
   </div>
 </template>
@@ -56,6 +56,4 @@ const { data: machines, pending } = await useFetch<Machine[]>('/machine', {
   query: filters,
   watch: [filters]
 })
-
-const displayFormats: string[] = ['oneLine', "twoLine", "twoLineTruncated"]
 </script>

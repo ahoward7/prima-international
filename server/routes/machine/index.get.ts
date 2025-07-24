@@ -1,10 +1,10 @@
 import type { H3Event } from 'h3'
-import type { Query, Document } from 'mongoose'
+import type { Document } from 'mongoose'
 
 type DBMachineDocument = DBMachine & Document
 type MachineFilterStrings = {[key: string]: string}
 
-function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string) {
+function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string, page: string) {
   let sortField = ''
   let sortDir = 1
   if (sortBy) {
@@ -46,17 +46,19 @@ function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string
     })
   }
 
-  const pageSizeInt = parseInt(pageSize)
+  // Add pagination
+  const pageSizeNum = parseInt(pageSize, 10) || 10 // default to 10 if invalid
+  const pageNum = parseInt(page, 10) || 1 // default to page 1 if invalid
+  const skip = (pageNum - 1) * pageSizeNum
 
-  if (pageSizeInt && !isNaN(pageSizeInt) && pageSizeInt > 0) {
-    pipeline.push({ $limit: pageSizeInt })
-  }
+  pipeline.push({ $skip: skip })
+  pipeline.push({ $limit: pageSizeNum })
 
   return pipeline
 }
 
 function buildQuery(machineFilters: MachineFilterStrings) {
-  const { search, model, type, sortBy, pageSize } = machineFilters
+  const { search, model, type, sortBy, pageSize, page } = machineFilters
   const filters: Record<string, any> = {}
 
   if (model) filters.model = model
@@ -71,7 +73,7 @@ function buildQuery(machineFilters: MachineFilterStrings) {
     ]
   }
 
-  const pipeline = buildPipeline(filters, sortBy, pageSize)
+  const pipeline = buildPipeline(filters, sortBy, pageSize, page)
 
   return MachineSchema.aggregate(pipeline)
 }

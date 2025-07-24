@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-2 relative min-w-[1400px] overflow-x-auto">
     <div class="flex justify-center">
-      <TablePagination :page-size="pageSize" :page="page" />
+      <TablePagination v-model:page="page" :page-size="pageSize" />
     </div>
     <div v-show="!machines">
       <div class="w-full top-0 h-8 bg-prima-red" />
@@ -42,6 +42,9 @@
         </template>
       </tbody>
     </table>
+    <div class="flex justify-center">
+      <TablePagination v-model:page="page" :page-size="pageSize" />
+    </div>
   </div>
 </template>
 
@@ -49,12 +52,12 @@
 const machineStore = useMachineStore()
 
 const sortBy = defineModel('sortBy', { type: String, default: 'model' })
+const page = defineModel('page')
 
 const props = defineProps<{
   machines: Machine[] | null
   displayFormat: string
   pageSize: number
-  page: number
 }>()
 
 const columns: TableColumnC[] = [

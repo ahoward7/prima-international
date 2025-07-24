@@ -1,4 +1,0 @@
-1. Decide on database schema
-2. Add filters to inventory
-3. Decide on business logic for machine CRUD operations
-4. Hook up database to CRUD operations

@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-const contact = defineModel<ContactForm>({ default: {}})
+const contact = defineModel<ContactForm>({ default: { company: '', name: ''}})
 
 interface ContactLabels {
   company: string,

@@ -102,7 +102,7 @@ async function joinContacts(machines: DBMachineDocument[]) {
 
     return {
       ...machine,
-      contact: contact || null,
+      contact: contact || { company: '', name: ''},
     } as Machine
   })
 

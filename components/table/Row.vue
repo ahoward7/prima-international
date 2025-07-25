@@ -49,16 +49,16 @@ function formatCommas(num: number = 0): string {
 }
 
 function convertIsoToDdMonYy(isoString) {
-  const date = new Date(isoString);
+  const date = new Date(isoString)
 
-  if (isNaN(date)) return 'Invalid date';
+  if (isNaN(date)) return 'Invalid date'
 
-  const day = String(date.getDate()).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0')
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const month = monthNames[date.getMonth()];
-  const year = String(date.getFullYear()).slice(-2); // last two digits
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const month = monthNames[date.getMonth()]
+  const year = String(date.getFullYear()).slice(-2) // last two digits
 
-  return `${day}-${month}-${year}`;
+  return `${day}-${month}-${year}`
 }
 </script>

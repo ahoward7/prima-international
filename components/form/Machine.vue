@@ -8,8 +8,8 @@
     <InputNumber v-model="machine.hours" label="Hours" placeholder="1000" class="col-span-1" />
     <InputSelect v-model="machine.salesman" label="Salesman" :options="filterOptions.salesman" class="col-span-1" width="w-full" createable />
     <InputTextarea v-model="machine.description" label="Description" placeholder="Description of machine..." class="col-span-4" />
-    <InputReadonly v-if="action !== 'add'" v-model="machine.createDate" label="Date Added" placeholder="dd/mm/yyyy" class="col-span-1" />
-    <InputReadonly v-if="action !== 'add'" v-model="machine.lastModDate" label="Last Modified Date" placeholder="dd/mm/yyyy" class="col-span-1" />
+    <InputReadonly v-if="action !== 'add'" :model-value="convertIsoToDdMonYy(machine.createDate)" label="Date Added" placeholder="dd/mm/yyyy" class="col-span-1" />
+    <InputReadonly v-if="action !== 'add'" :model-value="convertIsoToDdMonYy(machine.lastModDate)" label="Last Modified Date" placeholder="dd/mm/yyyy" class="col-span-1" />
     <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-4" />
   </div>
 </template>
@@ -19,4 +19,18 @@ const { filters: filterOptions } = storeToRefs(useMachineStore())
 
 const machine = defineModel<MachineForm>()
 const { action } = storeToRefs(useMachineStore())
+
+function convertIsoToDdMonYy(isoString) {
+  const date = new Date(isoString)
+
+  if (isNaN(date)) return 'Invalid date'
+
+  const day = String(date.getDate()).padStart(2, '0')
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  const month = monthNames[date.getMonth()]
+  const year = String(date.getFullYear()).slice(-2) // last two digits
+
+  return `${day}-${month}-${year}`
+}
 </script>

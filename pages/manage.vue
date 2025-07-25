@@ -10,12 +10,15 @@
 </template>
 
 <script setup lang="ts">
-import { managementActions } from '~/constants'
-
 const { action } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
 
 function setManagementAction(action: FilterOption) {
   machineStore.setAction(action.data)
 }
+
+const managementActions = [
+  { label: 'Add Machine', data: 'add' },
+  { label: 'Update Machine', data: 'update' },
+]
 </script>

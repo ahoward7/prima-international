@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { filterOptions } from '~/constants'
+const { filters: filterOptions } = storeToRefs(useMachineStore())
 
 const machine = defineModel<MachineForm>()
 const { action } = storeToRefs(useMachineStore())

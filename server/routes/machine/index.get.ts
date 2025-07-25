@@ -92,7 +92,6 @@ async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data:
   return { data, total }
 }
 
-
 async function joinContacts(machines: DBMachineDocument[]) {
   const contactIds = [...new Set(machines.map(m => m.contactId).filter(Boolean))]
   const contacts = await ContactSchema.find({ c_id: { $in: contactIds } })

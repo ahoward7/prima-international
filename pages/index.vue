@@ -28,7 +28,8 @@
 
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
-import { filterOptions } from '~/constants'
+
+const { filters: filterOptions } = storeToRefs(useMachineStore())
 
 const filters = ref<MachineFilters>({
   location: '',

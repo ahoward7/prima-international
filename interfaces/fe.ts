@@ -82,5 +82,7 @@ export type TableColumnC = {
 
 export type FilterOption = {
   label: string
-  data: string
+  data: string | number
 }
+
+export type FilterOptions = { [key: string]: FilterOption[] }

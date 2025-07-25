@@ -1,19 +1,22 @@
 <template>
   <div v-if="machine" class="grid grid-cols-4 gap-8 w-full">
-    <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="XXXXXXXXXXXX" class="col-span-4" />
-    <InputText v-model="machine.type" label="Type" placeholder="XXX" class="col-span-1" />
-    <InputText v-model="machine.model" label="Model" placeholder="XXXXXX" class="col-span-1" />
-    <InputNumber v-model="machine.price" label="Price" placeholder="XXXXXX" class="col-span-1 col-start-1" />
-    <InputText v-model="machine.year" label="Year" placeholder="XXXX" class="col-span-1" />
-    <InputNumber v-model="machine.hours" label="Hours" placeholder="XXXX" class="col-span-1" />
+    <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="Number" class="col-span-2" />
+    <InputSelect v-model="machine.model" label="Model" :options="filterOptions.model" class="col-span-1" width="w-full" />
+    <InputSelect v-model="machine.type" label="Type" :options="filterOptions.type" class="col-span-1" width="w-full" />
+    <InputNumber v-model="machine.price" label="Price" placeholder="Price" class="col-span-1 col-start-1" />
+    <InputNumber v-model="machine.year" label="Year" placeholder="2000" class="col-span-1" />
+    <InputNumber v-model="machine.hours" label="Hours" placeholder="1000" class="col-span-1" />
     <InputText v-model="machine.salesman" label="Salesman" placeholder="Initials" class="col-span-1" />
     <InputTextarea v-model="machine.description" label="Description" placeholder="Description of machine..." class="col-span-4" />
-    <InputText v-model="machine.createDate" label="Date Added" placeholder="dd/mm/yyyy" class="col-span-1" />
-    <InputText v-model="machine.lastModDate" label="Last Modified Date" placeholder="dd/mm/yyyy" class="col-span-1" />
+    <InputReadonly v-if="action !== 'add'" v-model="machine.createDate" label="Date Added" placeholder="dd/mm/yyyy" class="col-span-1" />
+    <InputReadonly v-if="action !== 'add'" v-model="machine.lastModDate" label="Last Modified Date" placeholder="dd/mm/yyyy" class="col-span-1" />
     <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-4" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { filterOptions } from '~/constants'
+
 const machine = defineModel<MachineForm>()
+const { action } = storeToRefs(useMachineStore())
 </script>

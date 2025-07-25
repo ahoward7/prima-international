@@ -79,3 +79,8 @@ export type TableColumnC = {
   label: string
   sort: boolean
 }
+
+export type FilterOption = {
+  label: string
+  data: string
+}

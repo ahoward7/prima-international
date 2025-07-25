@@ -6,6 +6,8 @@ const contact: ContactForm = {
 }
 
 export const useMachineStore = defineStore('machine', () => {
+  const action = ref('add')
+
   const machine: Ref<MachineForm> = ref({
     serialNumber: undefined,
     contact: contact,
@@ -41,9 +43,15 @@ export const useMachineStore = defineStore('machine', () => {
     machine.value = m
   }
 
+  function setAction(a: string) {
+    action.value = a
+  }
+
   return {
+    action,
     machine,
     soldMachine,
-    setMachine
+    setMachine,
+    setAction
   }
 })

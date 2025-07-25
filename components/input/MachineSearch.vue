@@ -2,42 +2,41 @@
   <div>
     <InputText v-model="searchInput" label="Universal" placeholder="Search anything..." />
     <div class="relative">
-      <div v-if="searchInput.length !== 0" class="absolute w-full">
-        <div v-for="machine in machines" @click="selectMachine(machine)" class="odd:bg-gray-100 even:bg-gray-100">
-          <div class="flex w-full hover:bg-gray-300 border-b border-r border-gray-400 cursor-pointer">
-            <div class="w-28 font-bold shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.serialNumber }}
-            </div>
-            <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.year ? machine.year.substring(0, 8) : 'NONE' }}
-            </div>
-            <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.hours }}
-            </div>
-            <div class="w-24 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              ${{ machine.price }}
-            </div>
-            <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.createDate.substring(0, 8) }}
-            </div>
-            <div class="w-48 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.location ? clampString(machine.location, 24) : 'NONE' }}
-            </div>
-            <div class="w-20 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.salesman }}
-            </div>
-            <div class="w-48 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.contact?.company || 'NONE' }}
-            </div>
-            <div class="w-40 shrink-0 whitespace-nowrap border-l border-gray-400 p-1">
-              {{ machine.contact?.name || 'NONE' }}
-            </div>
-          </div>
-        </div>
+      <div v-if="searchInput.length !== 0" class="absolute w-full overflow-auto border-r border-gray-400">
+        <table class="table-auto w-full text-sm">
+          <thead class="bg-gray-200 text-prima-red">
+            <tr>
+              <th class="border-l border-b border-gray-400 p-1 w-28">Serial</th>
+              <th class="border-l border-b border-gray-400 p-1 w-20">Year</th>
+              <th class="border-l border-b border-gray-400 p-1 w-20">Hours</th>
+              <th class="border-l border-b border-gray-400 p-1 w-24">Price</th>
+              <th class="border-l border-b border-gray-400 p-1 w-20">Last Modified</th>
+              <th class="border-l border-b border-gray-400 p-1 w-48">Location</th>
+              <th class="border-l border-b border-gray-400 p-1 w-48">Company</th>
+              <th class="border-l border-b border-gray-400 p-1 w-20">Salesman</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="machines?.data.length > 0" v-for="machine in machines?.data" :key="machine.serialNumber" @click="selectMachine(machine)" class="cursor-pointer hover:bg-gray-300 bg-gray-100">
+              <td class="border-l border-b border-gray-400 p-1 font-bold whitespace-nowrap">{{ machine.serialNumber }}</td>
+              <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.year || 'NONE' }}</td>
+              <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.hours }}</td>
+              <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">${{ machine.price }}</td>
+              <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.lastModDate }}</td>
+              <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.location ? clampString(machine.location, 24) : 'NONE' }}</td>
+              <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.contact?.company || 'NONE' }}</td>
+              <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.salesman }}</td>
+            </tr>
+            <tr v-else-if="!pending" class="font-bold bg-gray-100 border-b border-l border-gray-400">
+              <td colspan="8" class="p-1 font-bold">No results</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
@@ -59,10 +58,11 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue)
 })
 
-const { data: machines } = await useFetch<Machine[]>('/machine', {
+const { data: machines, pending } = await useFetch<Machine[]>('/machine', {
   method: 'GET', 
   query: filters,
-  watch: [filters]
+  watch: [filters],
+  lazy: true
 })
 
 function clampString(str: string, maxLength: number, suffix: string = '...') {

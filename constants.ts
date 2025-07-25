@@ -46,5 +46,10 @@ export const filterOptions = {
     { label: '40', data: 40},
     { label: '50', data: 50},
     { label: '100', data: 100},
-  ]
+  ],
 }
+
+export const managementActions = [
+  { label: 'Add Machine', data: 'add' },
+  { label: 'Update Machine', data: 'update' },
+]

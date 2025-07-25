@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-1">
     <label class="text-prima-red font-semibold">{{ label }}</label>
     <div class="relative">
-      <select ref="selectRef" class="w-44 h-[34px] bg-gray-100 px-1 pr-4 border border-prima-red" @change="selectOption">
+      <select ref="selectRef" class="h-[34px] bg-gray-100 px-1 pr-4 border border-prima-red" :class="width" @change="selectOption">
         <option v-for="option, index in options" :selected="index === selectedIndex" :disabled="clearable && index === 0">
           {{ option.label }}
         </option>
@@ -32,9 +32,11 @@ const props = withDefaults(defineProps<{
   options: SelectOption[]
   clearable?: boolean
   selectedIndex?: number
+  width?: string
 }>(), {
   clearable: true,
-  selectedIndex: 0
+  selectedIndex: 0,
+  width: 'w-44'
 })
 
 function selectOption(event: Event) {

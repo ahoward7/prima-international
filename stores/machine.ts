@@ -11,32 +11,32 @@ export const useMachineStore = defineStore('machine', () => {
   const machine: Ref<MachineForm> = ref({
     serialNumber: undefined,
     contact: contact,
-    location: undefined,
-    type: undefined,
-    model: undefined,
+    location: "",
+    type: "",
+    model: "",
     year: undefined,
     hours: undefined,
     price: undefined,
-    salesman: undefined,
-    description: undefined,
+    salesman: "",
+    description: "",
     dateCreated: undefined,
     dateLastModified: undefined,
-    notes: undefined,
+    notes: "",
   })
 
   const soldMachine: Ref<SoldMachineForm> = ref({
     machine,
     buyer: contact,
-    buyerLocation: undefined,
-    truckingCompany: undefined,
+    buyerLocation: "",
+    truckingCompany: "",
     totalCost: undefined,
     machineCost: undefined,
     freightCost: undefined,
     paintCost: undefined,
     profitFromSale: undefined,
-    purchaseFob: undefined,
-    saleFobPoint: undefined,
-    notes: undefined
+    purchaseFob: "",
+    saleFobPoint: "",
+    notes: ""
   })
 
   function setMachine(m: Machine) {

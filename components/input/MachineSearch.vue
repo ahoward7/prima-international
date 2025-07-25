@@ -2,11 +2,12 @@
   <div>
     <InputText v-model="searchInput" label="Universal" placeholder="Search anything..." />
     <div class="relative">
-      <div v-if="searchInput.length !== 0" class="absolute w-full overflow-auto border-r border-gray-400">
+      <div v-if="searchInput.length !== 0" class="absolute z-10 w-full overflow-auto border-r border-gray-400">
         <table class="table-auto w-full text-sm">
           <thead class="bg-gray-200 text-prima-red">
             <tr>
-              <th class="border-l border-b border-gray-400 p-1 w-28">Serial</th>
+              <th class="border-l border-b border-gray-400 p-1 w-28">Model</th>
+              <th class="border-l border-b border-gray-400 p-1 w-28">Serial#</th>
               <th class="border-l border-b border-gray-400 p-1 w-20">Year</th>
               <th class="border-l border-b border-gray-400 p-1 w-20">Hours</th>
               <th class="border-l border-b border-gray-400 p-1 w-24">Price</th>
@@ -18,7 +19,8 @@
           </thead>
           <tbody>
             <tr v-if="machines?.data.length > 0" v-for="machine in machines?.data" :key="machine.serialNumber" @click="selectMachine(machine)" class="cursor-pointer hover:bg-gray-300 bg-gray-100">
-              <td class="border-l border-b border-gray-400 p-1 font-bold whitespace-nowrap">{{ machine.serialNumber }}</td>
+              <td class="border-l border-b border-gray-400 p-1 font-bold whitespace-nowrap">{{ machine.model }}</td>
+              <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.serialNumber }}</td>
               <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.year || 'NONE' }}</td>
               <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.hours }}</td>
               <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">${{ machine.price }}</td>

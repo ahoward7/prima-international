@@ -17,7 +17,7 @@
         <HeaderSecondary>Table Display</HeaderSecondary>
         <div class="flex gap-4">
           <InputSelect v-model="displayFormat" label="Display Format" :options="filterOptions.displayFormat" :clearable="false" />
-          <InputSelect v-model="filters.pageSize" label="Page Size" :options="filterOptions.pageSize" :clearable="false" :selected-index="1" />
+          <InputSelect v-model="filters.pageSize" label="Page Size" :options="filterOptions.pageSize" :clearable="false" />
         </div>
       </div>
       <DividerLine />

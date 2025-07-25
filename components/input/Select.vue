@@ -4,7 +4,7 @@
 
     <div ref="dropdownRef" class="relative">
       <div class="bg-gray-100 border border-prima-red px-2 py-1 flex justify-between items-center cursor-pointer" @click="toggleDropdown">
-        <span class="select-none">{{ selectedLabel || 'Select...' }}</span>
+        <span class="select-none text-prima-red font-semibold">{{ selectedLabel || 'Select...' }}</span>
         <Icon name="carbon:chevron-down" class="text-prima-red" />
       </div>
 

@@ -19,8 +19,11 @@
         </div>
 
         <!-- No Results -->
-        <div v-if="filteredOptions.length === 0" class="px-2 py-1 text-gray-400">
-          No results found.
+        <div v-if="filteredOptions.length === 0" class="px-2 py-2 text-center">
+          <div class="text-gray-400 mb-2">No results found.</div>
+          <button v-if="createable" @click="createNewOption" class="w-full bg-prima-red text-white px-2 py-1 cursor-pointer">
+            Add <span class="uppercase">"{{ searchTerm }}"</span>
+          </button>
         </div>
       </div>
 
@@ -37,16 +40,21 @@ const selectedOption = defineModel<string | number>()
 const dropdownRef = ref(null)
 const isOpen = ref(false)
 const searchTerm = ref('')
+const createdOption = ref()
 
 const props = withDefaults(defineProps<{
   label: string
   options: FilterOption[]
   clearable?: boolean
   width?: string
+  createable?: boolean
 }>(), {
   clearable: true,
-  width: 'w-44'
+  width: 'w-44',
+  createable: false
 })
+
+const emit = defineEmits(['create'])
 
 function toggleDropdown() {
   isOpen.value = !isOpen.value
@@ -63,15 +71,29 @@ function resetSelection() {
   searchTerm.value = ''
 }
 
-const selectedLabel = computed(() => {
-  return props.options.find(o => o.data === selectedOption.value)?.label || ''
-})
+const allOptions = computed(() => createdOption.value ? [createdOption.value, ...props.options] : props.options)
 
-const filteredOptions = computed(() =>
-  props.options.filter(option =>
+const selectedLabel = computed(() => allOptions.value.find(o => o.data === selectedOption.value)?.label || '')
+
+const filteredOptions = computed(() => allOptions.value.filter(option =>
     option.label.toLowerCase().includes(searchTerm.value.toLowerCase())
-  )
-)
+))
+
+function createNewOption() {
+  if (!searchTerm.value.trim()) return
+
+  const newOption = searchTerm.value.trim().toUpperCase()
+
+  createdOption.value = {
+    label: newOption,
+    data: newOption
+  }
+
+  selectedOption.value = createdOption.value.data
+
+  isOpen.value = false
+  searchTerm.value = ''
+}
 
 onClickOutside(dropdownRef, () => {
   isOpen.value = false

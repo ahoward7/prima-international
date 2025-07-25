@@ -4,21 +4,23 @@ export default defineEventHandler(async (event: H3Event): Promise<{ [key: string
   // Get distinct models and types
   const models = await MachineSchema.distinct('model')
   const types = await MachineSchema.distinct('type')
+  const salesmen = await MachineSchema.distinct('salesman')
 
   // Filter out empty or falsy values, then convert to FilterOption format
-  const modelOptions: FilterOption[] = models
-    .filter(Boolean)
-    .map((value: string) => ({
-      label: value,
-      data: value
-    }))
+  const modelOptions: FilterOption[] = models.filter(Boolean).map((value: string) => ({
+    label: value,
+    data: value
+  }))
 
-  const typeOptions: FilterOption[] = types
-    .filter(Boolean)
-    .map((value: string) => ({
-      label: value,
-      data: value
-    }))
+  const typeOptions: FilterOption[] = types.filter(Boolean).map((value: string) => ({
+    label: value,
+    data: value
+  }))
+
+   const salesmanOptions: FilterOption[] = salesmen.filter(Boolean).map((value: string) => ({
+    label: value,
+    data: value
+  }))
 
   return {
     model: [
@@ -28,6 +30,10 @@ export default defineEventHandler(async (event: H3Event): Promise<{ [key: string
     type: [
       { label: 'Choose type', data: '' },
       ...typeOptions
+    ],
+    salesman: [
+      { label: 'Choose salesman', data: ''},
+      ...salesmanOptions
     ],
     location: [
       { label: 'Choose location', data: '' },

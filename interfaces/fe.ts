@@ -1,9 +1,8 @@
-export type MachineCategory = 'located' | 'sold' | 'archived' | 'all'
-
 export interface MachineFilters {
-  location?: MachineCategory
+  location?: string
   search?: string
   pageSize?: number
+  page?: number
   sortBy?: string
   model?: string
   type?: string

@@ -39,6 +39,16 @@ export const useMachineStore = defineStore('machine', () => {
     notes: ""
   })
 
+  const filters = ref<MachineFilters>({
+    location: 'located',
+    search: '',
+    pageSize: 20,
+    page: 1,
+    sortBy: 'model',
+    model: '',
+    type: '',
+  })
+
   const filterOptions: Ref<FilterOptions> = ref({})
 
   function setMachine(m: Machine) {
@@ -53,13 +63,19 @@ export const useMachineStore = defineStore('machine', () => {
     filterOptions.value = f
   }
 
+  function setFilters(f: MachineFilters) {
+    filters.value = f
+  }
+
   return {
     action,
     machine,
     soldMachine,
     filterOptions,
+    filters,
     setMachine,
     setAction,
-    setFilterOptions
+    setFilterOptions,
+    setFilters
   }
 })

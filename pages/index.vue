@@ -29,19 +29,24 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 
-const { filterOptions } = storeToRefs(useMachineStore())
+const machineStore = useMachineStore()
+const { filterOptions, filters: storeFilters } = storeToRefs(machineStore)
 
 const filters = ref<MachineFilters>({
-  location: '',
-  search: '',
-  pageSize: 20,
-  page: 1,
-  sortBy: 'model',
-  model: '',
-  type: '',
+  location: storeFilters.value.location || '',
+  search: storeFilters.value.search || '',
+  pageSize: storeFilters.value.pageSize || 20,
+  page: storeFilters.value.page || 1,
+  sortBy: storeFilters.value.sortBy || 'model',
+  model: storeFilters.value.model || '',
+  type: storeFilters.value.type || '',
 })
 
-const searchInput = ref('')
+watch(filters, (newFilters) => {
+  machineStore.setFilters(newFilters)
+}, { deep: true })
+
+const searchInput = ref(filters.value.search)
 const displayFormat = ref('oneLine')
 
 const debouncedSearch = useDebounceFn((value: string) => {

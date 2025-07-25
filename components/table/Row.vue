@@ -5,7 +5,7 @@
         {{ getFullValue(machine, column.key) }}
       </div>
       <div v-else-if="['price', 'hours'].includes(column.key)" class="h-6 overflow-hidden text-right">
-        {{ formatCommas(getFullValue(machine, column.key)) }}
+        {{ formatCommas(getFullValue(machine, column.key) as number) }}
       </div>
       <div v-else-if="column.key === 'year'" class="h-6 overflow-hidden text-right">
         {{ getFullValue(machine, column.key )}}
@@ -35,7 +35,7 @@ function getNestedValue(obj: any, path: string): any {
   }, obj)
 }
 
-function getFullValue(machine: Machine, key: string): string {
+function getFullValue(machine: Machine, key: string): string | number {
   const value = getNestedValue(machine, key)
   return value || 'NONE'
 }

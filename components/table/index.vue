@@ -83,6 +83,6 @@ function handleSort(column: string) {
 
 function selectMachine(machine: Machine) {
   machineStore.setMachine(machine)
-  navigateTo('/view')
+  navigateTo(`/detail/?id=${machine.m_id}`)
 }
 </script>

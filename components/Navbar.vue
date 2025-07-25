@@ -5,13 +5,13 @@
         Prima International Trading
       </NuxtLink>
       <div class="flex justify-center gap-12 col-span-2">
-        <NuxtLink to="/inventory" class="flex items-center gap-1 font-bold cursor-pointer">
+        <NuxtLink to="/" class="flex items-center gap-1 font-bold cursor-pointer">
           <Icon name="carbon:table" size="20" />
-          Inventory Search
+          Inventory
         </NuxtLink>
         <NuxtLink to="/manage" class="flex items-center gap-1 font-bold cursor-pointer">
           <Icon name="carbon:settings-edit" size="20" />
-          Manage Machines
+          Management
         </NuxtLink>
       </div>
     </div>

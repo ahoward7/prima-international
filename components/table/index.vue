@@ -63,7 +63,7 @@ const props = defineProps<{
 const columns: TableColumnC[] = [
   { key: 'model', label: 'Model', sort: true },
   { key: 'serialNumber', label: 'Serial#', sort: true },
-  { key: 'type', label: 'Type', sort: true },
+  { key: 'type', label: 'Tp', sort: true },
   { key: 'year', label: 'Year', sort: true },
   { key: 'hours', label: 'Hours', sort: true },
   { key: 'description', label: 'Desc', sort: false },

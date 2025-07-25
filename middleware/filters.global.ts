@@ -4,7 +4,7 @@ import { useMachineStore } from '~/stores/machine'
 export default defineNuxtRouteMiddleware(async () => {
   const machineStore = useMachineStore()
 
-  if (machineStore.filters.model) return
+  if (machineStore.filterOptions.model) return
 
   const { data, error } = await useFetch('/machine/filters')
 
@@ -14,6 +14,6 @@ export default defineNuxtRouteMiddleware(async () => {
   }
 
   if (data.value) {
-    machineStore.setFilters(data.value)
+    machineStore.setFilterOptions(data.value)
   }
 })

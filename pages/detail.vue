@@ -2,7 +2,7 @@
   <div v-if="machine " class="h-screen flex justify-center">
     <div class="w-full flex flex-col p-8 mt-4 max-w-[750px]">
       <div class="bg-prima-red py-4">
-        <HeaderPrimary class="!text-white flex justify-between px-8">
+        <HeaderPrimary class="!text-white !text-4xl flex justify-between px-8">
           <span>{{ machine.model }}</span>
           <span class="text-prima-yellow">{{ machine.serialNumber }}</span>
         </HeaderPrimary>

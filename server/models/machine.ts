@@ -8,7 +8,7 @@ export const MachineSchema = defineMongooseModel<DBMachine>({
     serialNumber: { type: String, required: false },
     model: { type: String, required: true },
     type: { type: String, required: true },
-    year: { type: String, required: false },
+    year: { type: Number, required: false },
     hours: { type: Number, required: false },
     description: { type: String, required: false },
     salesman: { type: String, required: true },

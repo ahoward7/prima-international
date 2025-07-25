@@ -17,7 +17,7 @@
           <span class="font-bold text-lg text-prima-red underline px-3 py-2">Located</span>
         </div>
         <div class="flex gap-4 justify-end">
-          <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer">Update Machine</button>
+          <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer" @click="updateMachine">Update Machine</button>
           <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer">Move To Sold</button>
           <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer">Archive Machine</button>
         </div>
@@ -30,11 +30,17 @@
 const machineStore = useMachineStore()
 const { machine, soldMachine } = storeToRefs(useMachineStore())
 
+const emit = defineEmits(['update'])
+
 const activeTab = ref<string>('located')
 
 const categories: Ref<string[]> = ref(['located', 'sold', 'archived'])
 
 function fillInMachine(selectedMachine: Machine) {
   machineStore.setMachine(selectedMachine)
+}
+
+function updateMachine() {
+  emit('update')
 }
 </script>

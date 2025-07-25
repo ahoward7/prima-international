@@ -4,7 +4,7 @@
       <HeaderPrimary class="mb-8">Management</HeaderPrimary>
       <FilterTabs :model-value="action" :options="managementActions" @select="setManagementAction" />
       <FormAddMachine v-if="action === 'add'" />
-      <FormExistingMachine v-else />
+      <FormExistingMachine @update="updateMachine" v-else />
     </div>
   </div>
 </template>
@@ -12,9 +12,17 @@
 <script setup lang="ts">
 const { action } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
+const { machine } = storeToRefs(useMachineStore())
 
 function setManagementAction(action: FilterOption) {
   machineStore.setAction(action.data)
+}
+
+async function updateMachine() {
+  await $fetch('/machine', {
+    method: 'PUT',
+    body: machine.value
+  })
 }
 
 const managementActions = [

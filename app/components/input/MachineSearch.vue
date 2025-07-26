@@ -18,7 +18,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="machines?.data.length && machines?.data.length > 0" v-for="machine in machines?.data" :key="machine.serialNumber" @click="selectMachine(machine)" class="cursor-pointer hover:bg-gray-300 bg-gray-100">
+            <tr v-if="machines?.data.length && machines?.data.length > 0" v-for="machine in machines?.data" :key="machine.m_id" @click="selectMachine(machine)" class="cursor-pointer hover:bg-gray-300 bg-gray-100">
               <td class="border-l border-b border-gray-400 p-1 font-bold whitespace-nowrap">{{ machine.model }}</td>
               <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.serialNumber }}</td>
               <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.year || 'NONE' }}</td>
@@ -30,7 +30,7 @@
               <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.salesman }}</td>
             </tr>
             <tr v-else-if="!pending" class="font-bold bg-gray-100 border-b border-l border-gray-400">
-              <td colspan="8" class="p-1 font-bold">No results</td>
+              <td colspan="9" class="p-1 font-bold">No results</td>
             </tr>
           </tbody>
         </table>

@@ -18,7 +18,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="machines?.data.length > 0" v-for="machine in machines?.data" :key="machine.serialNumber" @click="selectMachine(machine)" class="cursor-pointer hover:bg-gray-300 bg-gray-100">
+            <tr v-if="machines?.data.length && machines?.data.length > 0" v-for="machine in machines?.data" :key="machine.serialNumber" @click="selectMachine(machine)" class="cursor-pointer hover:bg-gray-300 bg-gray-100">
               <td class="border-l border-b border-gray-400 p-1 font-bold whitespace-nowrap">{{ machine.model }}</td>
               <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.serialNumber }}</td>
               <td class="border-l border-b border-gray-400 p-1 whitespace-nowrap">{{ machine.year || 'NONE' }}</td>
@@ -60,7 +60,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue)
 })
 
-const { data: machines, pending } = await useFetch<Machine[]>('/machine', {
+const { data: machines, pending } = await useFetch<{data: Machine[], total: string}>('/machine', {
   method: 'GET', 
   query: filters,
   watch: [filters],

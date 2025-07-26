@@ -54,7 +54,7 @@ const props = withDefaults(defineProps<{
   createable: false
 })
 
-const emit = defineEmits(['create'])
+const emit = defineEmits(['select', 'create'])
 
 function toggleDropdown() {
   isOpen.value = !isOpen.value
@@ -64,6 +64,7 @@ function selectOption(option: FilterOption) {
   selectedOption.value = option.data
   isOpen.value = false
   searchTerm.value = ''
+  emit('select', option.data)
 }
 
 function resetSelection() {

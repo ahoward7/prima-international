@@ -23,7 +23,7 @@ export interface Machine {
   type?: string
   model?: string
   serialNumber?: string
-  year?: string
+  year?: number
   hours?: number
   description?: string
   salesman: string

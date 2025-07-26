@@ -20,10 +20,10 @@ const { filterOptions } = storeToRefs(useMachineStore())
 const machine = defineModel<MachineForm>()
 const { action } = storeToRefs(useMachineStore())
 
-function convertIsoToDdMonYy(isoString) {
+function convertIsoToDdMonYy(isoString: string = '') {
   const date = new Date(isoString)
 
-  if (isNaN(date)) return 'Invalid date'
+  if (!date) return 'Invalid date'
 
   const day = String(date.getDate()).padStart(2, '0')
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 

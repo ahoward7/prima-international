@@ -4,10 +4,9 @@
       <HeaderSecondary class="mb-4">Machine Search</HeaderSecondary>
       <InputMachineSearch @select="fillInMachine" />
     </div>
-    <template v-if="machine.m_id">
+    <template v-if="machineToModify.m_id">
       <div class="flex justify-center w-full">
-        <FormLocatedMachine v-if="['located', 'archived'].includes(activeTab)" v-model="machine" mode="update" />
-        <FormSoldMachine v-if="activeTab === 'sold'" v-model="soldMachine" />
+        <FormLocatedMachine v-model="machineToModify" mode="update" />
       </div>
       <DividerLine />
       
@@ -28,19 +27,18 @@
 
 <script setup lang="ts">
 const machineStore = useMachineStore()
-const { machine, soldMachine } = storeToRefs(useMachineStore())
+const { machine } = storeToRefs(useMachineStore())
+
+const machineToModify: Ref<MachineForm> = ref(machine.value)
 
 const emit = defineEmits(['update'])
 
-const activeTab = ref<string>('located')
-
-const categories: Ref<string[]> = ref(['located', 'sold', 'archived'])
-
 function fillInMachine(selectedMachine: Machine) {
-  machineStore.setMachine(selectedMachine)
+  machineToModify.value = selectedMachine
 }
 
 function updateMachine() {
+  machineStore.setMachine(machineToModify.value)
   emit('update')
 }
 </script>

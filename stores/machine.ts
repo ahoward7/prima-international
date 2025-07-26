@@ -51,7 +51,7 @@ export const useMachineStore = defineStore('machine', () => {
 
   const filterOptions: Ref<FilterOptions> = ref({})
 
-  function setMachine(m: Machine) {
+  function setMachine(m: MachineForm) {
     machine.value = m
   }
 

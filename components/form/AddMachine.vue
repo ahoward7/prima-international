@@ -12,13 +12,14 @@
 
 <script setup lang="ts">
 const { machine } = storeToRefs(useMachineStore())
+const machineStore = useMachineStore()
 
-const machineToAdd = ref(machine.value)
+const machineToAdd: Ref<MachineForm> = ref(machine.value)
 
 const emit = defineEmits(['create'])
 
 function createMachine() {
   emit('create', machineToAdd.value)
-  machine.value = machineToAdd.value
+  machineStore.setMachine(machineToAdd.value)
 }
 </script>

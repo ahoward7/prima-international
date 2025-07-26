@@ -1,6 +1,10 @@
 <template>
-  <div v-if="machine " class="h-screen flex justify-center">
-    <div class="w-full flex flex-col p-8 mt-4 max-w-[750px]">
+  <div v-if="machine " class="h-screen flex flex-col items-center">
+    <NuxtLink to="/" class="w-full max-w-[700px] flex items-center cursor-pointer">
+      <Icon name="carbon:chevron-left" size="32" />
+      <span class="text-xl">Back</span>
+    </NuxtLink>
+    <div class="w-full h-fit flex flex-col mt-4 max-w-[700px] shadow-xl">
       <div class="bg-prima-red py-4">
         <HeaderPrimary class="!text-white !text-4xl flex justify-between px-8">
           <span>{{ machine.model }}</span>
@@ -9,8 +13,13 @@
       </div>
       <div class="flex flex-col gap-8 bg-gray-100 border-x border-b border-prima-red p-8">
         <div class="flex gap-8">
-          <div class="max-h-80 w-80 flex justify-center items-center bg-gray-200 border border-prima-red">
-            <img src="/images/Excavator.jpg" />
+          <div>
+            <div class="max-h-80 w-80 flex justify-center items-center bg-gray-200 border border-prima-red">
+              <img src="/images/Excavator.jpg" />
+            </div>
+            <div class="text-center text-sm text-gray-600 mt-1">
+              Example image for if we add them later
+            </div>
           </div>
           <div class="grow h-fit grid grid-cols-2 gap-4 font-semibold">
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
@@ -37,7 +46,7 @@
         </div>
         <div>
           <HeaderSecondary>Description</HeaderSecondary>
-          <div>{{ machine.description }}</div>
+          <div>{{ machine.description || 'NONE' }}</div>
         </div>
         <div class="flex flex-col gap-4">
           <div>
@@ -51,7 +60,7 @@
           <div class="grow h-fit grid grid-cols-2 gap-4 font-semibold">
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Company</label>
-              <span class="">{{ machine.contact.company }}</span>
+              <span class="">{{ machine.contact.company || 'NONE' }}</span>
             </div>
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Name</label>

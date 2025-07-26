@@ -14,15 +14,9 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
-  imports: {
-    dirs: ['~/../interfaces'],
-  },
   nitro: {
     experimental: {
       wasm: true
     },
-    imports: {
-      dirs: ['~/../interfaces']
-    }
   },
 })

@@ -46,12 +46,12 @@
         </div>
         <div>
           <HeaderSecondary>Description</HeaderSecondary>
-          <div>{{ machine.description || 'NONE' }}</div>
+          <div class="whitespace-pre">{{ machine.description || 'NONE' }}</div>
         </div>
         <div class="flex flex-col gap-4">
           <div>
             <HeaderSecondary>Notes</HeaderSecondary>
-            <div>{{ machine.notes || 'NONE' }}</div>
+            <div class="whitespace-pre">{{ machine.notes || 'NONE' }}</div>
           </div>
         </div>
         <DividerLine />

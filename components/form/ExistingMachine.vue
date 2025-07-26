@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-8">
     <div>
-      <HeaderSecondary class="mb-4">Machine Lookup</HeaderSecondary>
+      <HeaderSecondary class="mb-4">Machine Search</HeaderSecondary>
       <InputMachineSearch @select="fillInMachine" />
     </div>
     <template v-if="machine.m_id">

@@ -3,24 +3,31 @@
     <div class="flex flex-col gap-8 w-full max-w-[1200px]">
       <HeaderPrimary class="mb-8">Management</HeaderPrimary>
       <FilterTabs :model-value="action" :options="managementActions" @select="setManagementAction" />
-      <FormAddMachine v-if="action === 'add'" />
+      <FormAddMachine v-if="action === 'add'" @create="createMachine" />
       <FormExistingMachine @update="updateMachine" v-else />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const { action } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
-const { machine } = storeToRefs(useMachineStore())
+const { machine, action } = storeToRefs(useMachineStore())
 
 function setManagementAction(action: FilterOption) {
-  machineStore.setAction(action.data)
+  machineStore.setAction(action.data as string)
 }
 
 async function updateMachine() {
   await $fetch('/machine', {
     method: 'PUT',
+    body: machine.value
+  })
+}
+
+async function createMachine() {
+  console.log(machine.value)
+  await $fetch('/machine', {
+    method: 'POST',
     body: machine.value
   })
 }

@@ -4,8 +4,8 @@
     <div class="grid grid-cols-2 gap-8">
       <InputContactSearch class="w-full" @select="fillContact" />
       <div />
-      <InputText v-model="contact.company" :label="labels?.company || 'Company Name'" placeholder="Company Inc." />
       <InputText v-model="contact.name" :label="labels?.name || 'Contact Name'" placeholder="First Last" />
+      <InputText v-model="contact.company" :label="labels?.company || 'Company Name'" placeholder="Company Inc." />
     </div>
   </div>
 </template>

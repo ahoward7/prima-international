@@ -15,14 +15,14 @@ export default defineNuxtConfig({
     ],
   },
   imports: {
-    dirs: ['./interfaces'],
+    dirs: ['~/../interfaces'],
   },
   nitro: {
     experimental: {
       wasm: true
     },
     imports: {
-      dirs: ['./interfaces']
+      dirs: ['~/../interfaces']
     }
   },
 })

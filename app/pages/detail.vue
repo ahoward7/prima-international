@@ -51,7 +51,7 @@
         <div class="flex flex-col gap-4">
           <div>
             <HeaderSecondary>Notes</HeaderSecondary>
-            <div class="whitespace-pre">{{ machine.notes || 'NONE' }}</div>
+            <div class="whitespace-pre-wrap">{{ machine.notes || 'NONE' }}</div>
           </div>
         </div>
         <DividerLine />

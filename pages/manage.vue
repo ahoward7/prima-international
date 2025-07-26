@@ -18,18 +18,25 @@ function setManagementAction(action: FilterOption) {
 }
 
 async function updateMachine() {
-  await $fetch('/machine', {
+  const response = await $fetch('/machine', {
     method: 'PUT',
     body: machine.value
   })
+
+  if (response.success) {
+    navigateTo(`/detail?id=${machine.value.m_id}`)
+  }
 }
 
 async function createMachine() {
-  console.log(machine.value)
-  await $fetch('/machine', {
+  const response = await $fetch('/machine', {
     method: 'POST',
     body: machine.value
   })
+
+  if (response.success) {
+    navigateTo(`/detail?id=${response.machine.m_id}`)
+  }
 }
 
 const managementActions = [

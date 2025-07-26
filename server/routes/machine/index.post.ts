@@ -47,5 +47,10 @@ export default defineEventHandler(async (event: H3Event): Promise<any> => {
 
   const result = await MachineSchema.create(machine)
 
-  return { success: true, contactUpdated: contactChanged, machineCreated: !!result }
+  return {
+    success: true,
+    contactUpdated: contactChanged,
+    machineCreated: true,
+    machine: result.toObject?.() ?? result
+  }
 })

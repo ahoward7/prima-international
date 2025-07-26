@@ -22,8 +22,7 @@ export default defineEventHandler(async (event: H3Event): Promise<any> => {
         break
       }
     }
-  }
-  else {
+  } else {
     contactChanged = true
   }
 
@@ -34,7 +33,14 @@ export default defineEventHandler(async (event: H3Event): Promise<any> => {
 
   machine.lastModDate = new Date().toISOString()
 
-  const result = await MachineSchema.updateOne({ m_id: machine.m_id }, { $set: machine })
+  const updateResult = await MachineSchema.updateOne({ m_id: machine.m_id }, { $set: machine })
 
-  return { success: true, contactUpdated: contactChanged, machineUpdated: result.modifiedCount > 0 }
+  const updatedMachine = await MachineSchema.findOne({ m_id: machine.m_id }).lean()
+
+  return {
+    success: true,
+    contactUpdated: contactChanged,
+    machineUpdated: updateResult.modifiedCount > 0,
+    machine: updatedMachine
+  }
 })

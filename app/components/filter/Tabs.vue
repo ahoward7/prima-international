@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-const activeTab = defineModel({ required: false })
+const activeTab = defineModel<string>({ required: true })
 
 defineProps<{
   options: FilterOption[]

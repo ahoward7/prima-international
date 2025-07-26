@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { useMachineStore } from '~~/stores/machine'
 const { filterOptions } = storeToRefs(useMachineStore())
 
 const machine = defineModel<MachineForm>()

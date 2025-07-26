@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
+import { useMachineStore } from '~~/stores/machine'
 
 const machineStore = useMachineStore()
 const { filterOptions, filters: storeFilters } = storeToRefs(machineStore)
@@ -57,7 +58,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue)
 })
 
-const { data: machines, pending } = await useFetch<Machine[]>('/machine', { 
+const { data: machines, pending } = await useFetch<{ data: Machine[], total: number }>('/machine', { 
   method: 'GET', 
   query: filters,
   watch: [filters]

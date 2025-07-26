@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-const page = defineModel<number>('page')
+const page = defineModel<number>('page', { required: true})
 
 const props = defineProps<{
   pageSize: number

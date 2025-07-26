@@ -49,13 +49,14 @@
 </template>
 
 <script setup lang="ts">
+import { useMachineStore } from '~~/stores/machine'
 const machineStore = useMachineStore()
 
 const sortBy = defineModel('sortBy', { type: String, default: 'model' })
-const page = defineModel('page')
+const page = defineModel('page', { default: 1 })
 
 const props = defineProps<{
-  machines?: { data: Machine[], total: string }
+  machines?: { data: Machine[], total: number }
   displayFormat: string
   pageSize: number
 }>()

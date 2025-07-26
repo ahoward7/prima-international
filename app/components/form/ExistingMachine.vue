@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import { useMachineStore } from '~~/stores/machine'
 const machineStore = useMachineStore()
 const { machine } = storeToRefs(useMachineStore())
 

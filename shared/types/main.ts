@@ -16,10 +16,9 @@ export interface Contact {
   lastModDate: string
 }
 
-export interface Machine {
+export interface DBMachine {
   m_id: string
   contactId: string
-  contact: Contact
   type?: string
   model?: string
   serialNumber?: string
@@ -34,37 +33,51 @@ export interface Machine {
   notes?: string
 }
 
-export interface SoldMachine {
+export interface Machine extends DBMachine {
+  contact: Contact
+}
+
+export interface DBSoldMachine {
   s_id: string
-  machine: Machine
-  buyer: Contact
-  buyerLocation: string
-  truckingCompany: string
-  totalCost: number
+  machine: Omit<DBMachine, 'm_id'>
+  dateSold?: string
+  truckingCompany?: string
+  buyer?: string
+  buyerLocation?: string
+  purchaseFob?: string
   machineCost: number
   freightCost: number
   paintCost: number
-  profitFromSale: number
-  purchaseFob: string
-  saleFobPoint: string
-  notes?: string
+  otherCost: number
+  profit: number
+  totalCost: number
+  notes: string
+}
+
+export interface SoldMachine extends DBSoldMachine {
+  machine: Omit<Machine, 'm_id'>
+}
+
+export interface DBArchivedMachine {
+  a_id: string
+  archiveDate: string
+  machine: Omit<DBMachine, 'm_id'>
 }
 
 export interface ArchivedMachine {
   a_id: string
-  machine: Machine
   dateArchived: Date | string
+  machine: Omit<Machine, 'm_id'>
 }
 
-export type ContactForm = Partial<Omit<Contact, 'id'>>
+export type ContactForm = Partial<Omit<Contact, 'c_id'>>
 
-export type MachineForm = Partial<Omit<Machine, 'id' | 'contact'>> & {
-  contact?: ContactForm
+export type MachineForm = Partial<Machine> & {
+  contact: ContactForm
 }
 
-export type SoldMachineForm = Partial<Omit<SoldMachine, 'id' | 'machine' | 'buyer'>> & {
-  machine?: MachineForm
-  buyer?: ContactForm
+export type SoldMachineForm = Partial<SoldMachine> & {
+  machine: MachineForm
 }
 
 export type TableColumn = {

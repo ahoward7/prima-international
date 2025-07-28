@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-4 bg-gray-100 px-8 py-6 border-t-4 border border-prima-yellow">
     <div class="flex justify-between">
       <div>
-        <span class="text-prima-yellow text-xl font-extrabold font-prima">
+        <span class="text-prima-yellow text-xl font-extrabold">
           {{ machine.model }}
         </span>
         <span class="text-xl">

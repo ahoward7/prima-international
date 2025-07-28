@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@pinia/nuxt",
     "nuxt-mongoose",
+    "@nuxt/fonts"
   ],
   css: ['~/assets/css/main.css'],
   vite: {

@@ -77,7 +77,7 @@ const allOptions = computed(() => createdOption.value ? [createdOption.value, ..
 const selectedLabel = computed(() => allOptions.value.find(o => o.data === selectedOption.value)?.label || '')
 
 const filteredOptions = computed(() => allOptions.value.filter(option =>
-    option.label.toLowerCase().includes(searchTerm.value.toLowerCase())
+  option.label.toLowerCase().includes(searchTerm.value.toLowerCase())
 ))
 
 function createNewOption() {

@@ -7,7 +7,7 @@
       <div class="w-full top-0 h-8 bg-prima-red" />
       <div v-for="p in pageSize" class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400" :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'" />
     </div>
-    <table v-show="machines" class="font-[consolas] border-x border-b border-gray-400">
+    <table v-show="machines" class="border-x border-b border-gray-400 !font-jbmono">
       <thead>
         <tr>
           <TableHeaderColumn
@@ -23,7 +23,7 @@
         <template v-if="displayFormat === 'oneLine'">
           <TableRow
             v-for="machine in machines?.data"
-            :key="machine.id"
+            :key="machine.m_id"
             :machine="machine"
             :columns="filteredColumns"
             @select="selectMachine(machine)"
@@ -32,7 +32,7 @@
         <template v-else>
           <TableRowTwoLine
             v-for="machine, index in machines?.data"
-            :key="machine.id"
+            :key="machine.m_id"
             :machine="machine"
             :columns="filteredColumns"
             :display-format="displayFormat"

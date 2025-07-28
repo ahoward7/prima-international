@@ -5,7 +5,7 @@
     <div ref="dropdownRef" class="relative">
       <div class="bg-gray-100 border border-prima-red px-2 py-1 flex justify-between items-center cursor-pointer" @click="toggleDropdown">
         <span class="select-none text-prima-red font-semibold">{{ selectedLabel || 'Select...' }}</span>
-        <Icon name="carbon:chevron-down" class="text-prima-red" />
+        <Icon name="carbon:chevron-down" class="text-prima-red" size="20" />
       </div>
 
       <!-- Dropdown Panel -->
@@ -28,7 +28,7 @@
       </div>
 
       <!-- Clear Button -->
-      <Icon v-if="clearable && selectedOption !== options[0]?.data" name="carbon:close" class="absolute right-2 top-2 text-prima-red cursor-pointer" size="20" @click="resetSelection"/>
+      <Icon v-if="clearable && selectedOption !== options[0]?.data" name="carbon:close" class="absolute right-7 top-2 text-prima-red cursor-pointer" size="20" @click="resetSelection"/>
     </div>
   </div>
 </template>
@@ -50,7 +50,7 @@ const props = withDefaults(defineProps<{
   createable?: boolean
 }>(), {
   clearable: true,
-  width: 'w-44',
+  width: 'w-48',
   createable: false
 })
 

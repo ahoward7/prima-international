@@ -15,10 +15,10 @@
         <div class="flex gap-8">
           <div>
             <div class="max-h-80 w-80 flex justify-center items-center bg-gray-200 border border-prima-red">
-              <img src="/images/Excavator.jpg" />
-            </div>
-            <div class="text-center text-sm text-gray-600 mt-1">
-              Example image for if we add them later
+              <!-- <img src="/images/Excavator.jpg" /> -->
+              <div class="h-60 w-full flex justify-center items-center">
+                <Icon name="carbon:image" size="50" />
+              </div>
             </div>
           </div>
           <div class="grow h-fit grid grid-cols-2 gap-4 font-semibold">

@@ -2,9 +2,9 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "prima",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.tauri.prima",
   "build": {
-    "frontendDist": "..",
+    "frontendDist": "../.output",
     "devUrl": "http://localhost:3000",
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build"

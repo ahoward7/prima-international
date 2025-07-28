@@ -14,6 +14,8 @@ import { useMachineStore } from '~~/stores/machine'
 const machineStore = useMachineStore()
 const { machine, action } = storeToRefs(useMachineStore())
 
+machineStore.resetMachine()
+
 function setManagementAction(action: FilterOption) {
   machineStore.resetMachine()
   machineStore.setAction(action.data as string)

@@ -15,6 +15,7 @@ const machineStore = useMachineStore()
 const { machine, action } = storeToRefs(useMachineStore())
 
 function setManagementAction(action: FilterOption) {
+  machineStore.resetMachine()
   machineStore.setAction(action.data as string)
 }
 

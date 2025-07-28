@@ -5,27 +5,24 @@ const contact: ContactForm = {
   name: undefined
 }
 
-export const useMachineStore = defineStore('machine', () => {
-  const action = ref('add')
+const emptyMachine: MachineForm = {
+  serialNumber: undefined,
+  contact: contact,
+  location: "",
+  type: "",
+  model: "",
+  year: undefined,
+  hours: undefined,
+  price: undefined,
+  salesman: "",
+  description: "",
+  dateCreated: undefined,
+  dateLastModified: undefined,
+  notes: "",
+}
 
-  const machine: Ref<MachineForm> = ref({
-    serialNumber: undefined,
-    contact: contact,
-    location: "",
-    type: "",
-    model: "",
-    year: undefined,
-    hours: undefined,
-    price: undefined,
-    salesman: "",
-    description: "",
-    dateCreated: undefined,
-    dateLastModified: undefined,
-    notes: "",
-  })
-
-  const soldMachine: Ref<SoldMachineForm> = ref({
-    machine,
+const emptySoldMachine: SoldMachineForm = {
+    machine: emptyMachine,
     buyer: contact,
     buyerLocation: "",
     truckingCompany: "",
@@ -37,7 +34,14 @@ export const useMachineStore = defineStore('machine', () => {
     purchaseFob: "",
     saleFobPoint: "",
     notes: ""
-  })
+  }
+
+export const useMachineStore = defineStore('machine', () => {
+  const action = ref('add')
+
+  const machine: Ref<MachineForm> = ref(emptyMachine)
+
+  const soldMachine: Ref<SoldMachineForm> = ref(emptySoldMachine)
 
   const filters = ref<MachineFilters>({
     location: 'located',
@@ -53,6 +57,10 @@ export const useMachineStore = defineStore('machine', () => {
 
   function setMachine(m: MachineForm) {
     machine.value = m
+  }
+
+  function resetMachine() {
+    machine.value = emptyMachine
   }
 
   function setAction(a: string) {
@@ -74,6 +82,7 @@ export const useMachineStore = defineStore('machine', () => {
     filterOptions,
     filters,
     setMachine,
+    resetMachine,
     setAction,
     setFilterOptions,
     setFilters

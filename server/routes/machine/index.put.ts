@@ -59,7 +59,6 @@ export default defineEventHandler(async (event: H3Event): Promise<any> => {
     }
   }
 
-  machine.m_id = generateRandom10DigitNumber()
   machine.contactId = contactId
   machine.lastModDate = date
   delete machine.contact

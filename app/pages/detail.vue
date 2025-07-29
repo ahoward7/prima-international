@@ -64,7 +64,7 @@
             </div>
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Name</label>
-              <span class="">{{ machine.contact.name ? `$${formatCommas(machine.price)}` : 'NONE' }}</span>
+              <span class="">{{ machine.contact.name || 'NONE' }}</span>
             </div>
           </div>
         </div>

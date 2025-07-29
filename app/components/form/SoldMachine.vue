@@ -10,7 +10,7 @@
     <DividerLine class="my-4" />
 
     <HeaderSecondary>Sale Information</HeaderSecondary>
-    <FormContact v-model="machine.buyer" :labels="{ company: 'Buyer Company Name', name: 'Buyer Contact Name'}" class="mb-4" />
+    <InputText v-model="machine.buyer" placeholder="Buyer Company" class="mb-4" />
     <FormSale v-model="machine" />
   </div>
 </template>

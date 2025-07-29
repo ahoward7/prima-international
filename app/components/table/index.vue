@@ -55,11 +55,13 @@ const machineStore = useMachineStore()
 const sortBy = defineModel('sortBy', { type: String, default: 'model' })
 const page = defineModel('page', { default: 1 })
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   machines?: { data: Machine[], total: number }
   displayFormat: string
-  pageSize: number
-}>()
+  pageSize?: number
+}>(), {
+  pageSize: 20
+})
 
 const columns: TableColumnC[] = [
   { key: 'model', label: 'Model', sort: true },

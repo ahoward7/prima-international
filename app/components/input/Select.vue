@@ -44,15 +44,17 @@ const createdOption = ref()
 
 const props = withDefaults(defineProps<{
   label: string
-  options: FilterOption[]
+  options?: FilterOption[]
   clearable?: boolean
   width?: string
   createable?: boolean
 }>(), {
+  options: () => [] as FilterOption[],
   clearable: true,
   width: 'w-48',
-  createable: false
+  createable: false,
 })
+
 
 const emit = defineEmits(['search', 'select', 'create', 'clear'])
 

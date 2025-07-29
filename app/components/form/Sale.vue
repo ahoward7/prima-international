@@ -6,9 +6,8 @@
     <InputNumber v-model="soldInformation.machineCost" label="Machine Cost" placeholder="XXXXXX" class="col-span-1 col-start-1" />
     <InputNumber v-model="soldInformation.freightCost" label="Freight Cost" placeholder="XXXXXX" class="col-span-1" />
     <InputNumber v-model="soldInformation.paintCost" label="Paint Cost" placeholder="XXXXXX" class="col-span-1" />
-    <InputNumber v-model="soldInformation.profitFromSale" label="Profit From Sale" placeholder="XXXXXX" class="col-span-1" />
+    <InputNumber v-model="soldInformation.profit" label="Profit From Sale" placeholder="XXXXXX" class="col-span-1" />
     <InputText v-model="soldInformation.purchaseFob" label="Purchase FOB" placeholder="City, Country" class="col-span-4" />
-    <InputText v-model="soldInformation.saleFobPoint" label="Sale From FOB" placeholder="City, Country" class="col-span-1" />
     <InputTextarea v-model="soldInformation.notes" label="Notes On Sale" placeholder="Other information..." class="col-span-4" />
   </div>
 </template>

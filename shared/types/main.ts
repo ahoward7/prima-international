@@ -70,13 +70,13 @@ export interface ArchivedMachine {
   machine: Omit<Machine, 'm_id'>
 }
 
-export type ContactForm = Partial<Omit<Contact, 'c_id'>>
+export type ContactForm = Partial<Contact>
 
-export type MachineForm = Partial<Machine> & {
+export interface MachineForm extends Partial<DBMachine> {
   contact: ContactForm
 }
 
-export type SoldMachineForm = Partial<SoldMachine> & {
+export interface SoldMachineForm extends Partial<Omit<DBSoldMachine, 'machine'>> {
   machine: MachineForm
 }
 

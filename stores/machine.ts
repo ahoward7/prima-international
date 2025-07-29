@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 const contact: ContactForm = {
   company: undefined,
-  name: undefined
+  name: undefined,
 }
 
 const emptyMachine: MachineForm = {
@@ -16,23 +16,22 @@ const emptyMachine: MachineForm = {
   price: undefined,
   salesman: "",
   description: "",
-  dateCreated: undefined,
-  dateLastModified: undefined,
+  createDate: undefined,
+  lastModDate: undefined,
   notes: "",
 }
 
 const emptySoldMachine: SoldMachineForm = {
     machine: emptyMachine,
-    buyer: contact,
+    buyer: '',
     buyerLocation: "",
     truckingCompany: "",
     totalCost: undefined,
     machineCost: undefined,
     freightCost: undefined,
     paintCost: undefined,
-    profitFromSale: undefined,
+    profit: undefined,
     purchaseFob: "",
-    saleFobPoint: "",
     notes: ""
   }
 

@@ -55,7 +55,7 @@ const debouncedSearch = useDebounceFn((value: string) => {
 }, 300)
 
 watch(searchInput, (newValue) => {
-  debouncedSearch(newValue)
+  debouncedSearch(newValue as string)
 })
 
 const { data: machines, pending } = await useFetch<{ data: Machine[], total: number }>('/machine', { 

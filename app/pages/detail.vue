@@ -46,12 +46,12 @@
         </div>
         <div>
           <HeaderSecondary>Description</HeaderSecondary>
-          <div class="whitespace-pre">{{ machine.description || 'NONE' }}</div>
+          <div class="whitespace-pre-wrap" v-text="machine.description || 'NONE'" />
         </div>
         <div class="flex flex-col gap-4">
           <div>
             <HeaderSecondary>Notes</HeaderSecondary>
-            <div class="whitespace-pre-wrap">{{ machine.notes || 'NONE' }}</div>
+          <div class="whitespace-pre-wrap" v-text="machine.notes || 'NONE'" />
           </div>
         </div>
         <DividerLine />

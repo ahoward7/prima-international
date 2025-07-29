@@ -11,7 +11,7 @@
       <!-- Dropdown Panel -->
       <div v-if="isOpen" class="absolute z-10 bg-white border border-prima-red mt-1 w-full max-h-80 overflow-auto shadow-md">
         <!-- Search Input -->
-        <input v-model="searchTerm" type="text" placeholder="Search..." class="w-full px-2 py-1 border-b border-gray-200 outline-none" />
+        <input v-model="search" type="text" placeholder="Search..." class="w-full px-2 py-1 border-b border-gray-200 outline-none" @input="emit('search', search)" />
 
         <!-- Options -->
         <div v-for="(option, index) in filteredOptions" :key="index" @click="selectOption(option)" class="px-2 py-1 cursor-pointer hover:bg-gray-100">
@@ -22,7 +22,7 @@
         <div v-if="filteredOptions.length === 0" class="px-2 py-2 text-center">
           <div class="text-gray-400 mb-2">No results found.</div>
           <button v-if="createable" @click="createNewOption" class="w-full bg-prima-red text-white px-2 py-1 cursor-pointer">
-            Add <span class="uppercase">"{{ searchTerm }}"</span>
+            Add <span class="uppercase">"{{ search }}"</span>
           </button>
         </div>
       </div>
@@ -39,7 +39,7 @@ import { onClickOutside } from '@vueuse/core'
 const selectedOption = defineModel<string | number>()
 const dropdownRef = ref(null)
 const isOpen = ref(false)
-const searchTerm = ref('')
+const search = ref('')
 const createdOption = ref()
 
 const props = withDefaults(defineProps<{
@@ -54,7 +54,7 @@ const props = withDefaults(defineProps<{
   createable: false
 })
 
-const emit = defineEmits(['select', 'create'])
+const emit = defineEmits(['search', 'select', 'create', 'clear'])
 
 function toggleDropdown() {
   isOpen.value = !isOpen.value
@@ -63,13 +63,14 @@ function toggleDropdown() {
 function selectOption(option: FilterOption) {
   selectedOption.value = option.data
   isOpen.value = false
-  searchTerm.value = ''
+  search.value = ''
   emit('select', option.data)
 }
 
 function resetSelection() {
   selectedOption.value = props.options[0]?.data
-  searchTerm.value = ''
+  search.value = ''
+  emit('clear')
 }
 
 const allOptions = computed(() => createdOption.value ? [createdOption.value, ...props.options] : props.options)
@@ -77,13 +78,13 @@ const allOptions = computed(() => createdOption.value ? [createdOption.value, ..
 const selectedLabel = computed(() => allOptions.value.find(o => o.data === selectedOption.value)?.label || '')
 
 const filteredOptions = computed(() => allOptions.value.filter(option =>
-  option.label.toLowerCase().includes(searchTerm.value.toLowerCase())
+  option.label.toLowerCase().includes(search.value.toLowerCase())
 ))
 
 function createNewOption() {
-  if (!searchTerm.value.trim()) return
+  if (!search.value.trim()) return
 
-  const newOption = searchTerm.value.trim().toUpperCase()
+  const newOption = search.value.trim().toUpperCase()
 
   createdOption.value = {
     label: newOption,
@@ -93,7 +94,7 @@ function createNewOption() {
   selectedOption.value = createdOption.value.data
 
   isOpen.value = false
-  searchTerm.value = ''
+  search.value = ''
 }
 
 onClickOutside(dropdownRef, () => {

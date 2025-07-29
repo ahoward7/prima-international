@@ -39,9 +39,9 @@ const emptySoldMachine: SoldMachineForm = {
 export const useMachineStore = defineStore('machine', () => {
   const action = ref('add')
 
-  const machine: Ref<MachineForm> = ref(emptyMachine)
+  const machine: Ref<MachineForm> = ref({...emptyMachine})
 
-  const soldMachine: Ref<SoldMachineForm> = ref(emptySoldMachine)
+  const soldMachine: Ref<SoldMachineForm> = ref({...emptySoldMachine})
 
   const filters = ref<MachineFilters>({
     location: 'located',
@@ -60,7 +60,7 @@ export const useMachineStore = defineStore('machine', () => {
   }
 
   function resetMachine() {
-    machine.value = emptyMachine
+    machine.value = {...emptyMachine}
   }
 
   function setAction(a: string) {

@@ -6,44 +6,64 @@ function generateRandom10DigitNumber(): string {
   return (Math.floor(Math.random() * (max - min + 1)) + min).toString()
 }
 
+function generateContact(name: string, company: string, date: string): Contact {
+  return {
+    c_id: generateRandom10DigitNumber(),
+    name,
+    company,
+    createDate: date,
+    lastModDate: date
+  }
+}
 
 export default defineEventHandler(async (event: H3Event): Promise<any> => {
   const machine = await readBody(event)
   const date = new Date().toISOString()
 
-  if (!machine || !machine.contact ) {
+  if (!machine || !machine.contact) {
     return { error: 'Missing required machine or contact information' }
   }
 
-  const contact: Contact = machine.contact
-  const contactId = contact.c_id
-  delete machine.contact
-
-  const existingContact: Contact | null = await ContactSchema.findOne({ c_id: contactId }).lean()
-
+  let contact: Contact
   let contactChanged = false
-  if (existingContact) {
-    for (const key in contact) {
-      const contactKey = key as keyof Contact
-      if (key !== 'lastModDate' && contact[contactKey] !== existingContact[contactKey]) {
-        contactChanged = true
-        break
-      }
-    }
-  }
-  else {
+  let contactId: string
+
+  if (machine.contact.c_id === 'new') {
+    contact = generateContact(machine.contact.name, machine.contact.company, date)
+    contactId = contact.c_id
+    await ContactSchema.create(contact)
     contactChanged = true
   }
+  else {
+    contact = machine.contact
+    contactId = contact.c_id
 
-  if (contactChanged) {
-    contact.lastModDate = date
-    await ContactSchema.updateOne({ c_id: contactId }, { $set: contact }, { upsert: true })
+    const existingContact: Contact | null = await ContactSchema.findOne({ c_id: contactId }).lean()
+
+    if (existingContact) {
+      for (const key in contact) {
+        const contactKey = key as keyof Contact
+        if (key !== 'lastModDate' && contact[contactKey] !== existingContact[contactKey]) {
+          contactChanged = true
+          break
+        }
+      }
+    }
+    else {
+      contactChanged = true
+    }
+
+    if (contactChanged) {
+      contact.lastModDate = date
+      await ContactSchema.updateOne({ c_id: contactId }, { $set: contact }, { upsert: true })
+    }
   }
 
   machine.m_id = generateRandom10DigitNumber()
   machine.contactId = contactId
   machine.createDate = date
   machine.lastModDate = date
+  delete machine.contact
 
   const result = await MachineSchema.create(machine)
 

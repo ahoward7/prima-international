@@ -18,7 +18,7 @@
         <div class="flex gap-4 justify-end">
           <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer" @click="updateMachine">Update Machine</button>
           <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer">Move To Sold</button>
-          <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer">Archive Machine</button>
+          <button class="text-lg text-white font-semibold bg-prima-red px-3 py-2 cursor-pointer" @click="archiveMachine">Archive Machine</button>
         </div>
       </div>
     </template>
@@ -32,7 +32,7 @@ const { machine } = storeToRefs(useMachineStore())
 
 const machineToModify: Ref<MachineForm> = ref(machine.value)
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'archive'])
 
 function fillInMachine(selectedMachine: Machine) {
   machineToModify.value = selectedMachine
@@ -41,5 +41,10 @@ function fillInMachine(selectedMachine: Machine) {
 function updateMachine() {
   machineStore.setMachine(machineToModify.value)
   emit('update')
+}
+
+function archiveMachine() {
+  machineStore.setMachine(machineToModify.value)
+  emit('archive')
 }
 </script>

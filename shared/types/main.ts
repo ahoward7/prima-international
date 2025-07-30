@@ -58,16 +58,10 @@ export interface SoldMachine extends DBSoldMachine {
   machine: Omit<Machine, 'm_id'>
 }
 
-export interface DBArchivedMachine {
+export interface ArchivedMachine {
   a_id: string
   archiveDate: string
   machine: Omit<DBMachine, 'm_id'>
-}
-
-export interface ArchivedMachine {
-  a_id: string
-  dateArchived: Date | string
-  machine: Omit<Machine, 'm_id'>
 }
 
 export type ContactForm = Partial<Contact>

@@ -4,7 +4,7 @@
       <HeaderPrimary class="mb-8">Management</HeaderPrimary>
       <FilterTabs :model-value="action" :options="managementActions" @select="setManagementAction" />
       <FormAddMachine v-if="action === 'add'" @create="createMachine" />
-      <FormExistingMachine @update="updateMachine" v-else />
+      <FormExistingMachine v-else @update="updateMachine" @archive="archiveMachine" />
     </div>
   </div>
 </template>
@@ -21,6 +21,17 @@ function setManagementAction(action: FilterOption) {
   machineStore.setAction(action.data as string)
 }
 
+async function createMachine() {
+  const response = await $fetch('/machine', {
+    method: 'POST',
+    body: machine.value
+  })
+
+  if (response.success) {
+    navigateTo(`/detail?id=${response.machine.m_id}`)
+  }
+}
+
 async function updateMachine() {
   const response = await $fetch('/machine', {
     method: 'PUT',
@@ -32,14 +43,14 @@ async function updateMachine() {
   }
 }
 
-async function createMachine() {
-  const response = await $fetch('/machine', {
+async function archiveMachine() {
+  const response = await $fetch('/machine/archive', {
     method: 'POST',
     body: machine.value
   })
 
   if (response.success) {
-    navigateTo(`/detail?id=${response.machine.m_id}`)
+    navigateTo(`/detail?id=${response.machine.a_id}`)
   }
 }
 

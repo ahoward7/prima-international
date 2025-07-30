@@ -22,18 +22,18 @@ const emptyMachine: MachineForm = {
 }
 
 const emptySoldMachine: SoldMachineForm = {
-    machine: emptyMachine,
-    buyer: '',
-    buyerLocation: "",
-    truckingCompany: "",
-    totalCost: undefined,
-    machineCost: undefined,
-    freightCost: undefined,
-    paintCost: undefined,
-    profit: undefined,
-    purchaseFob: "",
-    notes: ""
-  }
+  machine: emptyMachine,
+  buyer: '',
+  buyerLocation: "",
+  truckingCompany: "",
+  totalCost: undefined,
+  machineCost: undefined,
+  freightCost: undefined,
+  paintCost: undefined,
+  profit: undefined,
+  purchaseFob: "",
+  notes: ""
+}
 
 export const useMachineStore = defineStore('machine', () => {
   const action = ref('add')

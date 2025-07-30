@@ -107,23 +107,4 @@ const { data: machineLocations } = await useFetch('/machine/locations', {
     serialNumber: location === 'located' ? machine.value?.serialNumber : machine.value.machine.serialNumber
   }
 })
-
-function formatCommas(num: number = 0): string {
-  if (!num) {
-    return ''
-  }
-
-  return num.toLocaleString('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-}
-
-function isoToMMDDYYYY(isoString: string): string {
-  const date = new Date(isoString)
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const day = date.getDate().toString().padStart(2, '0')
-  const year = date.getFullYear()
-  return `${month}/${day}/${year}`
-}
 </script>

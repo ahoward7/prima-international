@@ -2,6 +2,8 @@ import type { H3Event } from 'h3'
 import type { Document } from 'mongoose'
 
 type DBMachineDocument = DBMachine & Document
+type DBArchiveDocument = ArchivedMachine & Document
+type MachineDocument = DBMachineDocument | DBArchiveDocument
 type MachineFilterStrings = {[key: string]: string}
 
 function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string, page: string) {
@@ -57,34 +59,43 @@ function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string
   return pipeline
 }
 
-async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data: DBMachineDocument[]; total: number }> {
-  const { search, model, type, sortBy, pageSize, page } = machineFilters
+async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data: MachineDocument[]; total: number }> {
+  const { search, model, type, sortBy, pageSize, page, location } = machineFilters
+  const isArchived = location === 'archived'
+
+  const fieldPrefix = isArchived ? 'archived.machine.' : ''
   const filters: Record<string, any> = {}
 
-  if (model) filters.model = model
-  if (type) filters.type = type
+  if (model) filters[`${fieldPrefix}model`] = model
+  if (type) filters[`${fieldPrefix}type`] = type
 
   if (search) {
     filters.$or = [
-      { serialNumber: { $regex: search, $options: 'i' } },
-      { model: { $regex: search, $options: 'i' } },
-      { type: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } },
+      { [`${fieldPrefix}serialNumber`]: { $regex: search, $options: 'i' } },
+      { [`${fieldPrefix}model`]: { $regex: search, $options: 'i' } },
+      { [`${fieldPrefix}type`]: { $regex: search, $options: 'i' } },
+      { [`${fieldPrefix}description`]: { $regex: search, $options: 'i' } },
     ]
   }
 
-  // Build the main pipeline (with pagination and sort)
-  const pipeline = buildPipeline(filters, sortBy, pageSize, page)
+  const resolvedSortField = sortBy
+    ? sortBy.startsWith('-')
+      ? '-' + fieldPrefix + sortBy.slice(1)
+      : fieldPrefix + sortBy
+    : ''
 
-  // Build the total count pipeline
+  const pipeline = buildPipeline(filters, resolvedSortField, pageSize, page)
+
   const countPipeline = [
     { $match: filters },
     { $count: 'total' }
   ]
 
+  const targetSchema = isArchived ? ArchiveSchema : MachineSchema
+
   const [data, totalResult] = await Promise.all([
-    MachineSchema.aggregate(pipeline),
-    MachineSchema.aggregate(countPipeline),
+    targetSchema.aggregate(pipeline),
+    targetSchema.aggregate(countPipeline),
   ])
 
   const total = totalResult[0]?.total || 0
@@ -92,17 +103,21 @@ async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data:
   return { data, total }
 }
 
-async function joinContacts(machines: DBMachineDocument[]) {
-  const contactIds = [...new Set(machines.map(m => m.contactId).filter(Boolean))]
+async function joinContacts(machines: MachineDocument[], location: string) {
+  const isArchived = location === 'archived'
+
+  const extracted: Machine[] = machines.map(m => isArchived ? { m_id: (m as ArchivedMachine).a_id, ...(m as ArchivedMachine).machine } : m) as Machine[]
+
+  const contactIds = [...new Set(extracted.map(m => m?.contactId).filter(Boolean))]
   const contacts = await ContactSchema.find({ c_id: { $in: contactIds } })
   const contactMap = new Map(contacts.map(contact => [contact.c_id, contact]))
 
-  const joinedMachines: Machine[] = machines.map(machine => {
-    const contact = contactMap.get(machine.contactId ?? '')
+  const joinedMachines: Machine[] = extracted.map(machine => {
+    const contact = contactMap.get(machine?.contactId ?? '')
 
     return {
       ...machine,
-      contact: contact || { company: '', name: ''},
+      contact: contact || { company: '', name: '' },
     } as Machine
   })
 
@@ -113,7 +128,7 @@ export default defineEventHandler(async (event: H3Event): Promise<{ data: Machin
   const filters: MachineFilterStrings = getQuery(event)
 
   const { data: machines, total } = await buildQuery(filters)
-  const joinedMachines = await joinContacts(machines)
+  const joinedMachines = await joinContacts(machines, filters.location)
 
   return {
     data: joinedMachines,

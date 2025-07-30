@@ -42,15 +42,15 @@ function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string
     })
     pipeline.push({
       $sort: {
-        _sortNull: 1, // falsey values at the end
+        _sortNull: 1,
         [sortField]: sortDir
       }
     })
   }
 
   // Add pagination
-  const pageSizeNum = parseInt(pageSize, 10) || 10 // default to 10 if invalid
-  const pageNum = parseInt(page, 10) || 1 // default to page 1 if invalid
+  const pageSizeNum = parseInt(pageSize, 10) || 10
+  const pageNum = parseInt(page, 10) || 1
   const skip = (pageNum - 1) * pageSizeNum
 
   pipeline.push({ $skip: skip })
@@ -64,7 +64,7 @@ async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data:
 
   const isArchived = location === 'archived'
 
-  const fieldPrefix = isArchived ? 'archived.machine.' : ''
+  const fieldPrefix = isArchived ? 'machine.' : ''
   const filters: Record<string, any> = {}
 
   if (model) filters[`${fieldPrefix}model`] = model

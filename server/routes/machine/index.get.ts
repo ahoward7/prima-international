@@ -64,7 +64,7 @@ async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data:
 
   const isArchived = location === 'archived'
 
-  const fieldPrefix = isArchived ? 'archived.machine.' : ''
+  const fieldPrefix = isArchived ? 'machine.' : ''
   const filters: Record<string, any> = {}
 
   if (model) filters[`${fieldPrefix}model`] = model

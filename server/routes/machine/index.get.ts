@@ -61,6 +61,7 @@ function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string
 
 async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data: MachineDocument[]; total: number }> {
   const { search, model, type, sortBy, pageSize, page, location } = machineFilters
+
   const isArchived = location === 'archived'
 
   const fieldPrefix = isArchived ? 'archived.machine.' : ''
@@ -126,6 +127,13 @@ async function joinContacts(machines: MachineDocument[], location: string) {
 
 export default defineEventHandler(async (event: H3Event): Promise<{ data: Machine[]; total: number }> => {
   const filters: MachineFilterStrings = getQuery(event)
+
+  if (filters.location === 'sold') {
+    return {
+      data: [],
+      total: 0
+    }
+  }
 
   const { data: machines, total } = await buildQuery(filters)
   const joinedMachines = await joinContacts(machines, filters.location)

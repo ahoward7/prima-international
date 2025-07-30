@@ -68,14 +68,22 @@
             </div>
           </div>
         </div>
-        <div class="flex justify-between bg-prima-red font-semibold text-white px-4 py-3">
-          <div class="flex items-center gap-2">
-            <label class="text-sm">Created:</label>
-            <span>{{ isoToMMDDYYYY(machine.createDate) }}</span>
+        <div class="flex flex-col gap-2">
+          <div class="flex justify-between bg-prima-red font-semibold text-white px-4 py-3">
+            <div class="flex items-center gap-2">
+              <label class="text-sm">Created:</label>
+              <span>{{ isoToMMDDYYYY(machine.createDate) }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-sm">Last Modified:</label>
+              <span>{{ isoToMMDDYYYY(machine.lastModDate) }}</span>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <label class="text-sm">Last Modified:</label>
-            <span>{{ isoToMMDDYYYY(machine.lastModDate) }}</span>
+          <div class="flex items-center gap-2 font-semibold bg-prima-yellow px-4 py-3">
+            <label class="text-sm">Tables:</label>
+            <span v-for="ids, key in machineLocations">
+              {{ `${l.startCase(key as string)} (${ids.length })${key !== 'sold' ? ',' : ''}` }}
+            </span>
           </div>
         </div>
       </div>
@@ -84,8 +92,16 @@
 </template>
 
 <script setup lang="ts">
+import l from 'lodash'
+
 const { id } = useRoute().query
 const { data: machine } = await useFetch<Machine>(`/machine/${id}`)
+
+const { data: machineLocations } = await useFetch('/machine/locations', {
+  query: {
+    serialNumber: machine.value?.serialNumber
+  }
+})
 
 function formatCommas(num: number = 0): string {
   if (!num) {

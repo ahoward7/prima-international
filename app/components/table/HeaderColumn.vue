@@ -1,5 +1,9 @@
 <template>
-  <th class="bg-prima-red text-white py-1 border-l first:border-l-0 border-white" :class="[isSorting ? 'px-1' : 'px-4', column.key === 'salesman' ? 'w-10' : '']" @click="handleSort(column.key)">
+  <th
+    class="bg-prima-red text-white py-1 border-l first:border-l-0 border-white"
+    :class="[isSorting ? 'px-1' : 'px-4', column.key === 'salesman' ? 'w-10' : '']"
+    @click="handleSort(column.key)"
+  >
     <div class="flex justify-center select-none" :class="column.sort ? 'cursor-pointer' : ''">
       <span>{{ column.label }}</span>
       <div v-if="isSorting" class="flex items-center">

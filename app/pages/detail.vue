@@ -1,90 +1,24 @@
 <template>
-  <div v-if="machine " class="h-screen flex flex-col items-center">
-    <NuxtLink to="/" class="w-full max-w-[700px] flex items-center cursor-pointer">
-      <Icon name="carbon:chevron-left" size="32" />
-      <span class="text-xl">Back</span>
-    </NuxtLink>
-    <div class="w-full h-fit flex flex-col mt-4 max-w-[700px] shadow-xl">
-      <div class="bg-prima-red py-4">
-        <HeaderPrimary class="!text-white !text-4xl flex justify-between px-8">
-          <span>{{ machine.model }}</span>
-          <span class="text-prima-yellow">{{ machine.serialNumber }}</span>
-        </HeaderPrimary>
+  <div class="flex justify-center py-12 px-8">
+    <div class="w-[920px] flex flex-col items-center gap-8">
+      <HeaderPrimary>Machine Detail</HeaderPrimary>
+      <div v-if="machine" class="grid grid-cols-6 gap-8">
+        <InputText v-model="machine.type" label="Type" :options="filterOptions.type" class="col-span-1" width="w-full" createable />
+        <InputText v-model="machine.model" label="Model" :options="filterOptions.model" class="col-span-1" width="w-full" createable />
+        <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="Number" class="col-span-2" />
+        <InputNumber v-model="machine.year" label="Year" placeholder="2000" class="col-span-1" />
+        <InputNumber v-model="machine.hours" label="Hours" placeholder="1000" class="col-span-1" />
+        <InputTextarea v-model="machine.description" label="Description" placeholder="Description of machine..." class="col-span-6" />
+        <InputNumber v-model="machine.price" label="Price" placeholder="Price" class="col-span-1" />
+        <InputText v-model="machine.location" label="Location" placeholder="City, State, Country" class="col-span-4" />
+        <InputText v-model="machine.salesman" label="Salesman" :options="filterOptions.salesman" class="col-span-1" width="w-full" createable />
+        <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-6" />
       </div>
-      <div class="flex flex-col gap-8 bg-gray-100 border-x border-b border-prima-red p-8">
-        <div class="flex gap-8">
-          <div>
-            <div class="max-h-80 w-80 flex justify-center items-center bg-gray-200 border border-prima-red">
-              <!-- <img src="/images/Excavator.jpg" /> -->
-              <div class="h-60 w-full flex justify-center items-center">
-                <Icon name="carbon:image" size="50" />
-              </div>
-            </div>
-          </div>
-          <div class="grow h-fit grid grid-cols-2 gap-4 font-semibold">
-            <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
-              <label class="text-sm text-prima-red">Type</label>
-              <span class="">{{ machine.type || 'NONE' }}</span>
-            </div>
-            <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
-              <label class="text-sm text-prima-red">Price</label>
-              <span class="">{{ machine.price ? `$${formatCommas(machine.price)}` : 'NONE' }}</span>
-            </div>
-            <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
-              <label class="text-sm text-prima-red">Year</label>
-              <span class="">{{ machine.year || 'NONE' }}</span>
-            </div>
-            <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
-              <label class="text-sm text-prima-red">Hours</label>
-              <span class="">{{ machine.hours || 'NONE' }}</span>
-            </div>
-            <div class="col-span-2 flex flex-col px-2 py-1 border-l-2 border-prima-red">
-              <label class="text-sm text-prima-red">Location</label>
-              <span class=" whitespace-nowrap overflow-hidden">{{ machine.location || 'NONE' }}</span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <HeaderSecondary>Description</HeaderSecondary>
-          <div class="whitespace-pre-wrap" v-text="machine.description || 'NONE'" />
-        </div>
-        <div class="flex flex-col gap-4">
-          <div>
-            <HeaderSecondary>Notes</HeaderSecondary>
-            <div class="whitespace-pre-wrap" v-text="machine.notes || 'NONE'" />
-          </div>
-        </div>
-        <DividerLine />
-        <div class="flex flex-col gap-4">
-          <HeaderSecondary>Contact Information</HeaderSecondary>
-          <div class="grow h-fit grid grid-cols-2 gap-4 font-semibold">
-            <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
-              <label class="text-sm text-prima-red">Company</label>
-              <span class="">{{ machine.contact?.company || 'NONE' }}</span>
-            </div>
-            <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
-              <label class="text-sm text-prima-red">Name</label>
-              <span class="">{{ machine.contact?.name || 'NONE' }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <div class="flex justify-between bg-prima-red font-semibold text-white px-4 py-3">
-            <div class="flex items-center gap-2">
-              <label class="text-sm">Created:</label>
-              <span>{{ isoToMMDDYYYY(machine.createDate) }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <label class="text-sm">Last Modified:</label>
-              <span>{{ isoToMMDDYYYY(machine.lastModDate) }}</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 font-semibold bg-prima-yellow px-4 py-3">
-            <label class="text-sm">Tables:</label>
-            <span v-for="ids, key in machineLocations" :key="key">
-              {{ `${titleCase(key)} (${ids.length })${key !== 'sold' ? ',' : ''}` }}
-            </span>
-          </div>
+      <div class="w-full flex items-center gap-2 bg-prima-red/20 px-4 py-3">
+        <label class="font-semibold">Table Locations:</label>
+        <div v-for="ids, key in machineLocations" :key="key">
+          <span>{{ `${titleCase(key)} ` }}</span>
+          <span class="font-roboto-i">{{ `(${ids.length })${key !== 'sold' ? ',' : ''}` }}</span>
         </div>
       </div>
     </div>
@@ -92,6 +26,9 @@
 </template>
 
 <script setup lang="ts">
+import { useMachineStore } from '~~/stores/machine'
+
+const { filterOptions } = storeToRefs(useMachineStore())
 const { id, location } = useRoute().query
 
 const { data: machine } = await useFetch < Machine > (`/machine/${id}`, {

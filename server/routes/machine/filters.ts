@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 
-export default defineEventHandler(async (event: H3Event): Promise<{ [key: string]: FilterOption[] }> => {
+export default defineEventHandler(async (event: H3Event): Promise<FilterOptions> => {
   // Get distinct models and types
   const models = await MachineSchema.distinct('model')
   const types = await MachineSchema.distinct('type')

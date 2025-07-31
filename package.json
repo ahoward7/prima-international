@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "dependencies": {
     "@nuxt/fonts": "^0.11.4",
@@ -25,8 +27,11 @@
   },
   "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad",
   "devDependencies": {
+    "@antfu/eslint-config": "^5.0.0",
     "@iconify-json/carbon": "^1.2.10",
+    "@nuxt/eslint": "^1.7.1",
     "@nuxt/icon": "^1.15.0",
-    "@tauri-apps/cli": "^2.7.1"
+    "@tauri-apps/cli": "^2.7.1",
+    "eslint": "^9.32.0"
   }
 }

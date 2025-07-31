@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
   modules: [
+    "@nuxt/eslint",
     "@nuxt/icon",
     "@pinia/nuxt",
     "nuxt-mongoose",
@@ -18,6 +19,11 @@ export default defineNuxtConfig({
   nitro: {
     experimental: {
       wasm: true
+    },
+  },
+  eslint: {
+    config: {
+      standalone: false,
     },
   },
 })

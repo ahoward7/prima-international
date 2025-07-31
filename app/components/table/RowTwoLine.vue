@@ -4,8 +4,11 @@
       {{ getNestedValue(machine, 'model') }}
     </td>
     <td v-for="column in filteredColumns" :key="column.key" class="border-l px-1 py-1 border-gray-400">
-      <div v-if="['price', 'hours'].includes(column.key)" class="h-6 overflow-hidden text-right">
+      <div v-if="column.key === 'hours'" class="h-6 overflow-hidden text-right">
         {{ formatCommas(getNestedValue(machine, column.key) as number) }}
+      </div>
+      <div v-else-if="column.key === 'price'" class="h-6 overflow-hidden text-right">
+        {{ formatPrice(getNestedValue(machine, column.key) as number) }}
       </div>
       <div v-else-if="column.key === 'year'" class="h-6 overflow-hidden text-right">
         {{ getNestedValue(machine, column.key ) }}

@@ -4,8 +4,11 @@
       <div v-if="column.key === 'model'" class="border-l-0 cursor-pointer whitespace-nowrap" @click="emit('select')">
         {{ getNestedValue(machine, column.key) }}
       </div>
-      <div v-else-if="['price', 'hours'].includes(column.key)" class="h-6 overflow-hidden text-right">
-        ${{ formatCommas(getNestedValue(machine, column.key) as number) }}
+      <div v-else-if="column.key === 'hours'" class="h-6 overflow-hidden text-right">
+        {{ formatCommas(getNestedValue(machine, column.key) as number) }}
+      </div>
+      <div v-else-if="column.key === 'price'" class="h-6 overflow-hidden text-right">
+        {{ formatPrice(getNestedValue(machine, column.key) as number) }}
       </div>
       <div v-else-if="column.key === 'year'" class="h-6 overflow-hidden text-right">
         {{ getNestedValue(machine, column.key ) }}

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2 relative min-w-[1400px] overflow-x-auto">
+  <div class="flex flex-col gap-4 relative min-w-[1400px] overflow-x-auto">
     <div class="flex justify-center">
       <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
     </div>
@@ -7,8 +7,8 @@
       <div class="w-full top-0 h-8 bg-prima-red" />
       <div v-for="p in pageSize" :key="p" class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400" :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'" />
     </div>
-    <table v-show="machines" class="border-x border-b border-gray-400 !font-jbmono">
-      <thead>
+    <table v-show="machines" class="border-x border-b border-gray-400">
+      <thead class="font-robconbold">
         <tr>
           <TableHeaderColumn
             v-for="column in filteredColumns"
@@ -19,7 +19,7 @@
           />
         </tr>
       </thead>
-      <tbody>
+      <tbody class="font-robcon">
         <template v-if="displayFormat === 'oneLine'">
           <TableRow
             v-for="machine in machines?.data"

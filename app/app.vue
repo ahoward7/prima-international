@@ -1,5 +1,5 @@
 <template>
-  <div class="font-inter">
+  <div class="font-roboto">
     <Navbar />
     <NuxtPage />
     <Footer />

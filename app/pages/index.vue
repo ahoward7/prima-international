@@ -47,6 +47,13 @@ watch(filters, (newFilters) => {
   machineStore.setFilters(newFilters)
 }, { deep: true })
 
+watch(
+  () => [filters.value.location, filters.value.pageSize, filters.value.sortBy, filters.value.model, filters.value.type],
+  () => {
+    filters.value.page = 1
+  }
+)
+
 const searchInput = ref(filters.value.search)
 const displayFormat = ref('oneLine')
 

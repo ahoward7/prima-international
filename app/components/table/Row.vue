@@ -5,7 +5,7 @@
         {{ getNestedValue(machine, column.key) }}
       </div>
       <div v-else-if="['price', 'hours'].includes(column.key)" class="h-6 overflow-hidden text-right">
-        {{ formatCommas(getNestedValue(machine, column.key) as number) }}
+        ${{ formatCommas(getNestedValue(machine, column.key) as number) }}
       </div>
       <div v-else-if="column.key === 'year'" class="h-6 overflow-hidden text-right">
         {{ getNestedValue(machine, column.key ) }}

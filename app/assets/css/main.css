@@ -5,31 +5,31 @@
   --color-prima-red-100: #f5edec;
   --color-prima-yellow: #efbd00;
   --color-prima-link: #0073ff;
-  --font-inc: 'Inconsolata', 'monospace';
-  --font-inter: 'Inter', sans-serif;
-  --font-jbmono: 'JetBrains_Mono', 'monospace';
+  --font-roboto: 'Roboto', sans-serif;
+  --font-robcon: 'Roboto Condensed', sans-serif;
+  --font-robconbold: 'Roboto Condensed Bold', sans-serif;
 }
 
 @font-face {
-  font-family: 'Inconsolata';
-  src: url('/fonts/Inconsolata/Inconsolata-VariableFont_wdth,wght.ttf') format('truetype');
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'JetBrains_Mono';
-  src: url('/fonts/JetBrains_Mono/JetBrainsMono-VariableFont_wght.ttf') format('truetype');
-  font-weight: 100 900;
+  font-family: 'Roboto Condensed';
+  src: url('/fonts/Roboto/static/Roboto_Condensed-Regular.ttf') format('truetype');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
-  font-weight: 100 900;
+  font-family: 'Roboto Condensed Bold';
+  src: url('/fonts/Roboto/static/Roboto_Condensed-Bold.ttf') format('truetype');
+  font-weight: 600;
   font-style: normal;
   font-display: swap;
 }

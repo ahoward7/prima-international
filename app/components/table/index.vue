@@ -60,7 +60,7 @@ const props = withDefaults(defineProps<{
 
 const machineStore = useMachineStore()
 
-const sortBy = defineModel('sortBy', { type: String, default: 'model' })
+const sortBy = defineModel('sortBy', { type: String, default: 'type' })
 const page = defineModel('page', { default: 1 })
 
 const columns: TableColumnC[] = [
@@ -75,7 +75,8 @@ const columns: TableColumnC[] = [
   { key: 'location', label: 'Location', sort: false },
   { key: 'contact.company', label: 'Comp', sort: false },
   { key: 'notes', label: 'Notes', sort: false },
-  { key: 'salesman', label: 'Sm', sort: false }
+  { key: 'salesman', label: 'Sm', sort: false },
+  { key: '', label: '', sort: false }
 ]
 
 const filteredColumns = computed(() => props.displayFormat === 'oneLine' ? columns : columns.filter(column => !['Description', 'Notes'].includes(column.label)))

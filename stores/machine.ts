@@ -47,7 +47,7 @@ export const useMachineStore = defineStore('machine', () => {
     search: '',
     pageSize: 20,
     page: 1,
-    sortBy: 'model',
+    sortBy: 'type',
     model: '',
     type: ''
   })

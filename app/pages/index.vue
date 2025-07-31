@@ -38,7 +38,7 @@ const filters = ref<MachineFilters>({
   search: storeFilters.value.search || '',
   pageSize: storeFilters.value.pageSize || 20,
   page: storeFilters.value.page || 1,
-  sortBy: storeFilters.value.sortBy || 'model',
+  sortBy: storeFilters.value.sortBy || 'type',
   model: storeFilters.value.model || '',
   type: storeFilters.value.type || ''
 })

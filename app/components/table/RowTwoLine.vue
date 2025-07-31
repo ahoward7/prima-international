@@ -20,11 +20,7 @@
       <div v-else-if="column.key === 'lastModDate'">
         {{ isoToMMDDYYYY(machine.lastModDate) }}
       </div>
-      <div
-        v-else
-        class="h-6 overflow-hidden"
-        :class="[column.key === 'description' ? 'min-w-80' : '', column.label === 'Model' ? 'font-bold' : '']"
-      >
+      <div v-else class="h-6 overflow-hidden" :class="[column.key === 'description' ? 'min-w-80' : '']">
         {{ getNestedValue(machine, column.key) }}
       </div>
     </td>
@@ -37,7 +33,7 @@
     @mouseleave="isHovered = false"
     @click="emit('select')"
   >
-    <td colspan="5" class="px-1 py-1 border-l border-gray-400">
+    <td colspan="6" class="px-1 py-1 border-l border-gray-400">
       <div :class="displayClass">
         <span class="!font-robconbold">Description: </span>
         <span>{{ machine.description }}</span>

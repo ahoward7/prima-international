@@ -21,6 +21,32 @@
           <span class="font-roboto-i">{{ `(${ids.length })${key !== 'sold' ? ',' : ''}` }}</span>
         </div>
       </div>
+      <div class="w-full flex justify-between">
+        <div class="flex flex-col gap-1">
+          <div>
+            <label class="font-semibold text-prima-red">Date Created: </label>
+            <span>{{ isoToMMDDYYYY(machine?.createDate) }}</span>
+          </div>
+          <div>
+            <label class="font-semibold text-prima-red">Date Last Modified: </label>
+            <span>{{ isoToMMDDYYYY(machine?.lastModDate) }}</span>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <button class="w-24 text-white font-semibold bg-yellow-600 px-4 py-3 cursor-pointer">
+            Update
+          </button>
+          <button class="w-24 text-white font-semibold bg-green-600 px-4 py-3 cursor-pointer">
+            Sell
+          </button>
+          <button class="w-24 text-white font-semibold bg-blue-600 px-4 py-3 cursor-pointer">
+            Archive
+          </button>
+          <button class="w-24 text-white font-semibold bg-red-600 px-4 py-3 cursor-pointer">
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

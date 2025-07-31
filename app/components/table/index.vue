@@ -64,16 +64,16 @@ const sortBy = defineModel('sortBy', { type: String, default: 'model' })
 const page = defineModel('page', { default: 1 })
 
 const columns: TableColumnC[] = [
+  { key: 'type', label: 'Type', sort: true },
   { key: 'model', label: 'Model', sort: true },
   { key: 'serialNumber', label: 'Serial#', sort: true },
-  { key: 'type', label: 'Type', sort: true },
   { key: 'year', label: 'Year', sort: true },
   { key: 'hours', label: 'Hours', sort: true },
   { key: 'description', label: 'Desc', sort: false },
   { key: 'price', label: 'Price', sort: true },
-  { key: 'contact.company', label: 'Comp', sort: false },
   { key: 'lastModDate', label: 'Date', sort: true },
   { key: 'location', label: 'Location', sort: false },
+  { key: 'contact.company', label: 'Comp', sort: false },
   { key: 'notes', label: 'Notes', sort: false },
   { key: 'salesman', label: 'Sm', sort: false }
 ]

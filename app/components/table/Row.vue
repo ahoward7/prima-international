@@ -1,10 +1,7 @@
 <template>
-  <tr class="even:bg-gray-200 border-b border-gray-400">
+  <tr class="even:bg-gray-200 border-b border-gray-400 cursor-pointer hover:bg-gray-300" @click="emit('select')">
     <td v-for="column in columns" :key="column.key" class="border-l px-1 py-1 border-gray-400" :class="column.key === 'salesman' ? 'w-6' : ''">
-      <div v-if="column.key === 'model'" class="border-l-0 cursor-pointer whitespace-nowrap" @click="emit('select')">
-        {{ getNestedValue(machine, column.key) }}
-      </div>
-      <div v-else-if="column.key === 'hours'" class="h-6 overflow-hidden text-right">
+      <div v-if="column.key === 'hours'" class="h-6 overflow-hidden text-right">
         {{ formatCommas(getNestedValue(machine, column.key) as number) }}
       </div>
       <div v-else-if="column.key === 'price'" class="h-6 overflow-hidden text-right">

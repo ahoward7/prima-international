@@ -80,7 +80,6 @@ function getDisplayPages() {
   return pages
 }
 
-
 const displayPages = ref(getDisplayPages())
 
 watch([page, computedPageSize, computedTotal], () => {

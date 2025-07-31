@@ -22,7 +22,7 @@
       <tbody>
         <template v-if="displayFormat === 'oneLine'">
           <TableRow
-            v-for="machine in props.machines?.data"
+            v-for="machine in machines?.data"
             :key="machine.m_id"
             :machine="machine"
             :columns="filteredColumns"
@@ -31,7 +31,7 @@
         </template>
         <template v-else>
           <TableRowTwoLine
-            v-for="machine, index in props.machines?.data"
+            v-for="machine, index in machines?.data"
             :key="machine.m_id"
             :machine="machine"
             :columns="filteredColumns"

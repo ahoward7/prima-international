@@ -17,5 +17,5 @@ export const MachineSchema = defineMongooseModel<DBMachine>({
     price: { type: Number, required: false },
     location: { type: String, required: false },
     notes: { type: String, required: false  }
-  },
+  }
 })

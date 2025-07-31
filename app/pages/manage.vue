@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen flex justify-center px-4 py-12">
     <div class="flex flex-col gap-8 w-full max-w-[1200px]">
-      <HeaderPrimary class="mb-8">Management</HeaderPrimary>
+      <HeaderPrimary class="mb-8">
+        Management
+      </HeaderPrimary>
       <FilterTabs :model-value="action" :options="managementActions" @select="setManagementAction" />
       <FormAddMachine v-if="action === 'add'" @create="createMachine" />
       <FormExistingMachine v-else @update="updateMachine" @archive="archiveMachine" />
@@ -56,6 +58,6 @@ async function archiveMachine() {
 
 const managementActions = [
   { label: 'Add Machine', data: 'add' },
-  { label: 'Update Machine', data: 'update' },
+  { label: 'Update Machine', data: 'update' }
 ]
 </script>

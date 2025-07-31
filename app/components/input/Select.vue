@@ -11,36 +11,32 @@
       <!-- Dropdown Panel -->
       <div v-if="isOpen" class="absolute z-10 bg-white border border-prima-red mt-1 w-full max-h-80 overflow-auto shadow-md">
         <!-- Search Input -->
-        <input v-model="search" type="text" placeholder="Search..." class="w-full px-2 py-1 border-b border-gray-200 outline-none" @input="emit('search', search)" />
+        <input v-model="search" type="text" placeholder="Search..." class="w-full px-2 py-1 border-b border-gray-200 outline-none" @input="emit('search', search)">
 
         <!-- Options -->
-        <div v-for="(option, index) in filteredOptions" :key="index" @click="selectOption(option)" class="px-2 py-1 cursor-pointer hover:bg-gray-100">
+        <div v-for="(option, index) in filteredOptions" :key="index" class="px-2 py-1 cursor-pointer hover:bg-gray-100" @click="selectOption(option)">
           {{ option.label }}
         </div>
 
         <!-- No Results -->
         <div v-if="filteredOptions.length === 0" class="px-2 py-2 text-center">
-          <div class="text-gray-400 mb-2">No results found.</div>
-          <button v-if="createable" @click="createNewOption" class="w-full bg-prima-red text-white px-2 py-1 cursor-pointer">
+          <div class="text-gray-400 mb-2">
+            No results found.
+          </div>
+          <button v-if="createable" class="w-full bg-prima-red text-white px-2 py-1 cursor-pointer" @click="createNewOption">
             Add <span class="uppercase">"{{ search }}"</span>
           </button>
         </div>
       </div>
 
       <!-- Clear Button -->
-      <Icon v-if="clearable && selectedOption !== options[0]?.data" name="carbon:close" class="absolute right-7 top-2 text-prima-red cursor-pointer" size="20" @click="resetSelection"/>
+      <Icon v-if="clearable && selectedOption !== options[0]?.data" name="carbon:close" class="absolute right-7 top-2 text-prima-red cursor-pointer" size="20" @click="resetSelection" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
-
-const selectedOption = defineModel<string | number>()
-const dropdownRef = ref(null)
-const isOpen = ref(false)
-const search = ref('')
-const createdOption = ref()
 
 const props = withDefaults(defineProps<{
   label: string
@@ -52,11 +48,14 @@ const props = withDefaults(defineProps<{
   options: () => [] as FilterOption[],
   clearable: true,
   width: 'w-48',
-  createable: false,
+  createable: false
 })
-
-
 const emit = defineEmits(['search', 'select', 'create', 'clear'])
+const selectedOption = defineModel<string | number>()
+const dropdownRef = ref(null)
+const isOpen = ref(false)
+const search = ref('')
+const createdOption = ref()
 
 function toggleDropdown() {
   isOpen.value = !isOpen.value

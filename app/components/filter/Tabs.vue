@@ -5,16 +5,16 @@
 </template>
 
 <script setup lang="ts">
-const activeTab = defineModel<string>({ required: true })
-
 defineProps<{
   options: FilterOption[]
 }>()
 
 const emit = defineEmits(['select'])
 
+const activeTab = defineModel<string>({ required: true })
+
 function setActiveTab(option: FilterOption) {
-  activeTab.value = option.data
+  activeTab.value = option.data as string
   emit('select', option)
 }
 </script>

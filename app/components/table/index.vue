@@ -5,7 +5,7 @@
     </div>
     <div v-show="!machines">
       <div class="w-full top-0 h-8 bg-prima-red" />
-      <div v-for="p in pageSize" class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400" :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'" />
+      <div v-for="p in pageSize" :key="p" class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400" :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'" />
     </div>
     <table v-show="machines" class="border-x border-b border-gray-400 !font-jbmono">
       <thead>
@@ -50,11 +50,6 @@
 
 <script setup lang="ts">
 import { useMachineStore } from '~~/stores/machine'
-const machineStore = useMachineStore()
-
-const sortBy = defineModel('sortBy', { type: String, default: 'model' })
-const page = defineModel('page', { default: 1 })
-
 const props = withDefaults(defineProps<{
   machines?: { data: Machine[], total: number }
   displayFormat: string
@@ -62,6 +57,11 @@ const props = withDefaults(defineProps<{
 }>(), {
   pageSize: 20
 })
+
+const machineStore = useMachineStore()
+
+const sortBy = defineModel('sortBy', { type: String, default: 'model' })
+const page = defineModel('page', { default: 1 })
 
 const columns: TableColumnC[] = [
   { key: 'model', label: 'Model', sort: true },
@@ -75,7 +75,7 @@ const columns: TableColumnC[] = [
   { key: 'lastModDate', label: 'Date', sort: true },
   { key: 'location', label: 'Location', sort: false },
   { key: 'notes', label: 'Notes', sort: false },
-  { key: 'salesman', label: 'Sm', sort: false },
+  { key: 'salesman', label: 'Sm', sort: false }
 ]
 
 const filteredColumns = computed(() => props.displayFormat === 'oneLine' ? columns : columns.filter(column => !['Description', 'Notes'].includes(column.label)))

@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import type { Document } from 'mongoose'
 
 type DBMachineDocument = DBMachine & Document
-type MachineFilterStrings = {[key: string]: string}
+interface MachineFilterStrings {[key: string]: string}
 
 function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string, page: string) {
   let sortField = ''
@@ -47,8 +47,8 @@ function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string
   }
 
   // Add pagination
-  const pageSizeNum = parseInt(pageSize, 10) || 10 // default to 10 if invalid
-  const pageNum = parseInt(page, 10) || 1 // default to page 1 if invalid
+  const pageSizeNum = Number.parseInt(pageSize, 10) || 10 // default to 10 if invalid
+  const pageNum = Number.parseInt(page, 10) || 1 // default to page 1 if invalid
   const skip = (pageNum - 1) * pageSizeNum
 
   pipeline.push({ $skip: skip })
@@ -69,7 +69,7 @@ async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data:
       { serialNumber: { $regex: search, $options: 'i' } },
       { model: { $regex: search, $options: 'i' } },
       { type: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } }
     ]
   }
 
@@ -84,7 +84,7 @@ async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data:
 
   const [data, totalResult] = await Promise.all([
     MachineSchema.aggregate(pipeline),
-    MachineSchema.aggregate(countPipeline),
+    MachineSchema.aggregate(countPipeline)
   ])
 
   const total = totalResult[0]?.total || 0
@@ -102,8 +102,7 @@ async function joinContacts(machines: DBMachineDocument[]) {
 
     return {
       ...machine,
-      contact: contact || null,
-      contact: contact || { company: '', name: ''},
+      contact: contact || { company: '', name: ''}
     } as Machine
   })
 

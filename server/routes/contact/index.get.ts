@@ -9,12 +9,12 @@ export default defineEventHandler(async (event: H3Event): Promise<{ data: Contac
     filters.$or = [
       { c_id: { $regex: search, $options: 'i' } },
       { company: { $regex: search, $options: 'i' } },
-      { name: { $regex: search, $options: 'i' } },
+      { name: { $regex: search, $options: 'i' } }
     ]
   }
 
-  const pageNumber = Math.max(parseInt(page as string, 10), 1)
-  const size = Math.max(parseInt(pageSize as string, 10), 1)
+  const pageNumber = Math.max(Number.parseInt(page as string, 10), 1)
+  const size = Math.max(Number.parseInt(pageSize as string, 10), 1)
   const skip = (pageNumber - 1) * size
 
   const [contacts, total] = await Promise.all([

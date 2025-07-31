@@ -7,6 +7,6 @@ export const ContactSchema = defineMongooseModel<Contact>({
     company: { type: String, required: false },
     name: { type: String, required: false },
     createDate: { type: String, required: true },
-    lastModDate: { type: String, required: true },
-  },
+    lastModDate: { type: String, required: true }
+  }
 })

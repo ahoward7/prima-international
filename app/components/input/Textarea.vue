@@ -6,9 +6,9 @@
 </template>
 
 <script setup lang="ts">
-const model = defineModel<string>()
 defineProps<{
   label?: string
   placeholder?: string
 }>()
+const model = defineModel<string>()
 </script>

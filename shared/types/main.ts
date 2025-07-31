@@ -74,21 +74,21 @@ export interface SoldMachineForm extends Partial<Omit<DBSoldMachine, 'machine'>>
   machine: MachineForm
 }
 
-export type TableColumn = {
+export interface TableColumn {
   key: string
   label: string
   flex: string
 }
 
-export type TableColumnC = {
+export interface TableColumnC {
   key: string
   label: string
   sort: boolean
 }
 
-export type FilterOption = {
+export interface FilterOption {
   label: string
   data: string | number
 }
 
-export type FilterOptions = { [key: string]: FilterOption[] }
+export interface FilterOptions { [key: string]: FilterOption[] }

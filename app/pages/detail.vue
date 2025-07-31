@@ -1,5 +1,5 @@
 <template>
-  <div v-if="computedMachine " class="h-screen flex flex-col items-center">
+  <div v-if="machine " class="h-screen flex flex-col items-center">
     <NuxtLink to="/" class="w-full max-w-[700px] flex items-center cursor-pointer">
       <Icon name="carbon:chevron-left" size="32" />
       <span class="text-xl">Back</span>
@@ -7,8 +7,8 @@
     <div class="w-full h-fit flex flex-col mt-4 max-w-[700px] shadow-xl">
       <div class="bg-prima-red py-4">
         <HeaderPrimary class="!text-white !text-4xl flex justify-between px-8">
-          <span>{{ computedMachine.model }}</span>
-          <span class="text-prima-yellow">{{ computedMachine.serialNumber }}</span>
+          <span>{{ machine.model }}</span>
+          <span class="text-prima-yellow">{{ machine.serialNumber }}</span>
         </HeaderPrimary>
       </div>
       <div class="flex flex-col gap-8 bg-gray-100 border-x border-b border-prima-red p-8">
@@ -23,35 +23,35 @@
           </div>
           <div class="grow h-fit grid grid-cols-2 gap-4 font-semibold">
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
-              <label class="text-sm text-prima-red"l>Type</label>
-              <span class="">{{ computedMachine.type || 'NONE'  }}</span>
+              <label class="text-sm text-prima-red">Type</label>
+              <span class="">{{ machine.type || 'NONE' }}</span>
             </div>
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Price</label>
-              <span class="">{{ computedMachine.price ? `$${formatCommas(computedMachine.price)}` : 'NONE' }}</span>
+              <span class="">{{ machine.price ? `$${formatCommas(machine.price)}` : 'NONE' }}</span>
             </div>
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Year</label>
-              <span class="">{{ computedMachine.year || 'NONE'  }}</span>
+              <span class="">{{ machine.year || 'NONE' }}</span>
             </div>
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Hours</label>
-              <span class="">{{ computedMachine.hours || 'NONE' }}</span>
+              <span class="">{{ machine.hours || 'NONE' }}</span>
             </div>
             <div class="col-span-2 flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Location</label>
-              <span class=" whitespace-nowrap overflow-hidden">{{ computedMachine.location || 'NONE' }}</span>
+              <span class=" whitespace-nowrap overflow-hidden">{{ machine.location || 'NONE' }}</span>
             </div>
           </div>
         </div>
         <div>
           <HeaderSecondary>Description</HeaderSecondary>
-          <div class="whitespace-pre-wrap" v-text="computedMachine.description || 'NONE'" />
+          <div class="whitespace-pre-wrap" v-text="machine.description || 'NONE'" />
         </div>
         <div class="flex flex-col gap-4">
           <div>
             <HeaderSecondary>Notes</HeaderSecondary>
-          <div class="whitespace-pre-wrap" v-text="computedMachine.notes || 'NONE'" />
+            <div class="whitespace-pre-wrap" v-text="machine.notes || 'NONE'" />
           </div>
         </div>
         <DividerLine />
@@ -60,11 +60,11 @@
           <div class="grow h-fit grid grid-cols-2 gap-4 font-semibold">
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Company</label>
-              <span class="">{{ computedMachine.contact?.company || 'NONE' }}</span>
+              <span class="">{{ machine.contact?.company || 'NONE' }}</span>
             </div>
             <div class="flex flex-col px-2 py-1 border-l-2 border-prima-red">
               <label class="text-sm text-prima-red">Name</label>
-              <span class="">{{ computedMachine.contact?.name || 'NONE' }}</span>
+              <span class="">{{ machine.contact?.name || 'NONE' }}</span>
             </div>
           </div>
         </div>
@@ -72,17 +72,17 @@
           <div class="flex justify-between bg-prima-red font-semibold text-white px-4 py-3">
             <div class="flex items-center gap-2">
               <label class="text-sm">Created:</label>
-              <span>{{ isoToMMDDYYYY(computedMachine.createDate) }}</span>
+              <span>{{ isoToMMDDYYYY(machine.createDate) }}</span>
             </div>
             <div class="flex items-center gap-2">
               <label class="text-sm">Last Modified:</label>
-              <span>{{ isoToMMDDYYYY(computedMachine.lastModDate) }}</span>
+              <span>{{ isoToMMDDYYYY(machine.lastModDate) }}</span>
             </div>
           </div>
           <div class="flex items-center gap-2 font-semibold bg-prima-yellow px-4 py-3">
             <label class="text-sm">Tables:</label>
-            <span v-for="ids, key in machineLocations">
-              {{ `${l.startCase(key as string)} (${ids.length })${key !== 'sold' ? ',' : ''}` }}
+            <span v-for="ids, key in machineLocations" :key="key">
+              {{ `${titleCase(key)} (${ids.length })${key !== 'sold' ? ',' : ''}` }}
             </span>
           </div>
         </div>
@@ -92,19 +92,15 @@
 </template>
 
 <script setup lang="ts">
-import l from 'lodash'
-
 const { id, location } = useRoute().query
 
-const { data: machine } = await useFetch<Machine>(`/machine/${id}`, {
+const { data: machine } = await useFetch < Machine > (`/machine/${id}`, {
   query: { location }
 })
 
-const computedMachine = computed(() => location === 'located' ? machine.value : machine.value.machine )
-
 const { data: machineLocations } = await useFetch('/machine/locations', {
   query: {
-    serialNumber: location === 'located' ? machine.value?.serialNumber : machine.value.machine.serialNumber
+    serialNumber: machine.value?.serialNumber
   }
 })
 </script>

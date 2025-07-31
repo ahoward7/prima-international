@@ -8,7 +8,7 @@
         {{ formatCommas(getNestedValue(machine, column.key) as number) }}
       </div>
       <div v-else-if="column.key === 'year'" class="h-6 overflow-hidden text-right">
-        {{ getNestedValue(machine, column.key )}}
+        {{ getNestedValue(machine, column.key ) }}
       </div>
       <div v-else-if="column.key === 'notes'" class="h-6 overflow-hidden" v-text="machine.notes" />
       <div v-else-if="column.key === 'lastModDate'">

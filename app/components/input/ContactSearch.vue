@@ -1,5 +1,5 @@
 <template>
-  <InputSelect :model-value="''" label="Contact Search" :options="mappedContacts" @select="selectContact" @search="debouncedSearch" @clear="clearContact"/>
+  <InputSelect model-value="" label="Contact Search" :options="mappedContacts" @select="selectContact" @search="debouncedSearch" @clear="clearContact" />
 </template>
 
 <script setup lang="ts">

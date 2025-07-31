@@ -13,5 +13,5 @@
 </template>
 
 <script setup lang="ts">
-const soldInformation = defineModel<SoldMachineForm>({ required: true })
+const soldInformation = defineModel < SoldMachineForm > ({ required: true })
 </script>

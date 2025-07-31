@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 
-export default defineEventHandler(async (event: H3Event): Promise<FilterOptions> => {
+export default defineEventHandler(async (_: H3Event): Promise<FilterOptions> => {
   // Get distinct models and types
   const models = await MachineSchema.distinct('model')
   const types = await MachineSchema.distinct('type')
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event: H3Event): Promise<FilterOptions>
     data: value
   }))
 
-   const salesmanOptions: FilterOption[] = salesmen.filter(Boolean).map((value: string) => ({
+  const salesmanOptions: FilterOption[] = salesmen.filter(Boolean).map((value: string) => ({
     label: value,
     data: value
   }))
@@ -39,12 +39,12 @@ export default defineEventHandler(async (event: H3Event): Promise<FilterOptions>
       { label: 'Choose location', data: '' },
       { label: 'Located', data: 'located' },
       { label: 'Sold', data: 'sold' },
-      { label: 'Archived', data: 'archived' },
+      { label: 'Archived', data: 'archived' }
     ],
     displayFormat: [
       { label: 'One Line', data: 'oneLine'},
       { label: 'Two Line', data: 'twoLine'},
-      { label: 'Two Line Truncated', data: 'twoLineTruncated'},
+      { label: 'Two Line Truncated', data: 'twoLineTruncated'}
     ],
     pageSize: [
       { label: '10', data: 10},
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event: H3Event): Promise<FilterOptions>
       { label: '30', data: 30},
       { label: '40', data: 40},
       { label: '50', data: 50},
-      { label: '100', data: 100},
-    ],
+      { label: '100', data: 100}
+    ]
   }
 })

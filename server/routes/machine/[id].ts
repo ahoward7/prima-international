@@ -7,7 +7,7 @@ export default defineEventHandler(async (event): Promise<Machine | ArchivedMachi
   return await fetchFunction(id)
 })
 
-function getFetchFunction(location: string): Function {
+function getFetchFunction(location: string) {
   if (location === 'located') { return getLocatedMachine }
   if (location === 'archvied') { return getArchivedMachine }
   return getSoldMachine
@@ -21,7 +21,7 @@ async function getLocatedMachine(id: string): Promise<Machine | null> {
 
   return {
     ...machine,
-    contact,
+    contact
   } as Machine
 }
 
@@ -42,5 +42,6 @@ async function getArchivedMachine(id: string): Promise<ArchivedMachine | null> {
 }
 
 async function getSoldMachine(id: string): Promise<SoldMachine | null> {
+  void id
   return null
 }

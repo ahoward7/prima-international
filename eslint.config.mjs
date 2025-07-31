@@ -3,10 +3,20 @@ import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt(
   antfu({
+    stylistic: false,
+    vue: true,
+    typescript: true,
+    nuxt: true,
     rules: {
       'vue/block-order': ['error', { order: ['template', 'script', 'style'] }],
       'node/prefer-global/process': 'off',
       'no-console': ['warn', { allow: ['info', 'error'] }],
-    },
+      'comma-dangle': ['error', 'never'],
+      'indent': ['error', 2, { SwitchCase: 1 }],
+      'semi': ['error', 'never']
+    }
   }),
+  {
+    ignores: ['src-tauri']
+  }
 )

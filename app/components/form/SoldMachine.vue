@@ -6,7 +6,7 @@
 
     <HeaderSecondary>Machine Information</HeaderSecondary>
     <FormMachine v-model="machine.machine" />
-    
+
     <DividerLine class="my-4" />
 
     <HeaderSecondary>Sale Information</HeaderSecondary>
@@ -16,5 +16,5 @@
 </template>
 
 <script setup lang="ts">
-const machine = defineModel<SoldMachineForm>({ required: true })
+const machine = defineModel < SoldMachineForm > ({ required: true })
 </script>

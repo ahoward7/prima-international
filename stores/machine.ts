@@ -2,12 +2,12 @@ import { defineStore } from 'pinia'
 
 const contact: ContactForm = {
   company: undefined,
-  name: undefined,
+  name: undefined
 }
 
 const emptyMachine: MachineForm = {
   serialNumber: undefined,
-  contact: contact,
+  contact,
   location: "",
   type: "",
   model: "",
@@ -18,7 +18,7 @@ const emptyMachine: MachineForm = {
   description: "",
   createDate: undefined,
   lastModDate: undefined,
-  notes: "",
+  notes: ""
 }
 
 const emptySoldMachine: SoldMachineForm = {
@@ -49,7 +49,7 @@ export const useMachineStore = defineStore('machine', () => {
     page: 1,
     sortBy: 'model',
     model: '',
-    type: '',
+    type: ''
   })
 
   const filterOptions: Ref<FilterOptions> = ref({})

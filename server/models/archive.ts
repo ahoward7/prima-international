@@ -17,8 +17,8 @@ export const ArchiveSchema = defineMongooseModel<ArchivedMachine>({
       lastModDate: { type: String, required: true },
       price: { type: Number, required: false },
       location: { type: String, required: false },
-      notes: { type: String, required: false  },
+      notes: { type: String, required: false  }
     },
     archiveDate: { type: String, required: true }
-  },
+  }
 })

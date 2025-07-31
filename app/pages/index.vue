@@ -7,7 +7,7 @@
       <div class="flex flex-col gap-2">
         <HeaderSecondary>Search Filters</HeaderSecondary>
         <div class="flex gap-4">
-          <InputText class="w-60" v-model="searchInput" label="Universal" placeholder="Search anything..." />
+          <InputText v-model="searchInput" class="w-60" label="Universal" placeholder="Search anything..." />
           <InputSelect v-model="filters.location" label="Located/Sold/Archived" :options="filterOptions.location" width="w-52" />
           <InputSelect v-model="filters.model" label="Model" :options="filterOptions.model" />
           <InputSelect v-model="filters.type" label="Type" :options="filterOptions.type" />
@@ -21,7 +21,7 @@
         </div>
       </div>
       <DividerLine />
-      <Table :machines="machines" v-model:sort-by="filters.sortBy" v-model:page="filters.page" :display-format="displayFormat" :page-size="filters.pageSize" />
+      <Table v-model:sort-by="filters.sortBy" v-model:page="filters.page" :machines="machines" :display-format="displayFormat" :page-size="filters.pageSize" />
     </div>
   </div>
 </template>
@@ -40,7 +40,7 @@ const filters = ref<MachineFilters>({
   page: storeFilters.value.page || 1,
   sortBy: storeFilters.value.sortBy || 'model',
   model: storeFilters.value.model || '',
-  type: storeFilters.value.type || '',
+  type: storeFilters.value.type || ''
 })
 
 watch(filters, (newFilters) => {
@@ -58,7 +58,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
 
-const { data: machines, pending } = await useFetch<{ data: Machine[], total: number }>('/machine', { 
+const { data: machines } = await useFetch<{ data: Machine[], total: number }>('/machine', { 
   method: 'GET', 
   query: filters,
   watch: [filters]

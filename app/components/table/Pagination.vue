@@ -8,12 +8,12 @@
     <Icon name="carbon:chevron-left" size="28" class="cursor-pointer" @click="decPage" />
 
     <div class="w-60 flex justify-center gap-2 text-xl pb-0.5">
-      <template v-for="dp in displayPages" >
+      <template v-for="dp in displayPages" :key="dp">
         <span
           v-if="typeof dp === 'number'"
-          @click="page = dp"
           class="w-8 h-8 flex justify-center items-center pb-0.5 cursor-pointer rounded-md"
           :class="page === dp ? 'bg-prima-red text-white' : 'hover:bg-prima-red hover:text-white'"
+          @click="page = dp"
         >
           {{ dp }}
         </span>
@@ -33,12 +33,12 @@
 </template>
 
 <script setup lang="ts">
-const page = defineModel<number>('page', { required: true})
-
 const props = defineProps<{
   pageSize: number
   total: number
 }>()
+
+const page = defineModel<number>('page', { required: true})
 
 const pageCount = computed(() => Math.ceil(props.total / props.pageSize))
 const computedPageSize = computed(() => props.pageSize)

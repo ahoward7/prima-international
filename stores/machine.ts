@@ -21,6 +21,16 @@ const emptyMachine: MachineForm = {
   notes: ""
 }
 
+const defaultFilters: MachineFilters = {
+  location: 'located',
+  search: '',
+  pageSize: 20,
+  page: 1,
+  sortBy: 'type',
+  model: '',
+  type: ''
+}
+
 const emptySoldMachine: SoldMachineForm = {
   machine: emptyMachine,
   buyer: '',
@@ -42,15 +52,7 @@ export const useMachineStore = defineStore('machine', () => {
 
   const soldMachine: Ref<SoldMachineForm> = ref({...emptySoldMachine})
 
-  const filters = ref<MachineFilters>({
-    location: 'located',
-    search: '',
-    pageSize: 20,
-    page: 1,
-    sortBy: 'type',
-    model: '',
-    type: ''
-  })
+  const filters = ref<MachineFilters>({...defaultFilters})
 
   const filterOptions: Ref<FilterOptions> = ref({})
 
@@ -74,6 +76,10 @@ export const useMachineStore = defineStore('machine', () => {
     filters.value = f
   }
 
+  function resetFilters() {
+    filters.value = {...defaultFilters}
+  }
+
   return {
     action,
     machine,
@@ -84,6 +90,7 @@ export const useMachineStore = defineStore('machine', () => {
     resetMachine,
     setAction,
     setFilterOptions,
-    setFilters
+    setFilters,
+    resetFilters
   }
 })

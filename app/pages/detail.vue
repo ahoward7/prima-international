@@ -44,7 +44,7 @@
             <Button class="!bg-blue-600">
               Archive
             </Button>
-            <Button class="!bg-red-600">
+            <Button class="!bg-red-600" @click="deleteMachine">
               Delete
             </Button>
           </div>
@@ -97,7 +97,7 @@ async function createMachine() {
   })
 
   if (response.success) {
-    alert('success')
+    navigateTo('/')
   }
 }
 
@@ -108,7 +108,18 @@ async function updateMachine() {
   })
 
   if (response.success) {
-    alert('success')
+    navigateTo('/')
+  }
+}
+
+async function deleteMachine() {
+  const response = await $fetch('/machine', {
+    method: 'DELETE',
+    query: { id: machine.value.m_id }
+  })
+
+  if (response.success) {
+    navigateTo('/')
   }
 }
 </script>

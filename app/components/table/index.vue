@@ -48,6 +48,13 @@
             @select="selectMachine(machine)"
           />
         </template>
+        <tr v-if="machines?.data.length === 0">
+          <td>
+            <div class="px-2 py-1">
+              No Results
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
     <div class="flex justify-center">

@@ -11,6 +11,11 @@
           <InputSelect v-model="filters.location" label="Located/Sold/Archived" :options="filterOptions.location" width="w-52" />
           <InputSelect v-model="filters.model" label="Model" :options="filterOptions.model" />
           <InputSelect v-model="filters.type" label="Type" :options="filterOptions.type" />
+          <div class="flex items-end">
+            <Button class="!px-2 !py-1 !bg-prima-yellow border border-prima-yellow" @click="clearFilters">
+              Clear
+            </Button>
+          </div>
         </div>
       </div>
       <div class="flex flex-col gap-2">
@@ -33,15 +38,7 @@ import { useMachineStore } from '~~/stores/machine'
 const machineStore = useMachineStore()
 const { filterOptions, filters: storeFilters } = storeToRefs(machineStore)
 
-const filters = ref<MachineFilters>({
-  location: storeFilters.value.location || '',
-  search: storeFilters.value.search || '',
-  pageSize: storeFilters.value.pageSize || 20,
-  page: storeFilters.value.page || 1,
-  sortBy: storeFilters.value.sortBy || 'type',
-  model: storeFilters.value.model || '',
-  type: storeFilters.value.type || ''
-})
+const filters = ref<MachineFilters>(storeFilters.value)
 
 watch(filters, (newFilters) => {
   machineStore.setFilters(newFilters)
@@ -70,4 +67,10 @@ const { data: machines } = await useFetch<{ data: Machine[], total: number }>('/
   query: filters,
   watch: [filters]
 })
+
+function clearFilters() {
+  machineStore.resetFilters()
+  filters.value = storeFilters.value
+  searchInput.value = ''
+}
 </script>

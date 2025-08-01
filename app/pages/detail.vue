@@ -17,7 +17,7 @@
         <InputNumber v-model="machine.year" label="Year" placeholder="2000" class="col-span-1" />
         <InputNumber v-model="machine.hours" label="Hours" placeholder="1000" class="col-span-1" />
         <InputTextarea v-model="machine.description" label="Description" placeholder="Description of machine..." class="col-span-6" />
-        <InputNumber v-model="machine.price" label="Price" placeholder="Price" class="col-span-1" />
+        <InputMoney v-model="machine.price" label="Price" placeholder="Price" class="col-span-1" />
         <InputText v-model="machine.location" label="Location" placeholder="City, State, Country" class="col-span-4" />
         <InputText v-model="machine.salesman" label="Salesman" placeholder="Initials" :options="filterOptions.salesman" class="col-span-1" width="w-full" createable />
         <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-6" />

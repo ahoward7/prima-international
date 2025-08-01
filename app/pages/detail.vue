@@ -35,13 +35,13 @@
             </div>
           </div>
           <div class="flex gap-4">
-            <Button class="!bg-yellow-600" @click="updateMachine">
+            <Button class="!bg-prima-yellow" @click="updateMachine">
               Update
             </Button>
             <Button class="!bg-green-600">
               Sell
             </Button>
-            <Button class="!bg-blue-600">
+            <Button class="!bg-blue-600" @click="archiveMachine">
               Archive
             </Button>
             <Button class="!bg-red-600" @click="deleteMachine">
@@ -109,6 +109,17 @@ async function updateMachine() {
 
   if (response.success) {
     navigateTo('/')
+  }
+}
+
+async function archiveMachine() {
+  const response = await $fetch('/machine/archive', {
+    method: 'POST',
+    body: machine.value
+  })
+
+  if (response.success) {
+    navigateTo(`/`)
   }
 }
 

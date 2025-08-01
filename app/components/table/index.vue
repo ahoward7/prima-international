@@ -3,7 +3,7 @@
     <div class="flex justify-between items-end">
       <div class="w-32" />
       <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
-      <div class="w-32">
+      <div class="flex justify-end w-32">
         <NuxtLink to="/detail">
           <Button class="!bg-green-600">
             Add Machine

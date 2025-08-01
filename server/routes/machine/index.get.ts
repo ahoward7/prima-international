@@ -40,15 +40,14 @@ function buildPipeline(filters: MachineFilters, sortBy: string, pageSize: string
     })
     pipeline.push({
       $sort: {
-        _sortNull: 1, // falsey values at the end
+        _sortNull: 1,
         [sortField]: sortDir
       }
     })
   }
 
-  // Add pagination
-  const pageSizeNum = Number.parseInt(pageSize, 10) || 10 // default to 10 if invalid
-  const pageNum = Number.parseInt(page, 10) || 1 // default to page 1 if invalid
+  const pageSizeNum = Number.parseInt(pageSize, 10) || 10
+  const pageNum = Number.parseInt(page, 10) || 1
   const skip = (pageNum - 1) * pageSizeNum
 
   pipeline.push({ $skip: skip })
@@ -73,10 +72,8 @@ async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data:
     ]
   }
 
-  // Build the main pipeline (with pagination and sort)
   const pipeline = buildPipeline(filters, sortBy, pageSize, page)
 
-  // Build the total count pipeline
   const countPipeline = [
     { $match: filters },
     { $count: 'total' }

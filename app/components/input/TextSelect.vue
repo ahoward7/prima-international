@@ -40,7 +40,7 @@
 
     <!-- Clear Button -->
     <Icon
-      v-if="clearable && selectedOption !== options[0]?.data && search"
+      v-if="clearable && selectedOption && search"
       name="carbon:close"
       class="absolute right-2 top-9 text-prima-red cursor-pointer"
       size="20"

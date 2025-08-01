@@ -1,7 +1,15 @@
 <template>
   <div class="flex flex-col gap-4 relative min-w-[1400px] overflow-x-auto">
-    <div class="flex justify-center">
+    <div class="flex justify-between">
+      <div class="w-32" />
       <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
+      <div class="w-32">
+        <NuxtLink to="/detail">
+          <Button class="!bg-green-600">
+            Add Machine
+          </Button>
+        </NuxtLink>
+      </div>
     </div>
     <div v-show="!machines">
       <div class="w-full top-0 h-8 bg-prima-red" />

@@ -20,7 +20,7 @@
       <div v-else-if="column.key === 'lastModDate'">
         {{ isoToMMDDYYYY(machine.lastModDate) }}
       </div>
-      <div v-else-if="column.key === ''" class="flex gap-1 items-center">
+      <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
         <Icon name="carbon:pen" size="20" class="rounded-full text-yellow-600" />
         <Icon name="carbon:currency-dollar" size="20" class="rounded-full text-green-600" />
         <Icon name="carbon:volume-file-storage" size="20" class="rounded-full text-blue-600" />

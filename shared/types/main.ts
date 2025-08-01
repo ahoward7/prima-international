@@ -92,3 +92,4 @@ export interface FilterOption {
 }
 
 export interface FilterOptions { [key: string]: FilterOption[] }
+export interface StringObject { [key: string]: string[] }

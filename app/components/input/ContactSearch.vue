@@ -1,5 +1,13 @@
 <template>
-  <InputSelect model-value="" label="Contact Search" :options="mappedContacts" @select="selectContact" @search="debouncedSearch" @clear="clearContact" />
+  <InputTextSelect
+    model-value=""
+    label="Contact Search"
+    :options="mappedContacts"
+    placeholder="Search contacts..."
+    @select="selectContact"
+    @search="debouncedSearch"
+    @clear="clearContact"
+  />
 </template>
 
 <script setup lang="ts">
@@ -31,10 +39,9 @@ const mappedContacts = computed(() => {
     data: c.c_id
   }))
 
-  const defaultContact = { label: 'Choose contact', data: '' }
-  const newContact = { label: 'Create New Contact', data: 'new' }
+  // const newContact = { label: 'Create New Contact', data: 'new' }
 
-  return [defaultContact, newContact, ...mcs]
+  return [...mcs]
 })
 
 function selectContact(c_id: string) {

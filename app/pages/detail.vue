@@ -2,6 +2,14 @@
   <div class="flex justify-center py-12 px-8">
     <div class="w-[920px] flex flex-col items-center gap-8">
       <HeaderPrimary>Machine Detail</HeaderPrimary>
+      <div class="flex flex-col gap-4 w-full">
+        <div class="grid grid-cols-2 gap-8">
+          <InputContactSearch class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
+          <InputText v-model="machine.contact.name" label="Contact Name" placeholder="First Last" />
+          <InputText v-model="machine.contact.company" label="Company Name" placeholder="Company Inc." />
+        </div>
+      </div>
+      <DividerLine class="w-full" />
       <div v-if="machine" class="grid grid-cols-6 gap-8">
         <InputText v-model="machine.type" label="Type" placeholder="Type" :options="filterOptions.type" class="col-span-1" width="w-full" createable />
         <InputText v-model="machine.model" label="Model" placeholder="Model" :options="filterOptions.model" class="col-span-1" width="w-full" createable />
@@ -132,5 +140,13 @@ async function deleteMachine() {
   if (response.success) {
     navigateTo('/')
   }
+}
+
+function fillContact(c: Contact) {
+  machine.value.contact = c
+}
+
+function clearContact() {
+  machine.value.contact = {}
 }
 </script>

@@ -1,7 +1,13 @@
 <template>
   <div class="flex justify-center py-12 px-8">
     <div class="w-[920px] flex flex-col items-center gap-8">
-      <HeaderPrimary>Machine Detail</HeaderPrimary>
+      <div class="w-full">
+        <NuxtLink to="/" class="flex items-center text-prima-red">
+          <Icon name="carbon:chevron-left" size="28" />
+          <span class="text-xl">Inventory</span>
+        </NuxtLink>
+        <HeaderPrimary>Machine Detail</HeaderPrimary>
+      </div>
       <div class="flex flex-col gap-4 w-full">
         <div class="grid grid-cols-2 gap-8">
           <InputContactSearch class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
@@ -15,9 +21,9 @@
         <InputTextSelect v-model="machine.model" label="Model" placeholder="Model" :options="filterOptions.model" class="col-span-1" width="w-full" createable />
         <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="Number" class="col-span-2" />
         <InputNumber v-model="machine.year" label="Year" placeholder="2000" class="col-span-1" />
-        <InputNumber v-model="machine.hours" label="Hours" placeholder="1000" class="col-span-1" />
+        <InputNumber v-model="machine.hours" commas label="Hours" placeholder="1000" class="col-span-1" />
         <InputTextarea v-model="machine.description" label="Description" placeholder="Description of machine..." class="col-span-6" />
-        <InputMoney v-model="machine.price" label="Price" placeholder="Price" class="col-span-1" />
+        <InputNumber v-model="machine.price" commas price label="Price" placeholder="Price" class="col-span-1" />
         <InputText v-model="machine.location" label="Location" placeholder="City, State, Country" class="col-span-4" />
         <InputTextSelect v-model="machine.salesman" label="Salesman" placeholder="Initials" :options="filterOptions.salesman" class="col-span-1" width="w-full" createable />
         <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-6" />

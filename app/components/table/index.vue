@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-4 relative min-w-[1400px] overflow-x-auto">
-    <div class="flex justify-between">
+    <div class="flex justify-between items-end">
       <div class="w-32" />
       <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
       <div class="w-32">

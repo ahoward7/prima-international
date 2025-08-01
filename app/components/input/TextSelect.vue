@@ -10,7 +10,7 @@
       @keydown.down.prevent="navigate(1)"
       @keydown.up.prevent="navigate(-1)"
       @keydown.enter.prevent="selectHighlighted"
-      @keydown.tab="isOpen = false"
+      @keydown.tab="selectHighlighted"
       @input="emit('search', search)"
     />
 

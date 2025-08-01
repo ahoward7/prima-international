@@ -10,11 +10,12 @@
       @keydown.down.prevent="navigate(1)"
       @keydown.up.prevent="navigate(-1)"
       @keydown.enter.prevent="selectHighlighted"
+      @keydown.tab="isOpen = false"
       @input="emit('search', search)"
     />
 
     <!-- Dropdown Panel -->
-    <div v-if="isOpen" class="absolute top-[58px] z-10 bg-white border border-prima-red mt-1 w-full max-h-80 overflow-auto shadow-md">
+    <div v-if="isOpen" tabindex="-1" class="absolute top-[58px] z-10 bg-white border border-prima-red mt-1 w-full max-h-80 overflow-auto shadow-md">
       <!-- Options -->
       <div
         v-for="(option, index) in filteredOptions"
@@ -34,19 +35,12 @@
         <div class="text-gray-400 mb-2">
           No results found.
         </div>
-        <button
-          v-if="createable"
-          class="w-full bg-prima-red text-white px-2 py-1 cursor-pointer"
-          @click="createNewOption"
-        >
-          Add <span class="uppercase">"{{ search }}"</span>
-        </button>
       </div>
     </div>
 
     <!-- Clear Button -->
     <Icon
-      v-if="clearable && selectedOption !== options[0]?.data"
+      v-if="clearable && selectedOption !== options[0]?.data && search"
       name="carbon:close"
       class="absolute right-2 top-9 text-prima-red cursor-pointer"
       size="20"
@@ -109,24 +103,9 @@ const selectOption = (option: FilterOption) => {
 }
 
 const resetSelection = () => {
-  selectedOption.value = props.options[0]?.data
+  selectedOption.value = ''
   search.value = ''
   emit('clear')
-}
-
-const createNewOption = () => {
-  if (!search.value.trim()) return
-
-  const newOption = {
-    label: search.value.trim().toUpperCase(),
-    data: search.value.trim().toUpperCase()
-  }
-
-  createdOption.value = newOption
-  selectedOption.value = newOption.data
-  isOpen.value = false
-  emit('select', newOption.data)
-  emit('create', newOption)
 }
 
 // Keyboard navigation

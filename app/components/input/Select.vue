@@ -4,7 +4,7 @@
 
     <div ref="dropdownRef" class="relative">
       <div class="bg-gray-100 border border-prima-red px-2 py-1 flex justify-between items-center cursor-pointer" @click="toggleDropdown">
-        <span class="select-none text-prima-red">{{ selectedLabel || 'Select...' }}</span>
+        <span class="select-none text-prima-red" :class="!selectedOption ? 'opacity-50' : ''">{{ selectedLabel || placeholder }}</span>
         <Icon name="carbon:chevron-down" class="text-prima-red" size="20" />
       </div>
 
@@ -30,7 +30,7 @@
       </div>
 
       <!-- Clear Button -->
-      <Icon v-if="clearable && selectedOption !== options[0]?.data" name="carbon:close" class="absolute right-7 top-2 text-prima-red cursor-pointer" size="20" @click="resetSelection" />
+      <Icon v-if="clearable && selectedOption" name="carbon:close" class="absolute right-7 top-2 text-prima-red cursor-pointer" size="20" @click="resetSelection" />
     </div>
   </div>
 </template>
@@ -44,11 +44,13 @@ const props = withDefaults(defineProps<{
   clearable?: boolean
   width?: string
   createable?: boolean
+  placeholder?: string
 }>(), {
   options: () => [] as FilterOption[],
   clearable: true,
   width: 'w-48',
-  createable: false
+  createable: false,
+  placeholder: 'Select...'
 })
 const emit = defineEmits(['search', 'select', 'create', 'clear'])
 const selectedOption = defineModel<string | number>()
@@ -69,7 +71,7 @@ function selectOption(option: FilterOption) {
 }
 
 function resetSelection() {
-  selectedOption.value = props.options[0]?.data
+  selectedOption.value = ''
   search.value = ''
   emit('clear')
 }

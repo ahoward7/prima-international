@@ -23,20 +23,10 @@ export default defineEventHandler(async (_: H3Event): Promise<FilterOptions> => 
   }))
 
   return {
-    model: [
-      { label: 'Choose model', data: '' },
-      ...modelOptions
-    ],
-    type: [
-      { label: 'Choose type', data: '' },
-      ...typeOptions
-    ],
-    salesman: [
-      { label: 'Choose salesman', data: ''},
-      ...salesmanOptions
-    ],
+    model: modelOptions,
+    type: typeOptions,
+    salesman: salesmanOptions,
     location: [
-      { label: 'Choose location', data: '' },
       { label: 'Located', data: 'located' },
       { label: 'Sold', data: 'sold' },
       { label: 'Archived', data: 'archived' }

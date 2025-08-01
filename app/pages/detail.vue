@@ -11,15 +11,15 @@
       </div>
       <DividerLine class="w-full" />
       <div v-if="machine" class="grid grid-cols-6 gap-8">
-        <InputText v-model="machine.type" label="Type" placeholder="Type" :options="filterOptions.type" class="col-span-1" width="w-full" createable />
-        <InputText v-model="machine.model" label="Model" placeholder="Model" :options="filterOptions.model" class="col-span-1" width="w-full" createable />
+        <InputTextSelect v-model="machine.type" label="Type" placeholder="Type" :options="filterOptions.type" class="col-span-1" width="w-full" createable />
+        <InputTextSelect v-model="machine.model" label="Model" placeholder="Model" :options="filterOptions.model" class="col-span-1" width="w-full" createable />
         <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="Number" class="col-span-2" />
         <InputNumber v-model="machine.year" label="Year" placeholder="2000" class="col-span-1" />
         <InputNumber v-model="machine.hours" label="Hours" placeholder="1000" class="col-span-1" />
         <InputTextarea v-model="machine.description" label="Description" placeholder="Description of machine..." class="col-span-6" />
         <InputMoney v-model="machine.price" label="Price" placeholder="Price" class="col-span-1" />
         <InputText v-model="machine.location" label="Location" placeholder="City, State, Country" class="col-span-4" />
-        <InputText v-model="machine.salesman" label="Salesman" placeholder="Initials" :options="filterOptions.salesman" class="col-span-1" width="w-full" createable />
+        <InputTextSelect v-model="machine.salesman" label="Salesman" placeholder="Initials" :options="filterOptions.salesman" class="col-span-1" width="w-full" createable />
         <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-6" />
       </div>
       <template v-if="id">

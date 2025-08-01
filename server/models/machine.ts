@@ -16,6 +16,28 @@ export const MachineSchema = defineMongooseModel<DBMachine>({
     lastModDate: { type: String, required: true },
     price: { type: Number, required: false },
     location: { type: String, required: false },
-    notes: { type: String, required: false  }
+    notes: { type: String, required: false }
+  },
+  options: {
+    autoIndex: false
+  }
+})
+
+MachineSchema.collection.dropIndexes()
+
+MachineSchema.collection.createIndex({
+  serialNumber: 'text',
+  model: 'text',
+  type: 'text',
+  description: 'text',
+  notes: 'text'
+}, {
+  name: 'machine_full_text_search',
+  weights: {
+    serialNumber: 1,
+    model: 1,
+    type: 1,
+    description: 1,
+    notes: 1
   }
 })

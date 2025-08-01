@@ -64,15 +64,28 @@ async function buildQuery(machineFilters: MachineFilterStrings): Promise<{ data:
   if (type) filters.type = type
 
   if (search) {
-    filters.$or = [
-      { serialNumber: { $regex: search, $options: 'i' } },
-      { model: { $regex: search, $options: 'i' } },
-      { type: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } }
-    ]
+    filters.$text = { 
+      $search: search,
+      $caseSensitive: false,
+      $diacriticSensitive: false
+    }
   }
 
   const pipeline = buildPipeline(filters, sortBy, pageSize, page)
+
+  if (search) {
+    pipeline.splice(1, 0, {
+      $addFields: {
+        textScore: { $meta: "textScore" }
+      }
+    })
+    
+    if (!sortBy) {
+      pipeline.splice(-2, 0, {
+        $sort: { textScore: { $meta: "textScore" } }
+      })
+    }
+  }
 
   const countPipeline = [
     { $match: filters },

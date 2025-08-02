@@ -35,9 +35,9 @@ MachineSchema.collection.createIndex({
 }, {
   name: 'machine_full_text_search',
   weights: {
-    serialNumber: 1,
-    model: 1,
-    type: 1,
+    serialNumber: 7,
+    model: 5,
+    type: 5,
     description: 1,
     location: 1,
     notes: 1

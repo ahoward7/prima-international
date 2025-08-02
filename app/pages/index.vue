@@ -12,7 +12,7 @@
           <InputSelect v-model="filters.type" label="Type" placeholder="Filter by type..." :options="filterOptions.type" />
           <InputSelect v-model="filters.model" label="Model" placeholder="Filter by model..." :options="filterOptions.model" />
           <div class="flex items-end">
-            <Button class="!px-2 !py-1 !bg-prima-yellow border border-prima-yellow" @click="clearFilters">
+            <Button class="!h-fit !px-2 !py-1 !bg-prima-yellow border border-prima-yellow" @click="clearFilters">
               Clear
             </Button>
           </div>

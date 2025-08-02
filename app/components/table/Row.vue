@@ -21,7 +21,6 @@
         {{ isoToMMDDYYYY(getNestedValue(machine, column.key) as string) }}
       </div>
       <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
-        <Icon name="carbon:pen" size="20" class="rounded-full text-yellow-600" />
         <Icon name="carbon:currency-dollar" size="20" class="rounded-full text-green-600" />
         <Icon name="carbon:volume-file-storage" size="20" class="rounded-full text-blue-600" />
         <Icon name="carbon:trash-can" size="20" class="rounded-full text-red-600" />

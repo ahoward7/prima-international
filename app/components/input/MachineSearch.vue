@@ -94,7 +94,7 @@ const searchInput = ref('')
 
 const debouncedSearch = useDebounceFn((value: string) => {
   filters.value.search = value
-}, 300)
+}, 200)
 
 watch(searchInput, (newValue) => {
   debouncedSearch(newValue)

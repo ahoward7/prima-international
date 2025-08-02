@@ -30,6 +30,7 @@ MachineSchema.collection.createIndex({
   model: 'text',
   type: 'text',
   description: 'text',
+  location: 'text',
   notes: 'text'
 }, {
   name: 'machine_full_text_search',
@@ -38,6 +39,7 @@ MachineSchema.collection.createIndex({
     model: 1,
     type: 1,
     description: 1,
+    location: 1,
     notes: 1
   }
 })

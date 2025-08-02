@@ -27,7 +27,7 @@ const { data: contacts } = await useFetch('/contact', {
 
 const debouncedSearch = useDebounceFn((value: string) => {
   filters.value.search = value
-}, 300)
+}, 200)
 
 const mappedContacts = computed(() => {
   if (!contacts.value?.data) {

@@ -1,31 +1,31 @@
 import type { H3Event } from 'h3'
 
 export default defineEventHandler(async (_: H3Event): Promise<FilterOptions> => {
-  // Get distinct models and types
-  const models = await MachineSchema.distinct('model')
-  const types = await MachineSchema.distinct('type')
-  const salesmen = await MachineSchema.distinct('salesman')
+  // Get distinct values from both schemas
+  const [machineModels, archiveModels] = await Promise.all([
+    MachineSchema.distinct('model'),
+    ArchiveSchema.distinct('machine.model')
+  ])
+  const [machineTypes, archiveTypes] = await Promise.all([
+    MachineSchema.distinct('type'),
+    ArchiveSchema.distinct('machine.type')
+  ])
+  const [machineSalesmen, archiveSalesmen] = await Promise.all([
+    MachineSchema.distinct('salesman'),
+    ArchiveSchema.distinct('machine.salesman')
+  ])
 
-  // Filter out empty or falsy values, then convert to FilterOption format
-  const modelOptions: FilterOption[] = models.filter(Boolean).map((value: string) => ({
-    label: value,
-    data: value
-  }))
-
-  const typeOptions: FilterOption[] = types.filter(Boolean).map((value: string) => ({
-    label: value,
-    data: value
-  }))
-
-  const salesmanOptions: FilterOption[] = salesmen.filter(Boolean).map((value: string) => ({
-    label: value,
-    data: value
-  }))
+  // Helper to merge, deduplicate, and convert to FilterOption[]
+  const toFilterOptions = (a: string[], b: string[]): FilterOption[] =>
+    Array.from(new Set([...a, ...b].filter(Boolean))).map((value: string) => ({
+      label: value,
+      data: value
+    }))
 
   return {
-    model: modelOptions,
-    type: typeOptions,
-    salesman: salesmanOptions,
+    model: toFilterOptions(machineModels, archiveModels),
+    type: toFilterOptions(machineTypes, archiveTypes),
+    salesman: toFilterOptions(machineSalesmen, archiveSalesmen),
     location: [
       { label: 'Located', data: 'located' },
       { label: 'Sold', data: 'sold' },

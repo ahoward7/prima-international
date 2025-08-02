@@ -8,6 +8,15 @@ export interface MachineFilters {
   type?: string
 }
 
+export interface MachineFilterStrings {
+  [key: string]: string
+}
+
+export interface ApiData<T> {
+  data: T[],
+  total: number
+}
+
 export interface Contact {
   c_id: string
   company?: string
@@ -61,7 +70,7 @@ export interface SoldMachine extends DBSoldMachine {
 export interface ArchivedMachine {
   a_id: string
   archiveDate: string
-  machine: Omit<DBMachine, 'm_id'>
+  machine: Omit<Machine, 'm_id'>
 }
 
 export type ContactForm = Partial<Contact>

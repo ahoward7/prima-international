@@ -16,9 +16,9 @@
       <div v-else-if="column.key === 'year'" class="h-6 overflow-hidden text-right">
         {{ getNestedValue(machine, column.key ) }}
       </div>
-      <div v-else-if="column.key === 'notes'" class="h-6 overflow-hidden max-w-[420px]" v-text="machine.notes" />
+      <div v-else-if="column.key === 'notes'" class="h-6 overflow-hidden max-w-[420px]" v-text="getNestedValue(machine, column.key)" />
       <div v-else-if="column.key === 'lastModDate'">
-        {{ isoToMMDDYYYY(machine.lastModDate) }}
+        {{ isoToMMDDYYYY(getNestedValue(machine, column.key) as string) }}
       </div>
       <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
         <Icon name="carbon:pen" size="20" class="rounded-full text-yellow-600" />
@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 defineProps<{
-  machine: Machine
+  machine: Machine | Omit<Machine, 'm_id'>
   columns: TableColumnC[]
 }>()
 

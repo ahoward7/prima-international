@@ -22,3 +22,24 @@ export const ArchiveSchema = defineMongooseModel<ArchivedMachine>({
     archiveDate: { type: String, required: true }
   }
 })
+
+// ArchiveSchema.collection.dropIndexes()
+
+// ArchiveSchema.collection.createIndex({
+//   'machine.serialNumber': 'text',
+//   'machine.model': 'text',
+//   'machine.type': 'text',
+//   'machine.description': 'text',
+//   'machine.location': 'text',
+//   'machine.notes': 'text'
+// }, {
+//   name: 'archive_full_text_search',
+//   weights: {
+//     'machine.serialNumber': 7,
+//     'machine.model': 5,
+//     'machine.type': 5,
+//     'machine.description': 1,
+//     'machine.location': 1,
+//     'machine.notes': 1
+//   }
+// })

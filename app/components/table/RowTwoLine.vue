@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  machine: Machine
+  machine: Machine | Omit<Machine, 'm_id'>
   columns: TableColumnC[]
   displayFormat: string
   index: number

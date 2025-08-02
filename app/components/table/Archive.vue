@@ -30,22 +30,22 @@
       <tbody class="font-robcon">
         <template v-if="displayFormat === 'oneLine'">
           <TableRow
-            v-for="machine in machines?.data"
-            :key="machine.m_id"
-            :machine="machine"
+            v-for="archive in machines?.data"
+            :key="archive.a_id"
+            :machine="archive.machine"
             :columns="filteredColumns"
-            @select="selectMachine(machine)"
+            @select="selectMachine(archive)"
           />
         </template>
         <template v-else>
           <TableRowTwoLine
-            v-for="machine, index in machines?.data"
-            :key="machine.m_id"
-            :machine="machine"
+            v-for="archive, index in machines?.data"
+            :key="archive.a_id"
+            :machine="archive.machine"
             :columns="filteredColumns"
             :display-format="displayFormat"
             :index="index"
-            @select="selectMachine(machine)"
+            @select="selectMachine(archive)"
           />
         </template>
         <tr v-if="machines?.data.length === 0">
@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { useMachineStore } from '~~/stores/machine'
 const props = withDefaults(defineProps<{
-  machines?: ApiData<Machine>
+  machines?: ApiData<ArchivedMachine>
   displayFormat: string
   pageSize?: number
 }>(), {
@@ -100,8 +100,8 @@ function handleSort(column: string) {
   sortBy.value = sortBy.value === column ? `-${column}` : column
 }
 
-function selectMachine(machine: Machine) {
-  machineStore.setMachine(machine)
-  navigateTo(`/detail/?id=${machine.m_id}&location=${machineStore.filters.location}`)
+function selectMachine(archive: ArchivedMachine) {
+  machineStore.setMachine(archive.machine)
+  navigateTo(`/detail/?id=${archive.a_id}&location=${machineStore.filters.location}`)
 }
 </script>

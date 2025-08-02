@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 
-export default defineEventHandler(async (event: H3Event): Promise<{ data: Contact[]; total: number }> => {
+export default defineEventHandler(async (event: H3Event): Promise<ApiData<Contact>> => {
   const { search, page = '1', pageSize = '10' } = getQuery(event)
 
   const filters: Record<string, any> = {}

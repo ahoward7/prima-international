@@ -100,7 +100,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue)
 })
 
-const { data: machines, pending } = await useFetch<{data: Machine[], total: string}>('/machine', {
+const { data: machines, pending } = await useFetch<ApiData<Machine>>('/machine', {
   method: 'GET', 
   query: filters,
   watch: [filters],

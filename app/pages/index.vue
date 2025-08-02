@@ -26,7 +26,22 @@
         </div>
       </div>
       <DividerLine />
-      <Table v-model:sort-by="filters.sortBy" v-model:page="filters.page" :machines="machines" :display-format="displayFormat" :page-size="filters.pageSize" />
+      <Table
+        v-if="filters.location === 'located'"
+        v-model:sort-by="filters.sortBy"
+        v-model:page="filters.page"
+        :machines="(machines as ApiData<Machine>)"
+        :display-format="displayFormat"
+        :page-size="filters.pageSize"
+      />
+      <TableArchive
+        v-if="filters.location === 'archived'"
+        v-model:sort-by="filters.sortBy"
+        v-model:page="filters.page"
+        :machines="(machines as ApiData<ArchivedMachine>)"
+        :display-format="displayFormat"
+        :page-size="filters.pageSize"
+      />
     </div>
   </div>
 </template>
@@ -62,7 +77,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
 
-const { data: machines } = await useFetch<{ data: Machine[], total: number }>('/machine', { 
+const { data: machines } = await useFetch<ApiData<Machine | ArchivedMachine>>('/machine', { 
   method: 'GET', 
   query: filters,
   watch: [filters]

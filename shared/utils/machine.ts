@@ -66,20 +66,25 @@ export function buildPipeline({ filters, sortBy, pageSize = '10', page = '1', de
 /**
  * Builds a reusable query using any Mongoose model.
  */
-export async function buildQueryForSchema<T>( schema: any, machineFilters: MachineFilterStrings, queryOptions: QueryOptions = {}): Promise<ApiData<T>> {
+/**
+ * Builds a reusable query using any Mongoose model with partial match support.
+ */
+export async function buildQueryForSchema<T>(schema: any, machineFilters: MachineFilterStrings, queryOptions: QueryOptions = {}): Promise<ApiData<T>> {
   const { search, model, type, sortBy, pageSize, page } = machineFilters
-  const { fieldPrefix, searchable, defaultSortField } = queryOptions
+  const { fieldPrefix = '', searchable, defaultSortField } = queryOptions
   const filters: Record<string, any> = {}
 
   if (model) filters[`${fieldPrefix}model`] = model
   if (type) filters[`${fieldPrefix}type`] = type
 
   if (searchable && search) {
-    filters.$text = {
-      $search: search,
-      $caseSensitive: false,
-      $diacriticSensitive: false
-    }
+    const regex = { $regex: search, $options: 'i' }
+    filters.$or = [
+      { [`${fieldPrefix}model`]: regex },
+      { [`${fieldPrefix}type`]: regex },
+      { [`${fieldPrefix}name`]: regex },
+      { [`${fieldPrefix}description`]: regex }
+    ]
   }
 
   const pipeline = buildPipeline({
@@ -90,20 +95,6 @@ export async function buildQueryForSchema<T>( schema: any, machineFilters: Machi
     defaultSortField,
     prefix: fieldPrefix
   })
-
-  if (searchable && search) {
-    pipeline.splice(1, 0, {
-      $addFields: {
-        textScore: { $meta: 'textScore' }
-      }
-    })
-
-    if (!sortBy) {
-      pipeline.splice(-2, 0, {
-        $sort: { textScore: { $meta: 'textScore' } }
-      })
-    }
-  }
 
   const countPipeline = [
     { $match: filters },
@@ -119,3 +110,4 @@ export async function buildQueryForSchema<T>( schema: any, machineFilters: Machi
 
   return { data, total }
 }
+

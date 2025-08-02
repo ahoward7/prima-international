@@ -19,27 +19,35 @@ export const MachineSchema = defineMongooseModel<DBMachine>({
     notes: { type: String, required: false }
   },
   options: {
-    autoIndex: false
-  }
-})
-
-MachineSchema.collection.dropIndexes()
-
-MachineSchema.collection.createIndex({
-  serialNumber: 'text',
-  model: 'text',
-  type: 'text',
-  description: 'text',
-  location: 'text',
-  notes: 'text'
-}, {
-  name: 'machine_full_text_search',
-  weights: {
-    serialNumber: 7,
-    model: 5,
-    type: 5,
-    description: 1,
-    location: 1,
-    notes: 1
+    // @ts-expect-error Indexes is correct here
+    indexes: [
+      { 'm_id': 1 },
+      { 'serialNumber': 1 },
+      { 'model': 1 },
+      { 'type': 1 },
+      { 'location': 1 },
+      { 
+        'type': 1, 
+        'model': 1 
+      },
+      { 
+        'location': 1, 
+        'type': 1 
+      },
+      { 
+        'type': 1, 
+        'year': 1 
+      },
+      { 'contactId': 1 },
+      { 'createDate': 1 },
+      { 'lastModDate': 1 },
+      { 'year': 1 },
+      { 'hours': 1 },
+      { 'price': 1 },
+      { 
+        'type': 1, 
+        'createDate': -1 
+      }
+    ]
   }
 })

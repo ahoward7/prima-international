@@ -20,26 +20,28 @@ export const ArchiveSchema = defineMongooseModel<ArchivedMachine>({
       notes: { type: String, required: false  }
     },
     archiveDate: { type: String, required: true }
+  },
+  options: {
+    // @ts-expect-error Indexes is correct here
+    indexes: [
+      { 'machine.serialNumber': 1 },
+      { 'machine.model': 1 },
+      { 'machine.type': 1 },
+      { 'machine.location': 1 },
+      { 
+        'machine.type': 1, 
+        'machine.model': 1 
+      },
+      { 
+        'machine.location': 1, 
+        'machine.type': 1 
+      },
+      { 'a_id': 1 },
+      { 'archiveDate': 1 },
+      { 
+        'archiveDate': 1, 
+        'machine.type': 1 
+      }
+    ]
   }
 })
-
-// ArchiveSchema.collection.dropIndexes()
-
-// ArchiveSchema.collection.createIndex({
-//   'machine.serialNumber': 'text',
-//   'machine.model': 'text',
-//   'machine.type': 'text',
-//   'machine.description': 'text',
-//   'machine.location': 'text',
-//   'machine.notes': 'text'
-// }, {
-//   name: 'archive_full_text_search',
-//   weights: {
-//     'machine.serialNumber': 7,
-//     'machine.model': 5,
-//     'machine.type': 5,
-//     'machine.description': 1,
-//     'machine.location': 1,
-//     'machine.notes': 1
-//   }
-// })

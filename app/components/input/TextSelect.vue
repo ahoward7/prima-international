@@ -128,6 +128,7 @@ watch(
   (val) => {
     const selected = allOptions.value.find(o => o.data === val)
     if (selected) search.value = selected.label
+    if (!selectedOption.value) search.value = ''
   },
   { immediate: true }
 )

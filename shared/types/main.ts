@@ -79,9 +79,9 @@ export interface MachineForm extends Partial<DBMachine> {
   contact: ContactForm
 }
 
-export interface SoldMachineForm extends Partial<Omit<DBSoldMachine, 'machine'>> {
-  machine: MachineForm
-}
+export interface SoldMachineForm extends Partial<Omit<DBSoldMachine, 'machine'>> {}
+
+export interface ArchivedMachineForm extends Partial<Omit<ArchivedMachine, 'machine'>> {}
 
 export interface TableColumn {
   key: string

@@ -22,7 +22,7 @@ export const MachineSchema = defineMongooseModel<DBMachine>({
     // @ts-expect-error Indexes is correct here
     indexes: [
       { 'm_id': 1 },
-      { 'serialNumber': 1 },
+      { 'serialNumber': 1},
       { 'model': 1 },
       { 'type': 1 },
       { 'location': 1 },
@@ -48,6 +48,17 @@ export const MachineSchema = defineMongooseModel<DBMachine>({
         'type': 1, 
         'createDate': -1 
       }
-    ]
+    ],
+    options: {
+      weights: {
+        serialNumber: 10,
+        model: 5,
+        type: 3,
+        location: 3,
+        year: 3,
+        hours: 1
+      },
+      name: 'TextSearchIndex'
+    }
   }
 })

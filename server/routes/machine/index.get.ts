@@ -14,15 +14,13 @@ export default defineEventHandler(async (event: H3Event) => {
 })
 
 async function getArchivedMachines(filters: MachineFilterStrings) {
-  const { data: archives, total } = await buildQueryForSchema<ArchivedMachine>(
-    ArchiveSchema,
-    filters,
-    {
-      searchable: true,
-      defaultSortField: 'model',
-      fieldPrefix: 'machine.'
-    }
-  )
+  const queryOptions = {
+    searchable: true,
+    defaultSortField: 'model',
+    fieldPrefix: 'machine.'
+  }
+
+  const { data: archives, total } = await buildQueryForSchema<ArchivedMachine>( ArchiveSchema, filters, queryOptions )
 
   const contactIds = extractContactIdsFromArchives(archives)
   const contactMap = await getContactMap(contactIds)

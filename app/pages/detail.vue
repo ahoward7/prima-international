@@ -47,6 +47,10 @@
               <label class="font-semibold text-prima-red">Date Last Modified: </label>
               <span>{{ isoToMMDDYYYY(machine?.lastModDate) }}</span>
             </div>
+            <div v-if="archivedMachine?.archiveDate">
+              <label class="font-semibold text-prima-red">Date Archived: </label>
+              <span>{{ isoToMMDDYYYY(archivedMachine?.archiveDate) }}</span>
+            </div>
           </div>
           <div class="flex gap-4">
             <Button class="!bg-prima-yellow" @click="updateMachine">
@@ -55,7 +59,7 @@
             <Button class="!bg-green-600">
               Sell
             </Button>
-            <Button class="!bg-blue-600" @click="archiveMachine">
+            <Button v-if="location !== 'archived'" class="!bg-blue-600" @click="archiveMachine">
               Archive
             </Button>
             <Button class="!bg-red-600" @click="deleteMachine">
@@ -76,10 +80,14 @@
 <script setup lang="ts">
 import { useMachineStore } from '~~/stores/machine'
 
-const { filterOptions, machine } = storeToRefs(useMachineStore())
+const { filterOptions, machine, archivedMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
 const { id, location } = useRoute().query
 const machineLocations: Ref<StringObject> = ref({})
+
+if (location && !['located', 'archived', 'sold'].includes(location as string)) {
+  navigateTo('/')
+}
 
 if (id) {
   const { data: dataMachine } = await useFetch<Machine>(`/machine/${id}`, {
@@ -87,7 +95,12 @@ if (id) {
   })
   
   if (dataMachine.value) {
-    machineStore.setMachine(dataMachine.value)
+    if (location === 'located') {
+      machineStore.setMachine(dataMachine.value)
+    }
+    else if (location === 'archived') {
+      machineStore.setMachine(dataMachine.value, location)
+    }
   }
 
   const { data: dataMachineLocatons } = await useFetch<StringObject>('/machine/locations', {

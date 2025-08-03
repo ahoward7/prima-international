@@ -32,7 +32,6 @@ const defaultFilters: MachineFilters = {
 }
 
 const emptySoldMachine: SoldMachineForm = {
-  machine: emptyMachine,
   buyer: '',
   buyerLocation: "",
   truckingCompany: "",
@@ -45,27 +44,31 @@ const emptySoldMachine: SoldMachineForm = {
   notes: ""
 }
 
+const emptyArchivedMachine: ArchivedMachineForm = {
+  archiveDate: ""
+}
+
 export const useMachineStore = defineStore('machine', () => {
-  const action = ref('add')
-
   const machine: Ref<MachineForm> = ref({...emptyMachine})
-
   const soldMachine: Ref<SoldMachineForm> = ref({...emptySoldMachine})
+  const archivedMachine: Ref<ArchivedMachineForm> = ref({...emptyArchivedMachine})
 
   const filters = ref<MachineFilters>({...defaultFilters})
-
   const filterOptions: Ref<FilterOptions> = ref({})
-
-  function setMachine(m: MachineForm) {
-    machine.value = m
+  
+  function setMachine(m: MachineForm | ArchivedMachineForm, location: string = 'located') {
+    if (location === 'archived') {
+      const archive = m as ArchivedMachine
+      archivedMachine.value.archiveDate = archive.archiveDate
+      machine.value = archive.machine
+    }
+    else {
+      machine.value = m as MachineForm
+    }
   }
 
   function resetMachine() {
     machine.value = {...emptyMachine}
-  }
-
-  function setAction(a: string) {
-    action.value = a
   }
 
   function setFilterOptions(f: FilterOptions) {
@@ -81,14 +84,13 @@ export const useMachineStore = defineStore('machine', () => {
   }
 
   return {
-    action,
     machine,
     soldMachine,
+    archivedMachine,
     filterOptions,
     filters,
     setMachine,
     resetMachine,
-    setAction,
     setFilterOptions,
     setFilters,
     resetFilters

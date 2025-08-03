@@ -82,10 +82,14 @@ export async function buildQueryForSchema<T>(schema: any, machineFilters: Machin
     filters.$or = [
       { [`${fieldPrefix}model`]: regex },
       { [`${fieldPrefix}type`]: regex },
-      { [`${fieldPrefix}name`]: regex },
-      { [`${fieldPrefix}description`]: regex }
+      { [`${fieldPrefix}years`]: regex },
+      { [`${fieldPrefix}hours`]: regex },
+      { [`${fieldPrefix}description`]: regex },
+      { [`${fieldPrefix}serialNumber`]: regex },
+      { [`${fieldPrefix}location`]: regex }
     ]
   }
+
 
   const pipeline = buildPipeline({
     filters,

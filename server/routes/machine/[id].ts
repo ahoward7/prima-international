@@ -9,7 +9,7 @@ export default defineEventHandler(async (event): Promise<Machine | ArchivedMachi
 
 function getFetchFunction(location: string) {
   if (location === 'located') { return getLocatedMachine }
-  if (location === 'archvied') { return getArchivedMachine }
+  if (location === 'archived') { return getArchivedMachine }
   return getSoldMachine
 }
 

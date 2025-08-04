@@ -21,9 +21,15 @@
         {{ isoToMMDDYYYY(getNestedValue(machine, column.key) as string) }}
       </div>
       <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
-        <Icon name="carbon:currency-dollar" size="20" class="rounded-full text-green-600" />
-        <Icon name="carbon:volume-file-storage" size="20" class="rounded-full text-blue-600" />
-        <Icon name="carbon:trash-can" size="20" class="rounded-full text-red-600" />
+        <ConfirmationIconButton @confirm="emit('sell')">
+          <Icon name="carbon:currency-dollar" size="20" class="text-green-600" />
+        </ConfirmationIconButton>
+        <ConfirmationIconButton @confirm="emit('archive')">
+          <Icon name="carbon:volume-file-storage" size="20" class="text-blue-600" />
+        </ConfirmationIconButton>
+        <ConfirmationIconButton @confirm="emit('delete')">
+          <Icon name="carbon:trash-can" size="20" class="text-red-600" />
+        </ConfirmationIconButton>
       </div>
       <div v-else class="h-6 overflow-hidden" :class="column.key === 'description' ? 'min-w-80' : ''">
         {{ getNestedValue(machine, column.key) }}
@@ -38,5 +44,5 @@ defineProps<{
   columns: TableColumnC[]
 }>()
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'sell' ,'archive', 'delete'])
 </script>

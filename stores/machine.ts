@@ -7,7 +7,7 @@ const contact: ContactForm = {
 
 const emptyMachine: MachineForm = {
   serialNumber: undefined,
-  contact,
+  contact: {...contact},
   location: "",
   type: "",
   model: "",

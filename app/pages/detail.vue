@@ -11,8 +11,8 @@
       <div class="flex flex-col gap-4 w-full">
         <div class="grid grid-cols-2 gap-8">
           <InputContactSearch class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
-          <InputText v-model="machine.contact.name" label="Contact Name" placeholder="First Last" />
-          <InputText v-model="machine.contact.company" label="Company Name" placeholder="Company Inc." />
+          <InputText v-model="machine.contact.name" label="Contact Name" placeholder="First Last" @input="setContactNew" />
+          <InputText v-model="machine.contact.company" label="Company Name" placeholder="Company Inc." @input="setContactNew" />
         </div>
       </div>
       <DividerLine class="w-full" />
@@ -186,5 +186,9 @@ function fillContact(c: Contact) {
 
 function clearContact() {
   machine.value.contact = {}
+}
+
+function setContactNew() {
+  machine.value.contact.c_id = 'new'
 }
 </script>

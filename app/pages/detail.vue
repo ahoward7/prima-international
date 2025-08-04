@@ -172,7 +172,7 @@ async function archiveMachine() {
 async function deleteMachine() {
   const response = await $fetch('/machine', {
     method: 'DELETE',
-    query: { id: machine.value.m_id }
+    query: { id, location }
   })
 
   if (response.success) {

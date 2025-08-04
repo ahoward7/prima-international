@@ -1,9 +1,14 @@
 import type { H3Event } from 'h3'
 
 export default defineEventHandler(async (event: H3Event): Promise<any> => {
-  const { id } = getQuery(event)
+  const { id, location } = getQuery(event)
 
-  await MachineSchema.deleteOne({ m_id: id })
+  if (location === 'located') {
+    await MachineSchema.deleteOne({ m_id: id })
+  }
+  else if (location === 'archived') {
+    await ArchiveSchema.deleteOne({ a_id: id })
+  }
 
   return {
     success: true

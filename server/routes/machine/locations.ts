@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 
-export default defineEventHandler(async (event: H3Event): Promise<StringObject> => {
+export default defineEventHandler(async (event: H3Event): Promise<MachineLocations> => {
   const { serialNumber }: { [key: string]: string } = getQuery(event)
 
   if (!serialNumber) {

@@ -19,7 +19,7 @@
       <div v-if="machine" class="grid grid-cols-6 gap-8">
         <InputTextSelect v-model="machine.type" label="Type" placeholder="Type" :options="filterOptions.type" class="col-span-1" width="w-full" createable />
         <InputTextSelect v-model="machine.model" label="Model" placeholder="Model" :options="filterOptions.model" class="col-span-1" width="w-full" createable />
-        <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="Number" class="col-span-2" />
+        <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="Number" class="col-span-2" :message="serialNumberMessage" @input="fetchLocations" />
         <InputNumber v-model="machine.year" label="Year" placeholder="2000" class="col-span-1" />
         <InputNumber v-model="machine.hours" commas label="Hours" placeholder="1000" class="col-span-1" />
         <InputTextarea v-model="machine.description" label="Description" placeholder="Description of machine..." class="col-span-6" />
@@ -78,12 +78,14 @@
 </template>
 
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
 
 const { filterOptions, machine, archivedMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
 const { id, location } = useRoute().query
-const machineLocations: Ref<StringObject> = ref({})
+const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
+const serialNumberMessage = ref('')
 
 if (location && !['located', 'archived', 'sold'].includes(location as string)) {
   navigateTo('/')
@@ -103,7 +105,7 @@ if (id) {
     }
   }
 
-  const { data: dataMachineLocatons } = await useFetch<StringObject>('/machine/locations', {
+  const { data: dataMachineLocatons } = await useFetch<MachineLocations>('/machine/locations', {
     query: {
       serialNumber: machine.value?.serialNumber
     }
@@ -111,6 +113,10 @@ if (id) {
 
   if (dataMachineLocatons.value) {
     machineLocations.value = dataMachineLocatons.value
+  }
+
+  if (dataMachineLocatons.value && dataMachineLocatons.value[location as MachineLocationString]?.length > 1 ) {
+    serialNumberMessage.value = 'The serial number already exists'
   }
 }
 else {
@@ -191,4 +197,23 @@ function clearContact() {
 function setContactNew() {
   machine.value.contact.c_id = 'new'
 }
+
+const fetchLocations = useDebounceFn(async () => {
+  const dataMachineLocations = await $fetch<MachineLocations>('/machine/locations', {
+    query: {
+      serialNumber: machine.value?.serialNumber
+    }
+  })
+
+  if (dataMachineLocations) {
+    machineLocations.value = dataMachineLocations
+  }
+
+  if (dataMachineLocations[location as MachineLocationString].length > 1) {
+    serialNumberMessage.value = 'The serial number already exists'
+  }
+  else {
+    serialNumberMessage.value = ''
+  }
+}, 200)
 </script>

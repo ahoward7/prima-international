@@ -1,7 +1,10 @@
 <template>
-  <div class="flex flex-col gap-1">
+  <div class="relative flex flex-col gap-1">
     <label v-if="label" class="text-prima-red font-semibold">{{ label || 'No Label' }}</label>
-    <input v-model="model" type="text" class="text-prima-red bg-gray-100 px-2 py-1 border border-prima-red" :placeholder="placeholder" @focus="emit('focus')">
+    <input v-model="model" type="text" class="text-prima-red bg-gray-100 px-2 py-1 border border-prima-red" :placeholder="placeholder" @focus="emit('focus')" @input="emit('input')">
+    <InputMessage v-show="message" class="absolute top-[65px]">
+      {{ message }}
+    </InputMessage>
   </div>
 </template>
 
@@ -9,8 +12,9 @@
 defineProps<{
   label?: string
   placeholder?: string
+  message?: string
 }>()
-const emit = defineEmits(['focus'])
+const emit = defineEmits(['focus', 'input'])
 
 const model = defineModel<string>()
 

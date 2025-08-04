@@ -50,6 +50,14 @@ export interface MachineToPut extends DBMachine {
   contact?: Contact
 }
 
+export type MachineLocationString = 'located' | 'archived' | 'sold'
+
+export interface MachineLocations {
+  located: string[]
+  archived: string[]
+  sold: string[]
+}
+
 export interface DBSoldMachine {
   s_id: string
   machine: Omit<DBMachine, 'm_id'>

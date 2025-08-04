@@ -1,27 +1,69 @@
 import type { H3Event } from 'h3'
+import type { ArchivedMachineToPut } from '~~/shared/types/main'
 
 export default defineEventHandler(async (event: H3Event): Promise<any> => {
-  const machine = await readBody(event)
+  const machine: Machine | ArchivedMachine = await readBody(event)
   const date = new Date().toISOString()
+  const { location } = getQuery(event)
 
-  if (!machine || !machine.m_id || !machine.contact || !machine.contact.c_id) {
-    return { error: 'Missing required machine or contact information' }
+  if (location === 'located') {
+    return updateLocatedMachine(machine as Machine, date)
   }
+  else if (location === 'archived') {
+    return updateArchivedMachine(machine as ArchivedMachine, date)
+  }
+})
 
-  const { contactId, contactChanged } = await handleContactUpdateOrCreate(machine.contact, date)
+async function updateLocatedMachine(machine: MachineForm, date: string) {
+  const locatedMachine = machine
 
-  machine.contactId = contactId
-  machine.lastModDate = date
-  delete machine.contact
+  if (!locatedMachine || !locatedMachine.m_id || !locatedMachine.contact || !locatedMachine.contact.c_id) {
+    return { error: 'Missing required locatedMachine or contact information' }
+  }
+  
+  const { contactId, contactChanged } = await handleContactUpdateOrCreate(locatedMachine.contact, date)
+  
+  locatedMachine.contactId = contactId
+  locatedMachine.lastModDate = date
 
-  const updateResult = await MachineSchema.updateOne({ m_id: machine.m_id }, { $set: machine })
-
-  const updatedMachine = await MachineSchema.findOne({ m_id: machine.m_id }).lean()
-
+  const machineToPut = locatedMachine as MachineToPut
+  delete machineToPut.contact
+  
+  const updateResult = await MachineSchema.updateOne({ m_id: machineToPut.m_id }, { $set: machineToPut })
+  
+  const updatedMachine = await MachineSchema.findOne({ m_id: machineToPut.m_id }).lean()
+  
   return {
     success: true,
     contactUpdated: contactChanged,
     machineUpdated: updateResult.modifiedCount > 0,
     machine: updatedMachine
   }
-})
+}
+
+async function updateArchivedMachine(machine: ArchivedMachine, date: string) {
+  const archive = machine
+
+  if (!archive.machine || !archive.machine.contact || !archive.machine.contact.c_id) {
+    return { error: 'Missing required archive.machine or contact information' }
+  }
+  
+  const { contactId, contactChanged } = await handleContactUpdateOrCreate(archive.machine.contact, date)
+  
+  archive.machine.contactId = contactId
+  archive.machine.lastModDate = date
+
+  const machineToPut = archive as ArchivedMachineToPut
+  delete machineToPut.machine.contact
+  
+  const updateResult = await ArchiveSchema.updateOne({ a_id: machineToPut.a_id }, { $set: machineToPut })
+  
+  const updatedMachine = await ArchiveSchema.findOne({ a_id: machineToPut.a_id }).lean()
+  
+  return {
+    success: true,
+    contactUpdated: contactChanged,
+    machineUpdated: updateResult.modifiedCount > 0,
+    machine: updatedMachine
+  }
+}

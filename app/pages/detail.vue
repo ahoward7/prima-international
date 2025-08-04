@@ -129,13 +129,32 @@ async function createMachine() {
 }
 
 async function updateMachine() {
+  let machineToUpdate
+
+  if (location === 'located') {
+    machineToUpdate = machine.value as Machine
+  }
+  else if (location === 'archived') {
+    const aMachine = machine.value as Omit<Machine, 'm_id'>
+
+    machineToUpdate = {
+      a_id: id || undefined,
+      archiveDate: archivedMachine.value.archiveDate,
+      machine: aMachine
+    } as ArchivedMachine
+  }
+
   const response = await $fetch('/machine', {
     method: 'PUT',
-    body: machine.value
+    body: machineToUpdate,
+    query: { location }
   })
 
-  if (response.success) {
+  if (response?.success) {
     navigateTo('/')
+  }
+  else if (response?.error) {
+    console.error(response.error)
   }
 }
 

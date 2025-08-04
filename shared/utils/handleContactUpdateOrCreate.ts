@@ -2,19 +2,13 @@ import type { Contact } from "../types/main"
 import { ContactSchema } from "../../server/models/contact"
 import { generateRandom10DigitNumber } from "./generateRandom10DigitNumber"
 
-interface NewContact {
-  c_id: string
-  name: string
-  company: string
-}
-
 interface ContactReturn {
   contactId: string
   contactChanged: boolean
   contact: Contact
 }
 
-export async function handleContactUpdateOrCreate( contactInput: Partial<Contact> & NewContact, date: string): Promise<ContactReturn> {
+export async function handleContactUpdateOrCreate( contactInput: Partial<Contact>, date: string): Promise<ContactReturn> {
   let contact: Contact
   let contactChanged = false
   let contactId: string

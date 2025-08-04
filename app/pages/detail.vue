@@ -220,5 +220,8 @@ const fetchLocations = useDebounceFn(async () => {
       serialNumberMessage.value = ''
     }
   }
+  else {
+    serialNumberMessage.value = ''
+  }
 }, 200)
 </script>

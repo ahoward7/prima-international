@@ -34,9 +34,9 @@
             :key="machine.m_id"
             :machine="machine"
             :columns="filteredColumns"
-            @select="selectMachine(machine)"
-            @archive="archiveMachine(machine)"
-            @delete="deleteMachine(machine)"
+            @select="emit('select', machine)"
+            @archive="emit('archive', machine)"
+            @delete="emit('delete', machine)"
           />
         </template>
         <template v-else>
@@ -47,7 +47,7 @@
             :columns="filteredColumns"
             :display-format="displayFormat"
             :index="index"
-            @select="selectMachine(machine)"
+            @select="emit('select', machine)"
           />
         </template>
         <tr v-if="machines?.data.length === 0">
@@ -66,7 +66,6 @@
 </template>
 
 <script setup lang="ts">
-import { useMachineStore } from '~~/stores/machine'
 const props = withDefaults(defineProps<{
   machines?: ApiData<Machine>
   displayFormat: string
@@ -75,7 +74,7 @@ const props = withDefaults(defineProps<{
   pageSize: 20
 })
 
-const machineStore = useMachineStore()
+const emit = defineEmits(['select', 'sell' ,'archive', 'delete'])
 
 const sortBy = defineModel('sortBy', { type: String, default: 'type' })
 const page = defineModel('page', { default: 1 })
@@ -100,28 +99,5 @@ const filteredColumns = computed(() => props.displayFormat === 'oneLine' ? colum
 
 function handleSort(column: string) {
   sortBy.value = sortBy.value === column ? `-${column}` : column
-}
-
-function selectMachine(machine: Machine) {
-  machineStore.setMachine(machine)
-  navigateTo(`/detail/?id=${machine.m_id}&location=${machineStore.filters.location}`)
-}
-
-async function archiveMachine(machine: Machine) {
-  await $fetch('/machine/archive', {
-    method: 'POST',
-    body: machine
-  })
-}
-
-async function deleteMachine(machine: Machine) {
-  const response = await $fetch('/machine', {
-    method: 'DELETE',
-    query: { id: machine.m_id, location: machineStore.filters.location }
-  })
-
-  if (response.success) {
-    navigateTo('/')
-  }
 }
 </script>

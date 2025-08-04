@@ -33,6 +33,9 @@
         :machines="(machines as ApiData<Machine>)"
         :display-format="displayFormat"
         :page-size="filters.pageSize"
+        @select="selectMachine"
+        @archive="archiveMachine"
+        @delete="deleteMachine"
       />
       <TableArchive
         v-if="filters.location === 'archived'"
@@ -77,7 +80,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
 
-const { data: machines } = await useFetch<ApiData<Machine | ArchivedMachine>>('/machine', { 
+const { data: machines, refresh } = await useFetch<ApiData<Machine | ArchivedMachine>>('/machine', { 
   method: 'GET', 
   query: filters,
   watch: [filters]
@@ -87,5 +90,28 @@ function clearFilters() {
   machineStore.resetFilters()
   filters.value = storeFilters.value
   searchInput.value = ''
+}
+
+function selectMachine(machine: Machine) {
+  machineStore.setMachine(machine)
+  navigateTo(`/detail/?id=${machine.m_id}&location=${machineStore.filters.location}`)
+}
+
+async function archiveMachine(machine: Machine) {
+  await $fetch('/machine/archive', {
+    method: 'POST',
+    body: machine
+  })
+}
+
+async function deleteMachine(machine: Machine) {
+  const response = await $fetch('/machine', {
+    method: 'DELETE',
+    query: { id: machine.m_id, location: machineStore.filters.location }
+  })
+
+  if (response.success) {
+    refresh()
+  }
 }
 </script>

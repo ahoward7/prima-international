@@ -116,7 +116,7 @@ if (id) {
   }
 
   if (dataMachineLocatons.value && dataMachineLocatons.value[location as MachineLocationString]?.length > 1 ) {
-    serialNumberMessage.value = 'The serial number already exists'
+    serialNumberMessage.value = 'This number already exists'
   }
 }
 else {
@@ -199,21 +199,26 @@ function setContactNew() {
 }
 
 const fetchLocations = useDebounceFn(async () => {
-  const dataMachineLocations = await $fetch<MachineLocations>('/machine/locations', {
-    query: {
-      serialNumber: machine.value?.serialNumber
+  if (machine.value.serialNumber) {
+    const dataMachineLocations = await $fetch<MachineLocations>('/machine/locations', {
+      query: {
+        serialNumber: machine.value?.serialNumber
+      }
+    })
+  
+    if (dataMachineLocations) {
+      machineLocations.value = dataMachineLocations
     }
-  })
 
-  if (dataMachineLocations) {
-    machineLocations.value = dataMachineLocations
-  }
-
-  if (dataMachineLocations[location as MachineLocationString].length > 1) {
-    serialNumberMessage.value = 'The serial number already exists'
-  }
-  else {
-    serialNumberMessage.value = ''
+    const locationToSearch = !id ? 'located' : location
+    const locationLength = dataMachineLocations[locationToSearch as MachineLocationString]?.length || 0
+  
+    if (locationLength > 1 || !id && locationLength > 0) {
+      serialNumberMessage.value = 'This number already exists'
+    }
+    else {
+      serialNumberMessage.value = ''
+    }
   }
 }, 200)
 </script>

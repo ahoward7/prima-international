@@ -53,25 +53,25 @@
             </div>
           </div>
           <div class="flex gap-4">
-            <Button class="!bg-prima-yellow" @click="updateMachine">
+            <ConfirmationButton class="!bg-prima-yellow" @confirm="updateMachine">
               Update
-            </Button>
-            <Button class="!bg-green-600">
+            </ConfirmationButton>
+            <ConfirmationButton class="!bg-green-600">
               Sell
-            </Button>
-            <Button v-if="location !== 'archived'" class="!bg-blue-600" @click="archiveMachine">
+            </ConfirmationButton>
+            <ConfirmationButton v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine">
               Archive
-            </Button>
-            <Button class="!bg-red-600" @click="deleteMachine">
+            </ConfirmationButton>
+            <ConfirmationButton class="!bg-red-600" @confirm="deleteMachine">
               Delete
-            </Button>
+            </ConfirmationButton>
           </div>
         </div>
       </template>
       <div v-else class="w-full flex justify-end">
-        <Button class="!bg-green-600" @click="createMachine">
+        <ConfirmationButton class="!bg-green-600" @confirm="createMachine">
           Create Machine
-        </Button>
+        </ConfirmationButton>
       </div>
     </div>
   </div>
@@ -113,10 +113,6 @@ if (id) {
 
   if (dataMachineLocatons.value) {
     machineLocations.value = dataMachineLocatons.value
-  }
-
-  if (dataMachineLocatons.value && dataMachineLocatons.value[location as MachineLocationString]?.length > 1 ) {
-    serialNumberMessage.value = 'This number already exists'
   }
 }
 else {
@@ -213,7 +209,7 @@ const fetchLocations = useDebounceFn(async () => {
     const locationToSearch = !id ? 'located' : location
     const locationLength = dataMachineLocations[locationToSearch as MachineLocationString]?.length || 0
   
-    if (locationLength > 1 || !id && locationLength > 0) {
+    if (!id && locationLength > 0) {
       serialNumberMessage.value = 'This number already exists'
     }
     else {

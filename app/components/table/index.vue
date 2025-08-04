@@ -35,6 +35,8 @@
             :machine="machine"
             :columns="filteredColumns"
             @select="selectMachine(machine)"
+            @archive="archiveMachine(machine)"
+            @delete="deleteMachine(machine)"
           />
         </template>
         <template v-else>
@@ -103,5 +105,23 @@ function handleSort(column: string) {
 function selectMachine(machine: Machine) {
   machineStore.setMachine(machine)
   navigateTo(`/detail/?id=${machine.m_id}&location=${machineStore.filters.location}`)
+}
+
+async function archiveMachine(machine: Machine) {
+  await $fetch('/machine/archive', {
+    method: 'POST',
+    body: machine
+  })
+}
+
+async function deleteMachine(machine: Machine) {
+  const response = await $fetch('/machine', {
+    method: 'DELETE',
+    query: { id: machine.m_id, location: machineStore.filters.location }
+  })
+
+  if (response.success) {
+    navigateTo('/')
+  }
 }
 </script>

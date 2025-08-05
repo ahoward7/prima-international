@@ -76,6 +76,10 @@
               <label class="font-semibold text-prima-red">Date Archived: </label>
               <span>{{ isoToMMDDYYYY(archivedMachine?.archiveDate) }}</span>
             </div>
+            <div v-if="soldMachine?.dateSold">
+              <label class="font-semibold text-prima-red">Date Sold: </label>
+              <span>{{ isoToMMDDYYYY(soldMachine?.dateSold) }}</span>
+            </div>
           </div>
           <div class="flex gap-4">
             <ConfirmationButton class="!bg-prima-yellow" @confirm="updateMachine">

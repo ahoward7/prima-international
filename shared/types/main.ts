@@ -85,9 +85,11 @@ export interface ArchivedMachine {
   machine: Omit<Machine, 'm_id'>
 }
 
-export interface ArchivedMachineToPut {
-  a_id: string
-  archiveDate: string
+export interface ArchivedMachineToPut extends Omit<ArchivedMachine, 'machine'> {
+  machine: Omit<MachineToPut, 'm_id'>
+}
+
+export interface SoldMachineToPut extends Omit<SoldMachine, 'machine'> {
   machine: Omit<MachineToPut, 'm_id'>
 }
 

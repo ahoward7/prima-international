@@ -182,6 +182,26 @@ async function updateMachine() {
       machine: aMachine
     } as ArchivedMachine
   }
+  else {
+    const sMachine = machine.value as Omit<Machine, 'm_id'>
+
+    machineToUpdate = {
+      s_id: id || undefined,
+      dateSold: soldMachine.value.dateSold,
+      machine: sMachine,
+      truckingCompany: soldMachine.value.truckingCompany,
+      buyer: soldMachine.value.buyer,
+      buyerLocation: soldMachine.value.buyerLocation,
+      purchaseFob: soldMachine.value.purchaseFob,
+      machineCost: soldMachine.value.machineCost,
+      freightCost: soldMachine.value.freightCost,
+      paintCost: soldMachine.value.paintCost,
+      otherCost: soldMachine.value.otherCost,
+      profit: soldMachine.value.profit,
+      totalCost: soldMachine.value.totalCost,
+      notes: soldMachine.value.notes
+    } as SoldMachine
+  }
 
   const response = await $fetch('/machine', {
     method: 'PUT',
@@ -193,7 +213,7 @@ async function updateMachine() {
     navigateTo('/')
   }
   else if (response?.error) {
-    console.error(response.error)
+    console.error(response?.error)
   }
 }
 

@@ -9,6 +9,9 @@ export default defineEventHandler(async (event: H3Event): Promise<any> => {
   else if (location === 'archived') {
     await ArchiveSchema.deleteOne({ a_id: id })
   }
+  else if (location === 'sold') {
+    await SoldSchema.deleteOne({ s_id: id })
+  }
 
   return {
     success: true

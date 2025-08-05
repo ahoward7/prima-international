@@ -218,7 +218,17 @@ async function updateMachine() {
 }
 
 async function sellMachine() {
+  const response = await $fetch('/machine/sold', {
+    method: 'POST',
+    body: {
+      machine: machine.value,
+      sold: soldMachine.value
+    }
+  })
 
+  if (response.success) {
+    navigateTo(`/`)
+  }
 }
 
 async function archiveMachine() {

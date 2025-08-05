@@ -8,9 +8,10 @@ export default defineEventHandler(async (event: H3Event) => {
   if (location === 'archived') {
     return await getArchivedMachines(filters)
   }
-  else {
-    return await getActiveMachines(filters)
+  else if (location === 'located') {
+    return await getLocatedMachines(filters)
   }
+  return await getSoldMachines(filters)
 })
 
 async function getArchivedMachines(filters: MachineFilterStrings) {
@@ -22,7 +23,7 @@ async function getArchivedMachines(filters: MachineFilterStrings) {
 
   const { data: archives, total } = await buildQueryForSchema<ArchivedMachine>( ArchiveSchema, filters, queryOptions )
 
-  const contactIds = extractContactIdsFromArchives(archives)
+  const contactIds = extractContactIdsFromArchivesOrSold(archives)
   const contactMap = await getContactMap(contactIds)
 
   const joinedData = archives.map(archive => ({
@@ -36,7 +37,30 @@ async function getArchivedMachines(filters: MachineFilterStrings) {
   return { data: joinedData, total }
 }
 
-async function getActiveMachines(filters: MachineFilterStrings) {
+async function getSoldMachines(filters: MachineFilterStrings) {
+  const queryOptions = {
+    searchable: true,
+    defaultSortField: 'model',
+    fieldPrefix: 'machine.'
+  }
+
+  const { data: soldMachines, total } = await buildQueryForSchema<SoldMachine>( SoldSchema, filters, queryOptions )
+
+  const contactIds = extractContactIdsFromArchivesOrSold(soldMachines)
+  const contactMap = await getContactMap(contactIds)
+
+  const joinedData = soldMachines.map(soldMachine => ({
+    ...soldMachine,
+    machine: {
+      ...soldMachine.machine,
+      contact: contactMap.get(soldMachine.machine?.contactId ?? '') || { company: '', name: '' }
+    }
+  }))
+
+  return { data: joinedData, total }
+}
+
+async function getLocatedMachines(filters: MachineFilterStrings) {
   const { data: machines, total } = await buildQueryForSchema<DBMachine>(
     MachineSchema,
     filters,
@@ -57,7 +81,7 @@ async function getActiveMachines(filters: MachineFilterStrings) {
   return { data: joinedData, total }
 }
 
-function extractContactIdsFromArchives(archives: ArchivedMachine[]) {
+function extractContactIdsFromArchivesOrSold(archives: ArchivedMachine[] | SoldMachine[]) {
   return [...new Set(archives.map(a => a.machine?.contactId).filter(Boolean))]
 }
 

@@ -17,9 +17,12 @@ export default defineEventHandler(async (event: H3Event): Promise<MachineLocatio
   const archived: ArchivedMachine[] = await ArchiveSchema.find({ "machine.serialNumber": serialNumber })
   const archivedNumbers: string[] = archived.map(a => a.machine.serialNumber || '')
 
+  const sold: SoldMachine[] = await SoldSchema.find({ "machine.serialNumber": serialNumber })
+  const soldNumbers: string[] = sold.map(s => s.machine.serialNumber || '')
+
   return {
     located: locatedNumbers,
     archived: archivedNumbers,
-    sold: []
+    sold: soldNumbers
   }
 })

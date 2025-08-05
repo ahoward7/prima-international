@@ -37,7 +37,7 @@
       </template>
 
       <!-- Selling Machine -->
-      <template v-if="id && sellingMachine">
+      <template v-if="(id && sellingMachine) || location === 'sold'">
         <DividerLine class="w-full" />
         <div class="grid grid-cols-6 gap-8">
           <InputNumber v-model="soldMachine.totalCost" label="Total Cost" placeholder="Total sale cost" class="col-span-2" commas price />
@@ -85,7 +85,7 @@
             <ConfirmationButton class="!bg-prima-yellow" @confirm="updateMachine">
               Update
             </ConfirmationButton>
-            <Button class="!bg-green-600" @click="sellingMachine = true">
+            <Button v-if="location !== 'sold'" class="!bg-green-600" @click="sellingMachine = true">
               Sell
             </Button>
             <ConfirmationButton v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine">
@@ -139,12 +139,7 @@ if (id) {
   })
   
   if (dataMachine.value) {
-    if (location === 'located') {
-      machineStore.setMachine(dataMachine.value)
-    }
-    else if (location === 'archived') {
-      machineStore.setMachine(dataMachine.value, location)
-    }
+    machineStore.setMachine(dataMachine.value, location as MachineLocationString)
   }
 
   const { data: dataMachineLocatons } = await useFetch<MachineLocations>('/machine/locations', {

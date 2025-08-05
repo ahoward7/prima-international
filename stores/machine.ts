@@ -56,11 +56,26 @@ export const useMachineStore = defineStore('machine', () => {
   const filters = ref<MachineFilters>({...defaultFilters})
   const filterOptions: Ref<FilterOptions> = ref({})
   
-  function setMachine(m: MachineForm | ArchivedMachineForm, location: string = 'located') {
+  function setMachine(m: MachineForm | ArchivedMachineForm | SoldMachineForm, location: string = 'located') {
     if (location === 'archived') {
       const archive = m as ArchivedMachine
       archivedMachine.value.archiveDate = archive.archiveDate
       machine.value = archive.machine
+    }
+    else if (location === 'sold') {
+      const sold = m as SoldMachine
+      soldMachine.value.buyer = sold.buyer
+      soldMachine.value.buyerLocation = sold.buyerLocation
+      soldMachine.value.truckingCompany = sold.truckingCompany
+      soldMachine.value.totalCost = sold.totalCost
+      soldMachine.value.machineCost = sold.machineCost
+      soldMachine.value.freightCost = sold.freightCost
+      soldMachine.value.paintCost = sold.paintCost
+      soldMachine.value.profit = sold.profit
+      soldMachine.value.purchaseFob = sold.purchaseFob
+      soldMachine.value.notes = sold.notes
+      soldMachine.value.dateSold = sold.dateSold
+      machine.value = sold.machine
     }
     else {
       machine.value = m as MachineForm

@@ -42,6 +42,17 @@ async function getArchivedMachine(id: string): Promise<ArchivedMachine | null> {
 }
 
 async function getSoldMachine(id: string): Promise<SoldMachine | null> {
-  void id
-  return null
+  const sold = await SoldSchema.findOne({ s_id: id }).lean()
+  if (!sold) return null
+
+  const contactId = sold.machine?.contactId
+  const contact = await ContactSchema.findOne({ c_id: contactId }) || { company: '', name: '' }
+
+  return {
+    ...sold,
+    machine: {
+      ...sold.machine,
+      contact
+    }
+  } as SoldMachine
 }

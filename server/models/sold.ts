@@ -1,7 +1,7 @@
 import { defineMongooseModel } from '#nuxt/mongoose'
 
 export const SoldSchema = defineMongooseModel<SoldMachine>({
-  name: 'Archive',
+  name: 'Sold',
   schema: {
     s_id: { type: String, required: true },
     machine: {
@@ -33,6 +33,7 @@ export const SoldSchema = defineMongooseModel<SoldMachine>({
     notes: { type: String, required: false }
   },
   options: {
+    collection: 'sold',
     // @ts-expect-error Indexes is correct here
     indexes: [
       { 'machine.serialNumber': 1 },

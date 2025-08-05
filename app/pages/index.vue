@@ -45,6 +45,14 @@
         :display-format="displayFormat"
         :page-size="filters.pageSize"
       />
+      <TableSold
+        v-if="filters.location === 'sold'"
+        v-model:sort-by="filters.sortBy"
+        v-model:page="filters.page"
+        :machines="(machines as ApiData<SoldMachine>)"
+        :display-format="displayFormat"
+        :page-size="filters.pageSize"
+      />
     </div>
   </div>
 </template>
@@ -80,7 +88,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
 
-const { data: machines, refresh } = await useFetch<ApiData<Machine | ArchivedMachine>>('/machine', { 
+const { data: machines, refresh } = await useFetch<ApiData<Machine | ArchivedMachine | SoldMachine>>('/machine', { 
   method: 'GET', 
   query: filters,
   watch: [filters]

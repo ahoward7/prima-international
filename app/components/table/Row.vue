@@ -5,7 +5,7 @@
       :key="column.key"
       class="border-l px-1 py-1 border-gray-400"
       :class="column.key === 'salesman' ? 'w-6' : ''"
-      @click="column.key ? emit('select') : ''" 
+      @click="column.key ? selectMachine() : ''" 
     >
       <div v-if="column.key === 'hours'" class="h-6 overflow-hidden text-right">
         {{ formatCommas(getNestedValue(machine, column.key) as number) }}
@@ -21,13 +21,13 @@
         {{ isoToMMDDYYYY(getNestedValue(machine, column.key) as string) }}
       </div>
       <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
-        <ConfirmationIconButton @confirm="emit('sell')">
+        <ConfirmationIconButton @confirm="''">
           <Icon name="carbon:currency-dollar" size="20" class="text-green-600" />
         </ConfirmationIconButton>
-        <ConfirmationIconButton @confirm="emit('archive')">
+        <ConfirmationIconButton @confirm="''">
           <Icon name="carbon:volume-file-storage" size="20" class="text-blue-600" />
         </ConfirmationIconButton>
-        <ConfirmationIconButton @confirm="emit('delete')">
+        <ConfirmationIconButton @confirm="''">
           <Icon name="carbon:trash-can" size="20" class="text-red-600" />
         </ConfirmationIconButton>
       </div>
@@ -39,10 +39,19 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { useMachineStore } from '~~/stores/machine'
+
+const props = defineProps<{
   machine: Machine | Omit<Machine, 'm_id'>
   columns: TableColumnC[]
+  machineId?: string
 }>()
 
-const emit = defineEmits(['select', 'sell' ,'archive', 'delete'])
+const { filters } = storeToRefs(useMachineStore())
+
+function selectMachine() {
+  if (props.machineId) {
+    navigateTo(`/detail/?id=${props.machineId}&location=${filters.value.location}`)
+  }
+}
 </script>

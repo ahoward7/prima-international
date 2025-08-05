@@ -32,6 +32,7 @@
           <TableRow
             v-for="archive in machines?.data"
             :key="archive.a_id"
+            :machine-id="archive.a_id"
             :machine="archive.machine"
             :columns="filteredColumns"
             @select="selectMachine(archive)"
@@ -41,6 +42,7 @@
           <TableRowTwoLine
             v-for="archive, index in machines?.data"
             :key="archive.a_id"
+            :machine-id="archive.a_id"
             :machine="archive.machine"
             :columns="filteredColumns"
             :display-format="displayFormat"

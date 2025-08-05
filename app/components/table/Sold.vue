@@ -32,6 +32,7 @@
           <TableRow
             v-for="soldMachine in machines?.data"
             :key="soldMachine.s_id"
+            :machine-id="soldMachine.s_id"
             :machine="soldMachine.machine"
             :columns="filteredColumns"
             @select="selectMachine(soldMachine)"
@@ -41,6 +42,7 @@
           <TableRowTwoLine
             v-for="soldMachine, index in machines?.data"
             :key="soldMachine.s_id"
+            :machine-id="soldMachine.s_id"
             :machine="soldMachine.machine"
             :columns="filteredColumns"
             :display-format="displayFormat"

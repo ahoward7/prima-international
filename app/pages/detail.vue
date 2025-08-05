@@ -132,6 +132,8 @@ const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
 const serialNumberMessage = ref('')
 const sellingMachine = ref(false)
 
+machineStore.resetMachine()
+
 if (location && !['located', 'archived', 'sold'].includes(location as string)) {
   navigateTo('/')
 }

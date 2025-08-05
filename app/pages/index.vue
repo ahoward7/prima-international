@@ -33,9 +33,6 @@
         :machines="(machines as ApiData<Machine>)"
         :display-format="displayFormat"
         :page-size="filters.pageSize"
-        @select="selectMachine"
-        @archive="archiveMachine"
-        @delete="deleteMachine"
       />
       <TableArchive
         v-if="filters.location === 'archived'"
@@ -60,10 +57,8 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
-import { useNotificationStore } from '~~/stores/notification'
 
 const machineStore = useMachineStore()
-const notificationStore = useNotificationStore()
 const { filterOptions, filters: storeFilters } = storeToRefs(machineStore)
 
 const filters = ref<MachineFilters>(storeFilters.value)
@@ -90,7 +85,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
 
-const { data: machines, refresh } = await useFetch<ApiData<Machine | ArchivedMachine | SoldMachine>>('/machine', { 
+const { data: machines } = await useFetch<ApiData<Machine | ArchivedMachine | SoldMachine>>('/machine', { 
   method: 'GET', 
   query: filters,
   watch: [filters]
@@ -100,37 +95,5 @@ function clearFilters() {
   machineStore.resetFilters()
   filters.value = storeFilters.value
   searchInput.value = ''
-}
-
-function selectMachine(machine: Machine) {
-  machineStore.setMachine(machine)
-  navigateTo(`/detail/?id=${machine.m_id}&location=${machineStore.filters.location}`)
-}
-
-async function archiveMachine(machine: Machine) {
-  const response = await $fetch('/machine/archive', {
-    method: 'POST',
-    body: machine
-  })
-
-  if (response?.success) {
-    notificationStore.pushNotification('success', 'Machine added to sold table successfully')
-  }
-}
-
-async function sellMachine(machine: Machine) {
-  void machine
-}
-
-async function deleteMachine(machine: Machine) {
-  const response = await $fetch('/machine', {
-    method: 'DELETE',
-    query: { id: machine.m_id, location: machineStore.filters.location }
-  })
-
-  if (response.success) {
-    notificationStore.pushNotification('success', 'Machine deleted successfully')
-    refresh()
-  }
 }
 </script>

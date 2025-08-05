@@ -32,22 +32,20 @@
           <TableRow
             v-for="machine in machines?.data"
             :key="machine.m_id"
+            :machine-id="machine.m_id"
             :machine="machine"
             :columns="filteredColumns"
-            @select="emit('select', machine)"
-            @archive="emit('archive', machine)"
-            @delete="emit('delete', machine)"
           />
         </template>
         <template v-else>
           <TableRowTwoLine
             v-for="machine, index in machines?.data"
             :key="machine.m_id"
+            :machine-id="machine.m_id"
             :machine="machine"
             :columns="filteredColumns"
             :display-format="displayFormat"
             :index="index"
-            @select="emit('select', machine)"
           />
         </template>
         <tr v-if="machines?.data.length === 0">
@@ -73,8 +71,6 @@ const props = withDefaults(defineProps<{
 }>(), {
   pageSize: 20
 })
-
-const emit = defineEmits(['select', 'sell' ,'archive', 'delete'])
 
 const sortBy = defineModel('sortBy', { type: String, default: 'type' })
 const page = defineModel('page', { default: 1 })

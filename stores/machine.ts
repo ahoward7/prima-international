@@ -84,6 +84,8 @@ export const useMachineStore = defineStore('machine', () => {
 
   function resetMachine() {
     machine.value = {...emptyMachine}
+    soldMachine.value = {...emptySoldMachine}
+    archivedMachine.value = {...emptyArchivedMachine}
   }
 
   function setFilterOptions(f: FilterOptions) {

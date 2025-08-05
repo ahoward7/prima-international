@@ -26,16 +26,21 @@ export async function sellMachine(machine: Machine) {
   void machine
 }
 
-export async function deleteMachine(machine: Machine) {
+export async function deleteMachine(id?: string) {
+  if (!id) {
+    return
+  }
+
   const machineStore = useMachineStore()
   const notificationStore = useNotificationStore()
 
   const response = await $fetch<{ success: boolean }>('/machine', {
     method: 'DELETE',
-    query: { id: machine.m_id, location: machineStore.filters.location }
+    query: { id, location: machineStore.filters.location }
   })
 
   if (response.success) {
+    machineStore.refreshMachines++
     notificationStore.pushNotification('success', 'Machine deleted successfully')
   }
 }

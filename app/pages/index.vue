@@ -59,7 +59,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
 
 const machineStore = useMachineStore()
-const { filterOptions, filters: storeFilters } = storeToRefs(machineStore)
+const { filterOptions, filters: storeFilters, refreshMachines } = storeToRefs(machineStore)
 
 const filters = ref<MachineFilters>(storeFilters.value)
 
@@ -85,10 +85,14 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
 
-const { data: machines } = await useFetch<ApiData<Machine | ArchivedMachine | SoldMachine>>('/machine', { 
+const { data: machines, refresh } = await useFetch<ApiData<Machine | ArchivedMachine | SoldMachine>>('/machine', { 
   method: 'GET', 
   query: filters,
   watch: [filters]
+})
+
+watch(refreshMachines, () => {
+  refresh()
 })
 
 function clearFilters() {

@@ -21,13 +21,13 @@
         {{ isoToMMDDYYYY(getNestedValue(machine, column.key) as string) }}
       </div>
       <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
-        <ConfirmationIconButton @confirm="''">
+        <ConfirmationIconButton v-if="filters.location !== 'sold'" @confirm="''">
           <Icon name="carbon:currency-dollar" size="20" class="text-green-600" />
         </ConfirmationIconButton>
-        <ConfirmationIconButton @confirm="''">
+        <ConfirmationIconButton v-if="filters.location !== 'archived'" @confirm="''">
           <Icon name="carbon:volume-file-storage" size="20" class="text-blue-600" />
         </ConfirmationIconButton>
-        <ConfirmationIconButton @confirm="''">
+        <ConfirmationIconButton @confirm="deleteMachine(machineId)">
           <Icon name="carbon:trash-can" size="20" class="text-red-600" />
         </ConfirmationIconButton>
       </div>
@@ -39,9 +39,13 @@
 </template>
 
 <script setup lang="ts">
+import { useMachineStore } from '~~/stores/machine'
+
 defineProps<{
   machine: Machine | Omit<Machine, 'm_id'>
   columns: TableColumnC[]
   machineId?: string
 }>()
+
+const { filters } = storeToRefs(useMachineStore())
 </script>

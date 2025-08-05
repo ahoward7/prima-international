@@ -1,5 +1,6 @@
 <template>
-  <div class="font-roboto">
+  <div class="relative font-roboto">
+    <Notifications />
     <NuxtPage />
     <Footer />
   </div>

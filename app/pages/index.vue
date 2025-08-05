@@ -60,8 +60,10 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
+import { useNotificationStore } from '~~/stores/notification'
 
 const machineStore = useMachineStore()
+const notificationStore = useNotificationStore()
 const { filterOptions, filters: storeFilters } = storeToRefs(machineStore)
 
 const filters = ref<MachineFilters>(storeFilters.value)
@@ -106,10 +108,18 @@ function selectMachine(machine: Machine) {
 }
 
 async function archiveMachine(machine: Machine) {
-  await $fetch('/machine/archive', {
+  const response = await $fetch('/machine/archive', {
     method: 'POST',
     body: machine
   })
+
+  if (response?.success) {
+    notificationStore.pushNotification('success', 'Machine added to sold table successfully')
+  }
+}
+
+async function sellMachine(machine: Machine) {
+  void machine
 }
 
 async function deleteMachine(machine: Machine) {
@@ -119,6 +129,7 @@ async function deleteMachine(machine: Machine) {
   })
 
   if (response.success) {
+    notificationStore.pushNotification('success', 'Machine deleted successfully')
     refresh()
   }
 }

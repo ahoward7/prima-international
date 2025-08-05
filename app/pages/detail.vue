@@ -121,9 +121,12 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
+import { useNotificationStore } from '~~/stores/notification'
 
 const { filterOptions, machine, archivedMachine, soldMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
+const notificationStore = useNotificationStore()
+
 const { id, location } = useRoute().query
 const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
 const serialNumberMessage = ref('')
@@ -163,6 +166,7 @@ async function createMachine() {
   })
 
   if (response.success) {
+    notificationStore.pushNotification('success', 'Machine created successfully')
     navigateTo('/')
   }
 }
@@ -210,6 +214,7 @@ async function updateMachine() {
   })
 
   if (response?.success) {
+    notificationStore.pushNotification('success', 'Machine updated successfully')
     navigateTo('/')
   }
   else if (response?.error) {
@@ -227,6 +232,7 @@ async function sellMachine() {
   })
 
   if (response.success) {
+    notificationStore.pushNotification('success', 'Machine added to sold table successfully')
     navigateTo(`/`)
   }
 }
@@ -238,6 +244,7 @@ async function archiveMachine() {
   })
 
   if (response.success) {
+    notificationStore.pushNotification('success', 'Machine added to archives successfully')
     navigateTo(`/`)
   }
 }
@@ -249,6 +256,7 @@ async function deleteMachine() {
   })
 
   if (response.success) {
+    notificationStore.pushNotification('success', 'Machine deleted successfully')
     navigateTo('/')
   }
 }

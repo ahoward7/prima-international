@@ -5,7 +5,7 @@
       :key="column.key"
       class="border-l px-1 py-1 border-gray-400"
       :class="column.key === 'salesman' ? 'w-6' : ''"
-      @click="column.key ? selectMachine() : ''" 
+      @click="column.key ? selectMachine(machineId) : ''" 
     >
       <div v-if="column.key === 'hours'" class="h-6 overflow-hidden text-right">
         {{ formatCommas(getNestedValue(machine, column.key) as number) }}
@@ -39,19 +39,9 @@
 </template>
 
 <script setup lang="ts">
-import { useMachineStore } from '~~/stores/machine'
-
-const props = defineProps<{
+defineProps<{
   machine: Machine | Omit<Machine, 'm_id'>
   columns: TableColumnC[]
   machineId?: string
 }>()
-
-const { filters } = storeToRefs(useMachineStore())
-
-function selectMachine() {
-  if (props.machineId) {
-    navigateTo(`/detail/?id=${props.machineId}&location=${filters.value.location}`)
-  }
-}
 </script>

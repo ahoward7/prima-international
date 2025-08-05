@@ -1,5 +1,5 @@
 <template>
-  <tr class="border-b border-gray-400 cursor-pointer" :class="[rowClass]" @click="''">
+  <tr class="border-b border-gray-400 cursor-pointer" :class="[rowClass]" @click="selectMachine(machineId)">
     <td v-for="column in columns" :key="column.key" class="border-l px-1 py-1 border-gray-400" :class="!column.key ? 'w-20' : ''">
       <div v-if="column.key === 'hours'" class="h-6 overflow-hidden text-right">
         {{ formatCommas(getNestedValue(machine, column.key) as number) }}
@@ -25,7 +25,7 @@
     </td>
   </tr>
 
-  <tr class="border-b border-gray-400 cursor-pointer" :class="[rowClass]" @click="''">
+  <tr class="border-b border-gray-400 cursor-pointer" :class="[rowClass]" @click="selectMachine(machineId)">
     <td colspan="6" class="px-1 py-1 border-l border-gray-400">
       <div :class="displayClass">
         <span class="!font-robconbold">Description: </span>
@@ -47,6 +47,7 @@ const props = defineProps<{
   columns: TableColumnC[]
   displayFormat: string
   index: number
+  machineId: string
 }>()
 
 const rowClass = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-50'

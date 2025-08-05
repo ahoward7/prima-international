@@ -1,6 +1,14 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
 
+export function selectMachine(id?: string) {
+  const machineStore = useMachineStore()
+
+  if (id) {
+    navigateTo(`/detail/?id=${id}&location=${machineStore.filters.location}`)
+  }
+}
+
 export async function archiveMachine(machine: Machine) {
   const notificationStore = useNotificationStore()
 

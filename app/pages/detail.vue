@@ -1,6 +1,7 @@
 <template>
   <div class="flex justify-center py-12 px-8">
     <div class="w-[920px] flex flex-col items-center gap-8">
+      <!-- Header -->
       <div class="w-full">
         <NuxtLink to="/" class="flex items-center text-prima-red">
           <Icon name="carbon:chevron-left" size="28" />
@@ -8,6 +9,7 @@
         </NuxtLink>
         <HeaderPrimary>Machine Detail</HeaderPrimary>
       </div>
+      <!-- Contact -->
       <div class="flex flex-col gap-4 w-full">
         <div class="grid grid-cols-2 gap-8">
           <InputContactSearch class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
@@ -16,6 +18,7 @@
         </div>
       </div>
       <DividerLine class="w-full" />
+      <!-- Machine -->
       <div v-if="machine" class="grid grid-cols-6 gap-8">
         <InputTextSelect v-model="machine.type" label="Type" placeholder="Type" :options="filterOptions.type" class="col-span-1" width="w-full" createable />
         <InputTextSelect v-model="machine.model" label="Model" placeholder="Model" :options="filterOptions.model" class="col-span-1" width="w-full" createable />
@@ -28,7 +31,22 @@
         <InputTextSelect v-model="machine.salesman" label="Salesman" placeholder="Initials" :options="filterOptions.salesman" class="col-span-1" width="w-full" createable />
         <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-6" />
       </div>
-      <template v-if="id">
+      <!-- Machine Actions -->
+      <template v-if="id && sellingMachine">
+        <DividerLine class="w-full" />
+        <div class="grid grid-cols-6 gap-8">
+          <InputNumber v-model="soldMachine.totalCost" label="Total Cost" placeholder="Total sale cost" class="col-span-2" />
+          <InputNumber v-model="soldMachine.machineCost" label="Machine Cost" placeholder="Machine" class="col-span-1" />
+          <InputNumber v-model="soldMachine.freightCost" label="Freight Cost" placeholder="Freight" class="col-span-1" />
+          <InputNumber v-model="soldMachine.paintCost" label="Paint Cost" placeholder="Paint" class="col-span-1" />
+          <InputNumber v-model="soldMachine.profit" label="Profit From Sale" placeholder="Profit" class="col-span-1" />
+          <InputText v-model="soldMachine.buyerLocation" label="Buyer Location" placeholder="City, Country" class="col-span-2" />
+          <InputText v-model="soldMachine.truckingCompany" label="Trucking Company" placeholder="Company Name" class="col-span-2" />
+          <InputText v-model="soldMachine.purchaseFob" label="Purchase FOB" placeholder="City, Country" class="col-span-2" />
+          <InputTextarea v-model="soldMachine.notes" label="Notes On Sale" placeholder="Other information..." class="col-span-6" />
+        </div>
+      </template>
+      <template v-if="id && !sellingMachine">
         <DividerLine class="w-full" />
         <div class="w-full flex items-center gap-2 bg-prima-yellow/20 px-4 py-3">
           <label class="font-semibold">Table Locations:</label>
@@ -56,9 +74,9 @@
             <ConfirmationButton class="!bg-prima-yellow" @confirm="updateMachine">
               Update
             </ConfirmationButton>
-            <ConfirmationButton class="!bg-green-600">
+            <Button class="!bg-green-600" @click="sellingMachine = true">
               Sell
-            </ConfirmationButton>
+            </Button>
             <ConfirmationButton v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine">
               Archive
             </ConfirmationButton>
@@ -68,7 +86,15 @@
           </div>
         </div>
       </template>
-      <div v-else class="w-full flex justify-end">
+      <div v-if="id && sellingMachine" class="w-full flex justify-end gap-4">
+        <ConfirmationButton class="!bg-red-600" @confirm="sellingMachine = false">
+          Cancel
+        </ConfirmationButton>
+        <ConfirmationButton class="!bg-green-600" @confirm="sellMachine">
+          Sell Machine
+        </ConfirmationButton>
+      </div>
+      <div v-else-if="!id" class="w-full flex justify-end">
         <ConfirmationButton class="!bg-green-600" @confirm="createMachine">
           Create Machine
         </ConfirmationButton>
@@ -81,11 +107,12 @@
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
 
-const { filterOptions, machine, archivedMachine } = storeToRefs(useMachineStore())
+const { filterOptions, machine, archivedMachine, soldMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
 const { id, location } = useRoute().query
 const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
 const serialNumberMessage = ref('')
+const sellingMachine = ref(false)
 
 if (location && !['located', 'archived', 'sold'].includes(location as string)) {
   navigateTo('/')
@@ -158,6 +185,10 @@ async function updateMachine() {
   else if (response?.error) {
     console.error(response.error)
   }
+}
+
+async function sellMachine() {
+
 }
 
 async function archiveMachine() {

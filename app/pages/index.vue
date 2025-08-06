@@ -11,7 +11,7 @@
           <InputSelect v-model="filters.location" class="!w-40" label="Loc/Sold/Arch" placeholder="Filter by location..." :options="filterOptions.location" width="w-52" />
           <InputTextSelect v-model="filters.type" class="!w-40" label="Type" placeholder="Filter by type..." :options="filterOptions.type" />
           <InputTextSelect v-model="filters.model" class="!w-40" label="Model" placeholder="Filter by model..." :options="filterOptions.model" />
-          <InputContactSearch v-model="filters.contactId" class="grow" />
+          <InputContactSearch v-model="filters.contactId" class="!w-[440px]" />
           <div class="flex items-end">
             <Button class="!h-fit !px-2 !py-1 !bg-prima-yellow border border-prima-yellow" @click="clearFilters">
               Clear

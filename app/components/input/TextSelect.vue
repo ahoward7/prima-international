@@ -11,7 +11,7 @@
       @keydown.up.prevent="navigate(-1)"
       @keydown.enter.prevent="selectHighlighted"
       @keydown.tab="selectHighlighted"
-      @input="emit('search', search)"
+      @input="emitSearch"
     />
 
     <!-- Dropdown Panel -->
@@ -80,36 +80,40 @@ const highlightedIndex = ref(0)
 const dropdownRef = ref(null)
 onClickOutside(dropdownRef, () => (isOpen.value = false))
 
-const allOptions = computed(() =>
-  createdOption.value ? [createdOption.value, ...props.options] : props.options
-)
+const allOptions = computed(() => {
+  return createdOption.value ? [createdOption.value, ...props.options] : props.options
+})
 
-const filteredOptions = computed(() =>
-  allOptions.value.filter(option =>
+const filteredOptions = computed(() => {
+  return allOptions.value.filter(option =>
     option.label.toLowerCase().includes(search.value.toLowerCase())
   )
-)
+})
 
-const openDropdown = () => {
+function openDropdown() {
   isOpen.value = true
   highlightedIndex.value = 0
 }
 
-const selectOption = (option: FilterOption) => {
+function emitSearch() {
+  isOpen.value = true
+  emit('search', search.value)
+}
+
+function selectOption(option: FilterOption) {
   selectedOption.value = option.data
   search.value = option.label
   isOpen.value = false
   emit('select', option.data)
 }
 
-const resetSelection = () => {
+function resetSelection() {
   selectedOption.value = ''
   search.value = ''
   emit('clear')
 }
 
-// Keyboard navigation
-const navigate = (direction: 1 | -1) => {
+function navigate(direction: 1 | -1) {
   if (!isOpen.value || filteredOptions.value.length === 0) return
   const newIndex = highlightedIndex.value + direction
   if (newIndex < 0) highlightedIndex.value = filteredOptions.value.length - 1
@@ -117,7 +121,7 @@ const navigate = (direction: 1 | -1) => {
   else highlightedIndex.value = newIndex
 }
 
-const selectHighlighted = () => {
+function selectHighlighted() {
   if (!isOpen.value || filteredOptions.value.length === 0) return
   selectOption(filteredOptions.value[highlightedIndex.value] as FilterOption)
 }

@@ -82,37 +82,37 @@
             </div>
           </div>
           <div class="flex gap-4">
-            <ConfirmationButton class="!bg-prima-yellow" @confirm="updateMachine(id as string)">
+            <ButtonConfirmation class="!bg-prima-yellow" @confirm="updateMachine(id as string)">
               Update
-            </ConfirmationButton>
+            </ButtonConfirmation>
             <Button v-if="location !== 'sold'" class="!bg-green-600" @click="sellingMachine = true">
               Sell
             </Button>
-            <ConfirmationButton v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine()">
+            <ButtonConfirmation v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine()">
               Archive
-            </ConfirmationButton>
-            <ConfirmationButton class="!bg-red-600" @confirm="deleteMachine(id as string)">
+            </ButtonConfirmation>
+            <ButtonConfirmation class="!bg-red-600" @confirm="deleteMachine(id as string)">
               Delete
-            </ConfirmationButton>
+            </ButtonConfirmation>
           </div>
         </div>
       </template>
 
       <!-- Selling Machine Buttons -->
       <div v-if="id && sellingMachine" class="w-full flex justify-end gap-4">
-        <ConfirmationButton class="!bg-red-600" @confirm="sellingMachine = false">
+        <ButtonConfirmation class="!bg-red-600" @confirm="sellingMachine = false">
           Cancel
-        </ConfirmationButton>
-        <ConfirmationButton class="!bg-green-600" @confirm="sellMachine()">
+        </ButtonConfirmation>
+        <ButtonConfirmation class="!bg-green-600" @confirm="sellMachine()">
           Sell Machine
-        </ConfirmationButton>
+        </ButtonConfirmation>
       </div>
 
       <!-- Creating Machine Buttons -->
       <div v-else-if="!id" class="w-full flex justify-end">
-        <ConfirmationButton class="!bg-green-600" @confirm="createMachine()">
+        <ButtonConfirmation class="!bg-green-600" @confirm="createMachine()">
           Create Machine
-        </ConfirmationButton>
+        </ButtonConfirmation>
       </div>
     </div>
   </div>

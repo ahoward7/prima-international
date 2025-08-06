@@ -16,12 +16,12 @@
       </div>
       <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
         <Icon name="carbon:currency-dollar" size="20" class="text-green-600" @click="navigateTo(`/detail/?id=${machineId}&location=${filters.location}&selling=1`)" />
-        <ConfirmationIconButton v-if="filters.location !== 'archived'" @confirm="archiveMachine(machine as Machine)">
+        <ButtonConfirmationIcon v-if="filters.location !== 'archived'" @confirm="archiveMachine(machine as Machine)">
           <Icon name="carbon:volume-file-storage" size="20" class="text-blue-600" />
-        </ConfirmationIconButton>
-        <ConfirmationIconButton @confirm="deleteMachine(machineId)">
+        </ButtonConfirmationIcon>
+        <ButtonConfirmationIcon @confirm="deleteMachine(machineId)">
           <Icon name="carbon:trash-can" size="20" class="text-red-600" />
-        </ConfirmationIconButton>
+        </ButtonConfirmationIcon>
       </div>
       <div v-else class="h-6 overflow-hidden" :class="[column.key === 'description' ? 'min-w-80' : '']">
         {{ getNestedValue(machine, column.key) }}

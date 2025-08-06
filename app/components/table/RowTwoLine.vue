@@ -15,9 +15,13 @@
         {{ isoToMMDDYYYY(machine.lastModDate) }}
       </div>
       <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
-        <Icon name="carbon:currency-dollar" size="20" class="rounded-full text-green-600" />
-        <Icon name="carbon:volume-file-storage" size="20" class="rounded-full text-blue-600" />
-        <Icon name="carbon:trash-can" size="20" class="rounded-full text-red-600" />
+        <Icon name="carbon:currency-dollar" size="20" class="text-green-600" @click="navigateTo(`/detail/?id=${machineId}&location=${filters.location}&selling=1`)" />
+        <ConfirmationIconButton v-if="filters.location !== 'archived'" @confirm="archiveMachine(machine as Machine)">
+          <Icon name="carbon:volume-file-storage" size="20" class="text-blue-600" />
+        </ConfirmationIconButton>
+        <ConfirmationIconButton @confirm="deleteMachine(machineId)">
+          <Icon name="carbon:trash-can" size="20" class="text-red-600" />
+        </ConfirmationIconButton>
       </div>
       <div v-else class="h-6 overflow-hidden" :class="[column.key === 'description' ? 'min-w-80' : '']">
         {{ getNestedValue(machine, column.key) }}
@@ -42,6 +46,8 @@
 </template>
 
 <script setup lang="ts">
+import { useMachineStore } from '~~/stores/machine'
+
 const props = defineProps<{
   machine: Machine | Omit<Machine, 'm_id'>
   columns: TableColumnC[]
@@ -49,6 +55,8 @@ const props = defineProps<{
   index: number
   machineId: string
 }>()
+
+const { filters } = useMachineStore()
 
 const rowClass = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-50'
 const displayClass = computed(() => props.displayFormat === "twoLine" ? '' : 'h-6 overflow-hidden')

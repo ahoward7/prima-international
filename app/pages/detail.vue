@@ -125,10 +125,10 @@ import { useMachineStore } from '~~/stores/machine'
 const { filterOptions, machine, archivedMachine, soldMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
 
-const { id, location } = useRoute().query
+const { id, location, selling } = useRoute().query
 const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
 const serialNumberMessage = ref('')
-const sellingMachine = ref(false)
+const sellingMachine = ref(selling === '1')
 
 machineStore.resetMachine()
 

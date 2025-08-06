@@ -83,13 +83,15 @@ export async function updateMachine(id?: string) {
   }
 }
 
-export async function archiveMachine() {
+export async function archiveMachine(machineFromTable?: Machine) {
   const { machine } = useMachineStore()
   const notificationStore = useNotificationStore()
 
+  const machineToArchive = machineFromTable || machine
+
   const response = await $fetch<{ success: boolean }>('/machine/archive', {
     method: 'POST',
-    body: machine
+    body: machineToArchive
   })
 
   if (response?.success) {

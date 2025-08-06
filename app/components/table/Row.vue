@@ -21,10 +21,8 @@
         {{ isoToMMDDYYYY(getNestedValue(machine, column.key) as string) }}
       </div>
       <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
-        <ConfirmationIconButton v-if="filters.location !== 'sold'" @confirm="''">
-          <Icon name="carbon:currency-dollar" size="20" class="text-green-600" />
-        </ConfirmationIconButton>
-        <ConfirmationIconButton v-if="filters.location !== 'archived'" @confirm="''">
+        <Icon name="carbon:currency-dollar" size="20" class="text-green-600" @click="navigateTo(`/detail/?id=${machineId}&location=${filters.location}&selling=1`)" />
+        <ConfirmationIconButton v-if="filters.location !== 'archived'" @confirm="archiveMachine(machine as Machine)">
           <Icon name="carbon:volume-file-storage" size="20" class="text-blue-600" />
         </ConfirmationIconButton>
         <ConfirmationIconButton @confirm="deleteMachine(machineId)">

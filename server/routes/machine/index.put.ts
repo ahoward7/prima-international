@@ -15,8 +15,12 @@ export default defineEventHandler(async (event: H3Event): Promise<any> => {
     }
     return updateSoldMachine(machine as SoldMachine, date)
   }
-  catch(e) {
-    console.error(e)
+  catch (error: any) {
+    return sendError(event, createError({
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || 'Server: Error updating machine',
+      data: error.data || error.message || 'Server: Unexpected error'
+    }))
   }
 })
 

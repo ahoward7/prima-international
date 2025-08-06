@@ -5,13 +5,22 @@ export default defineEventHandler(async (event: H3Event) => {
   const filters = getQuery(event) as MachineFilterStrings
   const location = filters.location || 'located'
 
-  if (location === 'archived') {
-    return await getArchivedMachines(filters)
+  try {
+    if (location === 'archived') {
+      return await getArchivedMachines(filters)
+    }
+    else if (location === 'located') {
+      return await getLocatedMachines(filters)
+    }
+    return await getSoldMachines(filters)
   }
-  else if (location === 'located') {
-    return await getLocatedMachines(filters)
+  catch (error: any) {
+    return sendError(event, createError({
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || 'Server: Error getting machine',
+      data: error.data || error.message || 'Server: Unexpected error'
+    }))
   }
-  return await getSoldMachines(filters)
 })
 
 async function getArchivedMachines(filters: MachineFilterStrings) {

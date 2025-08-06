@@ -5,14 +5,19 @@ export async function createMachine() {
   const { machine } = useMachineStore()
   const notificationStore = useNotificationStore()
 
-  const response = await $fetch('/machine', {
-    method: 'POST',
-    body: machine
-  })
-
-  if (response.success) {
-    notificationStore.pushNotification('success', 'Machine created successfully')
-    navigateTo('/')
+  try {
+    const response = await $fetch('/machine', {
+      method: 'POST',
+      body: machine
+    })
+  
+    if (response.success) {
+      notificationStore.pushNotification('success', 'Machine created successfully')
+      navigateTo('/')
+    }
+  }
+  catch (error: any) {
+    return handleError(error, 'Error creating machine')
   }
 }
 
@@ -25,9 +30,7 @@ export function selectMachine(id?: string) {
 }
 
 export async function updateMachine(id?: string) {
-  if (!id) {
-    return
-  }
+  if (!id) return
 
   const { machine, archivedMachine, soldMachine, filters } = useMachineStore()
   const notificationStore = useNotificationStore()
@@ -40,18 +43,16 @@ export async function updateMachine(id?: string) {
   }
   else if (location === 'archived') {
     const aMachine = machine as Omit<Machine, 'm_id'>
-
     machineToUpdate = {
-      a_id: id || undefined,
+      a_id: id,
       archiveDate: archivedMachine.archiveDate,
       machine: aMachine
     } as ArchivedMachine
   }
   else {
     const sMachine = machine as Omit<Machine, 'm_id'>
-
     machineToUpdate = {
-      s_id: id || undefined,
+      s_id: id,
       dateSold: soldMachine.dateSold,
       machine: sMachine,
       truckingCompany: soldMachine.truckingCompany,
@@ -68,34 +69,41 @@ export async function updateMachine(id?: string) {
     } as SoldMachine
   }
 
-  const response = await $fetch('/machine', {
-    method: 'PUT',
-    body: machineToUpdate,
-    query: { location }
-  })
+  try {
+    const response = await $fetch('/machine', {
+      method: 'PUT',
+      body: machineToUpdate,
+      query: { location }
+    })
 
-  if (response?.success) {
-    notificationStore.pushNotification('success', 'Machine updated successfully')
-    navigateTo('/')
+    if (response?.success) {
+      notificationStore.pushNotification('success', 'Machine updated successfully')
+      navigateTo('/')
+    }
   }
-  else if (response?.error) {
-    console.error(response?.error)
+  catch (error: any) {
+    return handleError(error, 'Error updating machine')
   }
 }
+
 
 export async function archiveMachine(machineFromTable?: Machine) {
   const { machine } = useMachineStore()
   const notificationStore = useNotificationStore()
-
   const machineToArchive = machineFromTable || machine
 
-  const response = await $fetch<{ success: boolean }>('/machine/archive', {
-    method: 'POST',
-    body: machineToArchive
-  })
+  try {
+    const response = await $fetch<{ success: boolean }>('/machine/archive', {
+      method: 'POST',
+      body: machineToArchive
+    })
 
-  if (response?.success) {
-    notificationStore.pushNotification('success', 'Machine added to archives successfully')
+    if (response?.success) {
+      notificationStore.pushNotification('success', 'Machine added to archives successfully')
+    }
+  }
+  catch (error: any) {
+    return handleError(error, 'Error archiving machine')
   }
 }
 
@@ -103,36 +111,55 @@ export async function sellMachine() {
   const { machine, soldMachine } = useMachineStore()
   const notificationStore = useNotificationStore()
 
-  const response = await $fetch('/machine/sold', {
-    method: 'POST',
-    body: {
-      machine,
-      sold: soldMachine
-    }
-  })
+  try {
+    const response = await $fetch('/machine/sold', {
+      method: 'POST',
+      body: {
+        machine,
+        sold: soldMachine
+      }
+    })
 
-  if (response.success) {
-    notificationStore.pushNotification('success', 'Machine added to sold table successfully')
-    navigateTo(`/`)
+    if (response.success) {
+      notificationStore.pushNotification('success', 'Machine added to sold table successfully')
+      navigateTo('/')
+    }
+  }
+  catch (error: any) {
+    return handleError(error, 'Error selling machine')
   }
 }
 
 export async function deleteMachine(id?: string) {
-  if (!id) {
-    return
-  }
+  if (!id) return
 
   const machineStore = useMachineStore()
   const notificationStore = useNotificationStore()
 
-  const response = await $fetch<{ success: boolean }>('/machine', {
-    method: 'DELETE',
-    query: { id, location: machineStore.filters.location }
-  })
+  try {
+    const response = await $fetch<{ success: boolean }>('/machine', {
+      method: 'DELETE',
+      query: { id, location: machineStore.filters.location }
+    })
 
-  if (response.success) {
-    machineStore.refreshMachines++
-    notificationStore.pushNotification('success', 'Machine deleted successfully')
-    navigateTo('/')
+    if (response.success) {
+      machineStore.refreshMachines++
+      notificationStore.pushNotification('success', 'Machine deleted successfully')
+      navigateTo('/')
+    }
   }
+  catch (error: any) {
+    return handleError(error, 'Error deleting machine')
+  }
+}
+
+function handleError(error: any, defaultMessage: string) {
+  const notificationStore = useNotificationStore()
+  notificationStore.pushNotification('error', defaultMessage)
+
+  return createError({
+    statusCode: error.statusCode || 500,
+    statusMessage: error.statusMessage || defaultMessage,
+    data: error.data || error.message || 'Client: Unexpected error'
+  })
 }

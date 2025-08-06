@@ -37,13 +37,13 @@ const headerColor = () => {
 
 const backgroundColor = () => {
   if (props.type === 'success') {
-    return 'bg-green-600/5'
+    return 'bg-green-50'
   }
   if (props.type === 'warning') {
-    return 'bg-prima-yellow/5'
+    return 'bg-yellow-50'
   }
   if (props.type === 'error') {
-    return 'bg-red-600/5'
+    return 'bg-red-50'
   }
 }
 

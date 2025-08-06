@@ -1,6 +1,20 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
 
+export async function createMachine(machine: Machine) {
+  const notificationStore = useNotificationStore()
+
+  const response = await $fetch('/machine', {
+    method: 'POST',
+    body: machine
+  })
+
+  if (response.success) {
+    notificationStore.pushNotification('success', 'Machine created successfully')
+    navigateTo('/')
+  }
+}
+
 export function selectMachine(id?: string) {
   const machineStore = useMachineStore()
 
@@ -82,7 +96,21 @@ export async function archiveMachine(machine: Machine) {
 }
 
 export async function sellMachine(machine: Machine) {
-  void machine
+  const { soldMachine } = useMachineStore()
+  const notificationStore = useNotificationStore()
+
+  const response = await $fetch('/machine/sold', {
+    method: 'POST',
+    body: {
+      machine,
+      sold: soldMachine
+    }
+  })
+
+  if (response.success) {
+    notificationStore.pushNotification('success', 'Machine added to sold table successfully')
+    navigateTo(`/`)
+  }
 }
 
 export async function deleteMachine(id?: string) {

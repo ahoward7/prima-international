@@ -103,14 +103,14 @@
         <ConfirmationButton class="!bg-red-600" @confirm="sellingMachine = false">
           Cancel
         </ConfirmationButton>
-        <ConfirmationButton class="!bg-green-600" @confirm="sellMachine">
+        <ConfirmationButton class="!bg-green-600" @confirm="sellMachine(machine as Machine)">
           Sell Machine
         </ConfirmationButton>
       </div>
 
       <!-- Creating Machine Buttons -->
       <div v-else-if="!id" class="w-full flex justify-end">
-        <ConfirmationButton class="!bg-green-600" @confirm="createMachine">
+        <ConfirmationButton class="!bg-green-600" @confirm="createMachine(machine as Machine)">
           Create Machine
         </ConfirmationButton>
       </div>
@@ -121,11 +121,9 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
-import { useNotificationStore } from '~~/stores/notification'
 
 const { filterOptions, machine, archivedMachine, soldMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
-const notificationStore = useNotificationStore()
 
 const { id, location } = useRoute().query
 const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
@@ -159,33 +157,6 @@ if (id) {
 }
 else {
   machineStore.resetMachine()
-}
-
-async function createMachine() {
-  const response = await $fetch('/machine', {
-    method: 'POST',
-    body: machine.value
-  })
-
-  if (response.success) {
-    notificationStore.pushNotification('success', 'Machine created successfully')
-    navigateTo('/')
-  }
-}
-
-async function sellMachine() {
-  const response = await $fetch('/machine/sold', {
-    method: 'POST',
-    body: {
-      machine: machine.value,
-      sold: soldMachine.value
-    }
-  })
-
-  if (response.success) {
-    notificationStore.pushNotification('success', 'Machine added to sold table successfully')
-    navigateTo(`/`)
-  }
 }
 
 function fillContact(c: Contact) {

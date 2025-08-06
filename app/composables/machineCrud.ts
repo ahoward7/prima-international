@@ -14,12 +14,11 @@ export async function updateMachine(id?: string) {
     return
   }
 
-  const machineStore = useMachineStore()
-  const { machine, archivedMachine, soldMachine }  = useMachineStore()
+  const { machine, archivedMachine, soldMachine, filters } = useMachineStore()
   const notificationStore = useNotificationStore()
 
   let machineToUpdate
-  const location = machineStore.filters.location
+  const location = filters.location
 
   if (location === 'located') {
     machineToUpdate = machine as Machine

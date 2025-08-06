@@ -27,26 +27,9 @@
       </div>
       <DividerLine />
       <Table
-        v-if="filters.location === 'located'"
         v-model:sort-by="filters.sortBy"
         v-model:page="filters.page"
-        :machines="(machines as ApiData<Machine>)"
-        :display-format="displayFormat"
-        :page-size="filters.pageSize"
-      />
-      <TableArchive
-        v-if="filters.location === 'archived'"
-        v-model:sort-by="filters.sortBy"
-        v-model:page="filters.page"
-        :machines="(machines as ApiData<ArchivedMachine>)"
-        :display-format="displayFormat"
-        :page-size="filters.pageSize"
-      />
-      <TableSold
-        v-if="filters.location === 'sold'"
-        v-model:sort-by="filters.sortBy"
-        v-model:page="filters.page"
-        :machines="(machines as ApiData<SoldMachine>)"
+        :machines="machines"
         :display-format="displayFormat"
         :page-size="filters.pageSize"
       />

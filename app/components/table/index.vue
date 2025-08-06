@@ -11,10 +11,17 @@
         </NuxtLink>
       </div>
     </div>
+
     <div v-show="!machines">
       <div class="w-full top-0 h-8 bg-prima-red" />
-      <div v-for="p in pageSize" :key="p" class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400" :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'" />
+      <div
+        v-for="p in pageSize"
+        :key="p"
+        class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400"
+        :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'"
+      />
     </div>
+
     <table v-show="machines" class="border-x border-b border-gray-400">
       <thead class="font-robconbold">
         <tr>
@@ -30,19 +37,19 @@
       <tbody class="font-robcon">
         <template v-if="displayFormat === 'oneLine'">
           <TableRow
-            v-for="machine in machines?.data"
-            :key="machine.m_id"
-            :machine-id="machine.m_id"
-            :machine="machine"
+            v-for="item in machines?.data"
+            :key="getId(item)"
+            :machine-id="getId(item)"
+            :machine="getMachine(item)"
             :columns="filteredColumns"
           />
         </template>
         <template v-else>
           <TableRowTwoLine
-            v-for="machine, index in machines?.data"
-            :key="machine.m_id"
-            :machine-id="machine.m_id"
-            :machine="machine"
+            v-for="(item, index) in machines?.data"
+            :key="getId(item)"
+            :machine-id="getId(item)"
+            :machine="getMachine(item)"
             :columns="filteredColumns"
             :display-format="displayFormat"
             :index="index"
@@ -57,6 +64,7 @@
         </tr>
       </tbody>
     </table>
+
     <div class="flex justify-center">
       <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
     </div>
@@ -64,13 +72,18 @@
 </template>
 
 <script setup lang="ts">
+import l from 'lodash'
+import { useMachineStore } from '~~/stores/machine'
+
 const props = withDefaults(defineProps<{
-  machines?: ApiData<Machine>
+  machines?: ApiData<any>
   displayFormat: string
   pageSize?: number
 }>(), {
   pageSize: 20
 })
+
+const { filters } = useMachineStore()
 
 const sortBy = defineModel('sortBy', { type: String, default: 'type' })
 const page = defineModel('page', { default: 1 })
@@ -91,9 +104,41 @@ const columns: TableColumnC[] = [
   { key: '', label: '', sort: false }
 ]
 
-const filteredColumns = computed(() => props.displayFormat === 'oneLine' ? columns : columns.filter(column => !['Description', 'Notes'].includes(column.label)))
+const filteredColumns = computed(() =>
+  props.displayFormat === 'oneLine'
+    ? columns
+    : columns.filter(column => !['Desc', 'Notes'].includes(column.label))
+)
 
 function handleSort(column: string) {
   sortBy.value = sortBy.value === column ? `-${column}` : column
+}
+
+function getId(item: any) {
+  let idKey: string = ''
+  
+  if (filters.location === 'located') {
+    idKey = 'm_id'
+  }
+  else if (filters.location === 'archived') {
+    idKey = 'a_id'
+  }
+  else if (filters.location === 'sold') {
+    idKey = 's_id'
+  }
+
+  if (idKey) {
+    return l.get(item, idKey)
+  }
+  return ''
+}
+
+function getMachine(item: any) {
+  let machineKey: string = ''
+  
+  if (filters.location !== 'located') {
+    machineKey = 'machine'
+  }
+  return machineKey ? l.get(item, machineKey) : item
 }
 </script>

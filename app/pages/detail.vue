@@ -88,7 +88,7 @@
             <Button v-if="location !== 'sold'" class="!bg-green-600" @click="sellingMachine = true">
               Sell
             </Button>
-            <ConfirmationButton v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine(machine as Machine)">
+            <ConfirmationButton v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine()">
               Archive
             </ConfirmationButton>
             <ConfirmationButton class="!bg-red-600" @confirm="deleteMachine(id as string)">
@@ -103,14 +103,14 @@
         <ConfirmationButton class="!bg-red-600" @confirm="sellingMachine = false">
           Cancel
         </ConfirmationButton>
-        <ConfirmationButton class="!bg-green-600" @confirm="sellMachine(machine as Machine)">
+        <ConfirmationButton class="!bg-green-600" @confirm="sellMachine()">
           Sell Machine
         </ConfirmationButton>
       </div>
 
       <!-- Creating Machine Buttons -->
       <div v-else-if="!id" class="w-full flex justify-end">
-        <ConfirmationButton class="!bg-green-600" @confirm="createMachine(machine as Machine)">
+        <ConfirmationButton class="!bg-green-600" @confirm="createMachine()">
           Create Machine
         </ConfirmationButton>
       </div>

@@ -1,7 +1,8 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
 
-export async function createMachine(machine: Machine) {
+export async function createMachine() {
+  const { machine } = useMachineStore()
   const notificationStore = useNotificationStore()
 
   const response = await $fetch('/machine', {
@@ -16,10 +17,10 @@ export async function createMachine(machine: Machine) {
 }
 
 export function selectMachine(id?: string) {
-  const machineStore = useMachineStore()
+  const { filters } = useMachineStore()
 
   if (id) {
-    navigateTo(`/detail/?id=${id}&location=${machineStore.filters.location}`)
+    navigateTo(`/detail/?id=${id}&location=${filters.location}`)
   }
 }
 
@@ -82,7 +83,8 @@ export async function updateMachine(id?: string) {
   }
 }
 
-export async function archiveMachine(machine: Machine) {
+export async function archiveMachine() {
+  const { machine } = useMachineStore()
   const notificationStore = useNotificationStore()
 
   const response = await $fetch<{ success: boolean }>('/machine/archive', {
@@ -95,8 +97,8 @@ export async function archiveMachine(machine: Machine) {
   }
 }
 
-export async function sellMachine(machine: Machine) {
-  const { soldMachine } = useMachineStore()
+export async function sellMachine() {
+  const { machine, soldMachine } = useMachineStore()
   const notificationStore = useNotificationStore()
 
   const response = await $fetch('/machine/sold', {

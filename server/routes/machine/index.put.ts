@@ -23,7 +23,7 @@ export default defineEventHandler(async (event: H3Event): Promise<any> => {
 async function updateLocatedMachine(machine: MachineForm, date: string) {
   const locatedMachine = machine
 
-  if (!locatedMachine || !locatedMachine.m_id || !locatedMachine.contact || !locatedMachine.contact.c_id) {
+  if (!locatedMachine || !locatedMachine.m_id) {
     return { error: 'Missing required locatedMachine or contact information' }
   }
   

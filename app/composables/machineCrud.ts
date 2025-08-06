@@ -9,6 +9,66 @@ export function selectMachine(id?: string) {
   }
 }
 
+export async function updateMachine(id?: string) {
+  if (!id) {
+    return
+  }
+
+  const machineStore = useMachineStore()
+  const { machine, archivedMachine, soldMachine }  = useMachineStore()
+  const notificationStore = useNotificationStore()
+
+  let machineToUpdate
+  const location = machineStore.filters.location
+
+  if (location === 'located') {
+    machineToUpdate = machine as Machine
+  }
+  else if (location === 'archived') {
+    const aMachine = machine as Omit<Machine, 'm_id'>
+
+    machineToUpdate = {
+      a_id: id || undefined,
+      archiveDate: archivedMachine.archiveDate,
+      machine: aMachine
+    } as ArchivedMachine
+  }
+  else {
+    const sMachine = machine as Omit<Machine, 'm_id'>
+
+    machineToUpdate = {
+      s_id: id || undefined,
+      dateSold: soldMachine.dateSold,
+      machine: sMachine,
+      truckingCompany: soldMachine.truckingCompany,
+      buyer: soldMachine.buyer,
+      buyerLocation: soldMachine.buyerLocation,
+      purchaseFob: soldMachine.purchaseFob,
+      machineCost: soldMachine.machineCost,
+      freightCost: soldMachine.freightCost,
+      paintCost: soldMachine.paintCost,
+      otherCost: soldMachine.otherCost,
+      profit: soldMachine.profit,
+      totalCost: soldMachine.totalCost,
+      notes: soldMachine.notes
+    } as SoldMachine
+  }
+
+  const response = await $fetch('/machine', {
+    method: 'PUT',
+    body: machineToUpdate,
+    query: { location }
+  })
+
+  if (response?.success) {
+    notificationStore.pushNotification('success', 'Machine updated successfully')
+    navigateTo('/')
+  }
+  else if (response?.error) {
+    console.error(response?.error)
+  }
+}
+
 export async function archiveMachine(machine: Machine) {
   const notificationStore = useNotificationStore()
 
@@ -18,7 +78,7 @@ export async function archiveMachine(machine: Machine) {
   })
 
   if (response?.success) {
-    notificationStore.pushNotification('success', 'Machine added to sold table successfully')
+    notificationStore.pushNotification('success', 'Machine added to archives successfully')
   }
 }
 
@@ -42,18 +102,6 @@ export async function deleteMachine(id?: string) {
   if (response.success) {
     machineStore.refreshMachines++
     notificationStore.pushNotification('success', 'Machine deleted successfully')
+    navigateTo('/')
   }
 }
-
-// function getMachinePostfix(location: string): string {
-//   if (location === 'located') {
-//     return 'm_id'
-//   }
-//   if (location === 'archived') {
-//     return 'a_id'
-//   }
-//   if (location === 'sold') {
-//     return 's_id'
-//   }
-//   return ''
-// }

@@ -82,16 +82,16 @@
             </div>
           </div>
           <div class="flex gap-4">
-            <ConfirmationButton class="!bg-prima-yellow" @confirm="updateMachine">
+            <ConfirmationButton class="!bg-prima-yellow" @confirm="updateMachine(id as string)">
               Update
             </ConfirmationButton>
             <Button v-if="location !== 'sold'" class="!bg-green-600" @click="sellingMachine = true">
               Sell
             </Button>
-            <ConfirmationButton v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine">
+            <ConfirmationButton v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine(machine as Machine)">
               Archive
             </ConfirmationButton>
-            <ConfirmationButton class="!bg-red-600" @confirm="deleteMachine">
+            <ConfirmationButton class="!bg-red-600" @confirm="deleteMachine(id as string)">
               Delete
             </ConfirmationButton>
           </div>
@@ -173,57 +173,6 @@ async function createMachine() {
   }
 }
 
-async function updateMachine() {
-  let machineToUpdate
-
-  if (location === 'located') {
-    machineToUpdate = machine.value as Machine
-  }
-  else if (location === 'archived') {
-    const aMachine = machine.value as Omit<Machine, 'm_id'>
-
-    machineToUpdate = {
-      a_id: id || undefined,
-      archiveDate: archivedMachine.value.archiveDate,
-      machine: aMachine
-    } as ArchivedMachine
-  }
-  else {
-    const sMachine = machine.value as Omit<Machine, 'm_id'>
-
-    machineToUpdate = {
-      s_id: id || undefined,
-      dateSold: soldMachine.value.dateSold,
-      machine: sMachine,
-      truckingCompany: soldMachine.value.truckingCompany,
-      buyer: soldMachine.value.buyer,
-      buyerLocation: soldMachine.value.buyerLocation,
-      purchaseFob: soldMachine.value.purchaseFob,
-      machineCost: soldMachine.value.machineCost,
-      freightCost: soldMachine.value.freightCost,
-      paintCost: soldMachine.value.paintCost,
-      otherCost: soldMachine.value.otherCost,
-      profit: soldMachine.value.profit,
-      totalCost: soldMachine.value.totalCost,
-      notes: soldMachine.value.notes
-    } as SoldMachine
-  }
-
-  const response = await $fetch('/machine', {
-    method: 'PUT',
-    body: machineToUpdate,
-    query: { location }
-  })
-
-  if (response?.success) {
-    notificationStore.pushNotification('success', 'Machine updated successfully')
-    navigateTo('/')
-  }
-  else if (response?.error) {
-    console.error(response?.error)
-  }
-}
-
 async function sellMachine() {
   const response = await $fetch('/machine/sold', {
     method: 'POST',
@@ -236,30 +185,6 @@ async function sellMachine() {
   if (response.success) {
     notificationStore.pushNotification('success', 'Machine added to sold table successfully')
     navigateTo(`/`)
-  }
-}
-
-async function archiveMachine() {
-  const response = await $fetch('/machine/archive', {
-    method: 'POST',
-    body: machine.value
-  })
-
-  if (response.success) {
-    notificationStore.pushNotification('success', 'Machine added to archives successfully')
-    navigateTo(`/`)
-  }
-}
-
-async function deleteMachine() {
-  const response = await $fetch('/machine', {
-    method: 'DELETE',
-    query: { id, location }
-  })
-
-  if (response.success) {
-    notificationStore.pushNotification('success', 'Machine deleted successfully')
-    navigateTo('/')
   }
 }
 

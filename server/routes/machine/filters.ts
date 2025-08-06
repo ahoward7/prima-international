@@ -2,30 +2,33 @@ import type { H3Event } from 'h3'
 
 export default defineEventHandler(async (event: H3Event): Promise<FilterOptions | void> => {
   try {
-    const [machineModels, archiveModels] = await Promise.all([
+    const [machineModels, archiveModels, soldModels] = await Promise.all([
       MachineSchema.distinct('model'),
-      ArchiveSchema.distinct('machine.model')
+      ArchiveSchema.distinct('machine.model'),
+      SoldSchema.distinct('machine.model')
     ])
-    const [machineTypes, archiveTypes] = await Promise.all([
+    const [machineTypes, archiveTypes, soldTypes] = await Promise.all([
       MachineSchema.distinct('type'),
-      ArchiveSchema.distinct('machine.type')
+      ArchiveSchema.distinct('machine.type'),
+      SoldSchema.distinct('machine.type')
     ])
-    const [machineSalesmen, archiveSalesmen] = await Promise.all([
+    const [machineSalesmen, archiveSalesmen, soldSalesmen] = await Promise.all([
       MachineSchema.distinct('salesman'),
-      ArchiveSchema.distinct('machine.salesman')
+      ArchiveSchema.distinct('machine.salesman'),
+      SoldSchema.distinct('machine.salesman')
     ])
   
     // Helper to merge, deduplicate, and convert to FilterOption[]
-    const toFilterOptions = (a: string[], b: string[]): FilterOption[] =>
-      Array.from(new Set([...a, ...b].filter(Boolean))).map((value: string) => ({
+    const toFilterOptions = (a: string[], b: string[], c: string[]): FilterOption[] =>
+      Array.from(new Set([...a, ...b, ...c].filter(Boolean))).map((value: string) => ({
         label: value,
         data: value
       }))
   
     return {
-      model: toFilterOptions(machineModels, archiveModels),
-      type: toFilterOptions(machineTypes, archiveTypes),
-      salesman: toFilterOptions(machineSalesmen, archiveSalesmen),
+      model: toFilterOptions(machineModels, archiveModels, soldModels),
+      type: toFilterOptions(machineTypes, archiveTypes, soldTypes),
+      salesman: toFilterOptions(machineSalesmen, archiveSalesmen, soldSalesmen),
       location: [
         { label: 'Located', data: 'located' },
         { label: 'Sold', data: 'sold' },

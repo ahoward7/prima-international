@@ -70,12 +70,13 @@ export function buildPipeline({ filters, sortBy, pageSize = '10', page = '1', de
  * Builds a reusable query using any Mongoose model with partial match support.
  */
 export async function buildQueryForSchema<T>(schema: any, machineFilters: MachineFilterStrings, queryOptions: QueryOptions = {}): Promise<ApiData<T>> {
-  const { search, model, type, sortBy, pageSize, page } = machineFilters
+  const { search, model, type, sortBy, pageSize, page, contactId } = machineFilters
   const { fieldPrefix = '', searchable, defaultSortField } = queryOptions
   const filters: Record<string, any> = {}
 
   if (model) filters[`${fieldPrefix}model`] = model
   if (type) filters[`${fieldPrefix}type`] = type
+  if (contactId) filters[`${fieldPrefix}contactId`] = contactId
 
   if (searchable && search) {
     const regex = { $regex: search, $options: 'i' }
@@ -89,7 +90,6 @@ export async function buildQueryForSchema<T>(schema: any, machineFilters: Machin
       { [`${fieldPrefix}location`]: regex }
     ]
   }
-
 
   const pipeline = buildPipeline({
     filters,

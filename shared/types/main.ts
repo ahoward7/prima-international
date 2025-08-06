@@ -6,6 +6,7 @@ export interface MachineFilters {
   sortBy?: string
   model?: string
   type?: string
+  contactId?: string
 }
 
 export interface MachineFilterStrings {

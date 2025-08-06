@@ -47,6 +47,9 @@ export const MachineSchema = defineMongooseModel<DBMachine>({
       { 
         'type': 1, 
         'createDate': -1 
+      },
+      {
+        'contactId': 1
       }
     ],
     options: {

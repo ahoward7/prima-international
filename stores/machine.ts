@@ -28,7 +28,8 @@ const defaultFilters: MachineFilters = {
   page: 1,
   sortBy: 'type',
   model: '',
-  type: ''
+  type: '',
+  contactId: ''
 }
 
 const emptySoldMachine: SoldMachineForm = {

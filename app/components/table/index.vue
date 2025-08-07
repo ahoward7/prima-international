@@ -55,7 +55,7 @@
             :index="index"
           />
         </template>
-        <tr v-if="machines?.data.length === 0">
+        <tr v-if="machines?.data?.length === 0">
           <td>
             <div class="px-2 py-1">
               No Results

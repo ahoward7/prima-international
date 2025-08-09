@@ -100,6 +100,7 @@ export async function archiveMachine(machineFromTable?: Machine) {
 
     if (response?.success) {
       notificationStore.pushNotification('success', 'Machine added to archives successfully')
+      navigateTo('/')
     }
   }
   catch (error: any) {

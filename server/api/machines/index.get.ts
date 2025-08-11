@@ -1,25 +1,20 @@
-import type { H3Event } from 'h3'
-import { getQuery } from 'h3'
+import { defineEventHandler, getQuery } from 'h3'
+import { ok, problem } from '~~/server/utils/api'
 
-export default defineEventHandler(async (event: H3Event) => {
+export default defineEventHandler(async (event) => {
   const filters = getQuery(event) as MachineFilterStrings
-  const location = filters.location || 'located'
+  const location = (filters.location || 'located') as MachineLocationString
 
   try {
     if (location === 'archived') {
-      return await getArchivedMachines(filters)
+      return ok(event, await getArchivedMachines(filters))
     }
-    else if (location === 'located') {
-      return await getLocatedMachines(filters)
+    if (location === 'located') {
+      return ok(event, await getLocatedMachines(filters))
     }
-    return await getSoldMachines(filters)
-  }
-  catch (error: any) {
-    return sendError(event, createError({
-      statusCode: error.statusCode || 500,
-      statusMessage: error.statusMessage || 'Server: Error getting machine',
-      data: error.data || error.message || 'Server: Unexpected error'
-    }))
+    return ok(event, await getSoldMachines(filters))
+  } catch (error: any) {
+    return problem(event, error?.statusCode || 500, 'Server: Error getting machine', error?.message || 'Server: Unexpected error')
   }
 })
 
@@ -30,7 +25,7 @@ async function getArchivedMachines(filters: MachineFilterStrings) {
     fieldPrefix: 'machine.'
   }
 
-  const { data: archives, total } = await buildQueryForSchema<ArchivedMachine>( ArchiveSchema, filters, queryOptions )
+  const { data: archives, total } = await buildQueryForSchema<ArchivedMachine>(ArchiveSchema, filters, queryOptions)
 
   const contactIds = extractContactIdsFromArchivesOrSold(archives)
   const contactMap = await getContactMap(contactIds)
@@ -53,7 +48,7 @@ async function getSoldMachines(filters: MachineFilterStrings) {
     fieldPrefix: 'machine.'
   }
 
-  const { data: soldMachines, total } = await buildQueryForSchema<SoldMachine>( SoldSchema, filters, queryOptions )
+  const { data: soldMachines, total } = await buildQueryForSchema<SoldMachine>(SoldSchema, filters, queryOptions)
 
   const contactIds = extractContactIdsFromArchivesOrSold(soldMachines)
   const contactMap = await getContactMap(contactIds)

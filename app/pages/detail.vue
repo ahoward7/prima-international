@@ -137,19 +137,24 @@ if (location && !['located', 'archived', 'sold'].includes(location as string)) {
 }
 
 if (id) {
-  const { data: dataMachine } = await useFetch<Machine>(`/machine/${id}`, {
+  const { data: dataMachineEnv } = await useFetch<{ data: Machine }>(`/api/machines/${id}`, {
     query: { location }
   })
-  
+  const dataMachine = computed(() => dataMachineEnv.value?.data)
+
   if (dataMachine.value) {
     machineStore.setMachine(dataMachine.value, location as MachineLocationString)
   }
 
-  const { data: dataMachineLocatons } = await useFetch<MachineLocations>('/machine/locations', {
-    query: {
-      serialNumber: machine.value?.serialNumber
+  const { data: dataMachineLocatonsEnv } = await useFetch<{ data: MachineLocations }>(
+    '/api/machines/locations',
+    {
+      query: {
+        serialNumber: machine.value?.serialNumber
+      }
     }
-  })
+  )
+  const dataMachineLocatons = computed(() => dataMachineLocatonsEnv.value?.data)
 
   if (dataMachineLocatons.value) {
     machineLocations.value = dataMachineLocatons.value
@@ -173,19 +178,22 @@ function setContactNew() {
 
 const fetchLocations = useDebounceFn(async () => {
   if (machine.value.serialNumber) {
-    const dataMachineLocations = await $fetch<MachineLocations>('/machine/locations', {
-      query: {
-        serialNumber: machine.value?.serialNumber
+    const dataMachineLocationsEnv = await $fetch<{ data: MachineLocations }>(
+      '/api/machines/locations',
+      {
+        query: {
+          serialNumber: machine.value?.serialNumber
+        }
       }
-    })
-  
-    if (dataMachineLocations) {
-      machineLocations.value = dataMachineLocations
+    )
+
+    if (dataMachineLocationsEnv?.data) {
+      machineLocations.value = dataMachineLocationsEnv.data
     }
 
     const locationToSearch = !id ? 'located' : location
-    const locationLength = dataMachineLocations[locationToSearch as MachineLocationString]?.length || 0
-  
+    const locationLength = dataMachineLocationsEnv?.data?.[locationToSearch as MachineLocationString]?.length || 0
+
     if (!id && locationLength > 0) {
       serialNumberMessage.value = 'This number already exists'
     }

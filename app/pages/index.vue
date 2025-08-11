@@ -69,11 +69,16 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
 
-const { data: machines, refresh } = await useFetch<ApiData<Machine | ArchivedMachine | SoldMachine>>('/machine', { 
-  method: 'GET', 
-  query: filters,
-  watch: [filters]
-})
+// New API returns an envelope { data }, unwrap for the table
+const { data: machinesEnvelope, refresh } = await useFetch<{ data: ApiData<Machine | ArchivedMachine | SoldMachine> }>(
+  '/api/machines',
+  {
+    method: 'GET',
+    query: filters,
+    watch: [filters]
+  }
+)
+const machines = computed(() => machinesEnvelope.value?.data)
 
 watch(refreshMachines, () => {
   refresh()

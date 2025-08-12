@@ -40,6 +40,7 @@ const emptySoldMachine: SoldMachineForm = {
   machineCost: undefined,
   freightCost: undefined,
   paintCost: undefined,
+  otherCost: undefined,
   profit: undefined,
   purchaseFob: "",
   notes: ""
@@ -73,6 +74,7 @@ export const useMachineStore = defineStore('machine', () => {
       soldMachine.value.machineCost = sold.machineCost
       soldMachine.value.freightCost = sold.freightCost
       soldMachine.value.paintCost = sold.paintCost
+      soldMachine.value.otherCost = sold.otherCost
       soldMachine.value.profit = sold.profit
       soldMachine.value.purchaseFob = sold.purchaseFob
       soldMachine.value.notes = sold.notes

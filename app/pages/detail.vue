@@ -36,10 +36,11 @@
       <template v-if="(id && sellingMachine) || location === 'sold'">
         <DividerLine class="w-full" />
         <div class="grid grid-cols-6 gap-8">
-          <InputNumber v-model="soldMachine.totalCost" label="Total Cost" placeholder="Total sale cost" class="col-span-2" commas price />
+          <InputNumber v-model="soldMachine.totalCost" label="Total Cost" placeholder="Total sale cost" class="col-span-1" commas price />
           <InputNumber v-model="soldMachine.machineCost" label="Machine Cost" placeholder="Machine" class="col-span-1" commas price />
           <InputNumber v-model="soldMachine.freightCost" label="Freight Cost" placeholder="Freight" class="col-span-1" commas price />
           <InputNumber v-model="soldMachine.paintCost" label="Paint Cost" placeholder="Paint" class="col-span-1" commas price />
+          <InputNumber v-model="soldMachine.otherCost" label="Other Cost" placeholder="Other" class="col-span-1" commas price />
           <InputNumber v-model="soldMachine.profit" label="Profit From Sale" placeholder="Profit" class="col-span-1" commas price />
           <InputText v-model="soldMachine.buyerLocation" label="Buyer Location" placeholder="City, Country" class="col-span-2" />
           <InputText v-model="soldMachine.truckingCompany" label="Trucking Company" placeholder="Company Name" class="col-span-2" />

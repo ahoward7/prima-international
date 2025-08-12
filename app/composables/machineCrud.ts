@@ -104,16 +104,12 @@ export async function updateMachine(id?: string) {
   }
 
   try {
-    // Server improvement: RESTful paths per resource/action
-    const url =
-      location === 'located'
-        ? `/api/machines/${id}`
-        : location === 'archived'
-          ? `/api/machines/${id}/archive`
-          : `/api/machines/${id}/sold`
+    // Single endpoint handles updates for all locations; server uses query.location to route
+    const url = `/api/machines/${id}`
 
     const res = await apiFetch<any>(url, {
       method: 'PUT',
+      query: { location },
       body: machineToUpdate
       // headers: { 'If-Match': (machine as any)?.version ?? (machine as any)?.etag ?? '' }
     })

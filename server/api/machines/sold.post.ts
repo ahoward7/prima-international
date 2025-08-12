@@ -1,25 +1,25 @@
-import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import { ok, problem } from '~~/server/utils/api'
-// ...removed zod validation import...
+import { defineEventHandler, readBody } from 'h3'
+import { SoldSchema } from '~~/server/models/sold'
+import { created, problem } from '~~/server/utils/api'
+import { generateRandom10DigitNumber } from '~~/shared/utils/generateRandom10DigitNumber'
+import { handleContactUpdateOrCreate } from '~~/shared/utils/handleContactUpdateOrCreate'
 
+// Create a sold record from a provided Machine object and sold details (no id in route)
 export default defineEventHandler(async (event) => {
   try {
-    const id = getRouterParam(event, 'id')
-    if (!id) return problem(event, 400, 'Missing id', 'Machine id route param is required')
-
     const raw = await readBody(event)
     const input = raw as any
-    const date = new Date().toISOString()
 
-    const machine = input?.machine
+    const machine: Machine | undefined = input?.machine ?? (raw as Machine)
     const sold = input?.sold
-    if (!machine || !machine.contact) return problem(event, 400, 'Invalid body', 'Missing required machine or contact information')
+    if (!machine) return problem(event, 400, 'Invalid body', 'Machine object is required')
+    if (!machine?.contact) return problem(event, 400, 'Invalid body', 'Machine contact is required')
+
+    const date = sold?.dateSold || new Date().toISOString()
 
     const { contactId, contactChanged } = await handleContactUpdateOrCreate(machine.contact, date)
 
-    const machineCopy = { ...machine }
-    machineCopy.contactId = contactId
-    machineCopy.lastModDate = date
+    const machineCopy: any = { ...machine, contactId, lastModDate: date }
     delete machineCopy.contact
     delete machineCopy.m_id
 
@@ -41,7 +41,14 @@ export default defineEventHandler(async (event) => {
     }
 
     const result = await SoldSchema.create(soldMachine)
-    return ok(event, { success: true, contactUpdated: contactChanged, machineCreated: true, machine: result.toObject?.() ?? result })
+    const payload = {
+      success: true,
+      contactUpdated: contactChanged,
+      machineCreated: true,
+      machine: result.toObject?.() ?? result
+    }
+
+    return created(event, payload, `/api/machines/${soldMachine.s_id}?location=sold`)
   }
   catch (e: any) {
     return problem(event, e?.statusCode || 500, 'Sell failed', e?.message || 'Unexpected error')

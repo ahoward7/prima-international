@@ -153,9 +153,8 @@ export async function sellMachine() {
   const notificationStore = useNotificationStore()
 
   try {
-    // Server improvement: action endpoint; return { data: SoldMachine }
-    const id = (machine as any)?.m_id || (machine as any)?.a_id
-    const res = await apiFetch<any>(`/api/machines/${id}/sold`, {
+    // New endpoint: POST /api/machines/sold accepts Machine + sold details; returns { data: SoldMachine }
+    const res = await apiFetch<any>('/api/machines/sold', {
       method: 'POST',
       body: {
         machine,

@@ -3,7 +3,7 @@
     <slot />
     <div v-if="showConfirm" class="w-[52px] absolute top-6 right-[-4px] z-10 flex justify-center gap-1 bg-white border border-prima-red">
       <Icon name="carbon:close" class="text-red-600" size="24" @click="showConfirm = false" />
-      <Icon name="carbon:checkmark" class="text-green-600" size="24" @click="emit('confirm')" />
+      <Icon name="carbon:checkmark" class="text-green-600" size="24" @click="confirm" />
     </div>
   </div>
 </template>
@@ -12,4 +12,9 @@
 const emit = defineEmits(['confirm'])
 
 const showConfirm = ref(false)
+
+function confirm() {
+  showConfirm.value = false
+  emit('confirm')
+}
 </script>

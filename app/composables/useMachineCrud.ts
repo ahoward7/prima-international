@@ -1,15 +1,5 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
-interface ProblemDetails {
-  type?: string
-  title?: string
-  status?: number
-  detail?: string
-  instance?: string
-  code?: string
-  errors?: Record<string, string[]>
-}
-type ApiEnvelope<T> = { ok: true; data: T } | { ok: false; error: ProblemDetails }
 
 async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
   try {

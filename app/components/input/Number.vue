@@ -28,18 +28,8 @@ const props = defineProps<{
   commas?: boolean
   price?: boolean
 }>()
-
 const model = defineModel<number | undefined>()
 const rawValue = ref('')
- 
-function formatNumber(value: number | undefined): string {
-  return value?.toLocaleString('en-US') ?? ''
-}
- 
-function unformatNumber(str: string): number | undefined {
-  const cleaned = str.replace(/,/g, '')
-  return cleaned === '' || Number.isNaN(Number(cleaned)) ? undefined : Number(cleaned)
-}
 
 function handleInput(event: Event) {
   const input = event.target as HTMLInputElement

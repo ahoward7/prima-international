@@ -1,6 +1,7 @@
-import type { H3Event } from 'h3'
+import { defineEventHandler } from 'h3'
+import { ok, problem } from '~~/server/utils/api'
 
-export default defineEventHandler(async (event: H3Event): Promise<FilterOptions | void> => {
+export default defineEventHandler(async (event) => {
   try {
     const [machineModels, archiveModels, soldModels] = await Promise.all([
       MachineSchema.distinct('model'),
@@ -17,15 +18,14 @@ export default defineEventHandler(async (event: H3Event): Promise<FilterOptions 
       ArchiveSchema.distinct('machine.salesman'),
       SoldSchema.distinct('machine.salesman')
     ])
-  
-    // Helper to merge, deduplicate, and convert to FilterOption[]
+
     const toFilterOptions = (a: string[], b: string[], c: string[]): FilterOption[] =>
-      Array.from(new Set([...a, ...b, ...c].filter(Boolean))).map((value: string) => ({
+      Array.from(new Set([...(a || []), ...(b || []), ...(c || [])].filter(Boolean))).map((value: string) => ({
         label: value,
         data: value
       }))
-  
-    return {
+
+    return ok(event, {
       model: toFilterOptions(machineModels, archiveModels, soldModels),
       type: toFilterOptions(machineTypes, archiveTypes, soldTypes),
       salesman: toFilterOptions(machineSalesmen, archiveSalesmen, soldSalesmen),
@@ -47,13 +47,9 @@ export default defineEventHandler(async (event: H3Event): Promise<FilterOptions 
         { label: '50', data: 50},
         { label: '100', data: 100}
       ]
-    }
+    })
   }
   catch (error: any) {
-    return sendError(event, createError({
-      statusCode: error.statusCode || 500,
-      statusMessage: error.statusMessage || 'Server: Error creating machine',
-      data: error.data || error.message || 'Server: Unexpected error'
-    }))
+    return problem(event, error?.statusCode || 500, 'Server: Error fetching filters', error?.message || 'Server: Unexpected error')
   }
 })

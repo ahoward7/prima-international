@@ -20,10 +20,14 @@ const filters = ref({
   pageSize: 50
 })
 
-const { data: contacts } = await useFetch('/contact', {
-  query: filters,
-  lazy: true
-})
+const { data: contactsEnvelope } = await useFetch<{ data: ApiData<Contact> }>(
+  '/api/contact',
+  {
+    query: filters,
+    lazy: true
+  }
+)
+const contacts = computed(() => contactsEnvelope.value?.data)
 
 const debouncedSearch = useDebounceFn((value: string) => {
   filters.value.search = value
@@ -38,8 +42,6 @@ const mappedContacts = computed(() => {
     label: `${c.name || 'NO NAME'} | ${c.company || 'NO COMPANY'}`,
     data: c.c_id
   }))
-
-  // const newContact = { label: 'Create New Contact', data: 'new' }
 
   return [...mcs]
 })

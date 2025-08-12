@@ -1,8 +1,7 @@
 <template>
   <div ref="dropdownRef" class="relative flex flex-col gap-1" :class="width">
     <label class="text-prima-red font-semibold">{{ label }}</label>
-
-    <!-- InputText replaces the trigger div -->
+    
     <InputText
       v-model="search"
       :placeholder="placeholder"
@@ -13,10 +12,8 @@
       @keydown.tab="selectHighlighted"
       @input="emitSearch"
     />
-
-    <!-- Dropdown Panel -->
+    
     <div v-if="isOpen" tabindex="-1" class="absolute top-[58px] z-10 bg-white border border-prima-red mt-1 w-full max-h-80 overflow-auto shadow-md">
-      <!-- Options -->
       <div
         v-for="(option, index) in filteredOptions"
         :key="index"
@@ -29,16 +26,14 @@
       >
         {{ option.label }}
       </div>
-
-      <!-- No Results -->
+      
       <div v-if="filteredOptions.length === 0" class="px-2 py-2 text-center">
         <div class="text-gray-400 mb-2">
           No results found.
         </div>
       </div>
     </div>
-
-    <!-- Clear Button -->
+    
     <Icon
       v-if="clearable && selectedOption && search"
       name="carbon:close"
@@ -125,8 +120,7 @@ function selectHighlighted() {
   if (!isOpen.value || filteredOptions.value.length === 0) return
   selectOption(filteredOptions.value[highlightedIndex.value] as FilterOption)
 }
-
-// Watch for external model changes and update search label accordingly
+ 
 watch(
   () => selectedOption.value,
   (val) => {

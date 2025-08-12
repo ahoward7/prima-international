@@ -48,16 +48,13 @@ function getDisplayPages() {
   const pages = []
   const pc = Math.ceil(props.total / props.pageSize)
   const p = page.value
-
-  // Always show first page
+  
   pages.push(1)
-
-  // If current page is far from start, add ellipsis
+  
   if (p > 4) {
     pages.push('e')
   }
-
-  // Add pages around current page
+  
   const start = Math.max(2, p - 1)
   const end = Math.min(pc - 1, p + 1)
 
@@ -66,13 +63,11 @@ function getDisplayPages() {
       pages.push(i)
     }
   }
-
-  // If current page is far from end, add ellipsis
+  
   if (p < pc - 3) {
     pages.push('e')
   }
-
-  // Always show last page (if it's not page 1)
+  
   if (pc > 1 && !pages.includes(pc)) {
     pages.push(pc)
   }

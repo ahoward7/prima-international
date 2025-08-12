@@ -79,7 +79,6 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 
@@ -100,12 +99,16 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue)
 })
 
-const { data: machines, pending } = await useFetch<ApiData<Machine>>('/machine', {
-  method: 'GET', 
-  query: filters,
-  watch: [filters],
-  lazy: true
-})
+const { data: machinesEnvelope, pending } = await useFetch<{ data: ApiData<Machine> }>(
+  '/api/machines',
+  {
+    method: 'GET',
+    query: filters,
+    watch: [filters],
+    lazy: true
+  }
+)
+const machines = computed(() => machinesEnvelope.value?.data)
 
 function clampString(str: string, maxLength: number, suffix: string = '...') {
   if (typeof str !== 'string') {

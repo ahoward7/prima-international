@@ -15,7 +15,8 @@ export default withNuxt(
       'brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
       'vue/brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
       'indent': ['error', 2, { SwitchCase: 1 }],
-      'semi': ['error', 'never']
+      'semi': ['error', 'never'],
+      'no-multiple-empty-lines': ['error', { max: 1 }]
     }
   }),
   {

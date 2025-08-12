@@ -1,20 +1,49 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
+interface ProblemDetails {
+  type?: string
+  title?: string
+  status?: number
+  detail?: string
+  instance?: string
+  code?: string
+  errors?: Record<string, string[]>
+}
+type ApiEnvelope<T> = { ok: true; data: T } | { ok: false; error: ProblemDetails }
+
+async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
+  try {
+    const res: any = await $fetch(url, opts)
+    if (res?.data !== undefined) return { ok: true, data: res.data as T }
+    if (res?.success === true && res?.data === undefined) return { ok: true, data: res as T }
+    if (res?.error) return { ok: false, error: res.error as ProblemDetails }
+    return { ok: true, data: res as T }
+  }
+  catch (e: any) {
+    return {
+      ok: false,
+      error: {
+        title: e?.statusMessage || 'Request error',
+        status: e?.statusCode || 500,
+        detail: e?.data || e?.message || 'Client: Unexpected error'
+      }
+    }
+  }
+}
 
 export async function createMachine() {
   const { machine } = useMachineStore()
   const notificationStore = useNotificationStore()
 
   try {
-    const response = await $fetch('/machine', {
+    const res = await apiFetch<Machine>('/api/machines', {
       method: 'POST',
       body: machine
     })
-  
-    if (response.success) {
-      notificationStore.pushNotification('success', 'Machine created successfully')
-      navigateTo('/')
-    }
+    if (!res.ok) return handleError(res.error, 'Error creating machine')
+
+    notificationStore.pushNotification('success', 'Machine created successfully')
+    navigateTo('/')
   }
   catch (error: any) {
     return handleError(error, 'Error creating machine')
@@ -70,22 +99,22 @@ export async function updateMachine(id?: string) {
   }
 
   try {
-    const response = await $fetch('/machine', {
-      method: 'PUT',
-      body: machineToUpdate,
-      query: { location }
-    })
+    const url = `/api/machines/${id}`
 
-    if (response?.success) {
-      notificationStore.pushNotification('success', 'Machine updated successfully')
-      navigateTo('/')
-    }
+    const res = await apiFetch<any>(url, {
+      method: 'PUT',
+      query: { location },
+      body: machineToUpdate
+    })
+    if (!res.ok) return handleError(res.error, 'Error updating machine')
+
+    notificationStore.pushNotification('success', 'Machine updated successfully')
+    navigateTo('/')
   }
   catch (error: any) {
     return handleError(error, 'Error updating machine')
   }
 }
-
 
 export async function archiveMachine(machineFromTable?: Machine) {
   const { machine } = useMachineStore()
@@ -93,15 +122,14 @@ export async function archiveMachine(machineFromTable?: Machine) {
   const machineToArchive = machineFromTable || machine
 
   try {
-    const response = await $fetch<{ success: boolean }>('/machine/archive', {
+    const res = await apiFetch<any>('/api/machines/archive', {
       method: 'POST',
       body: machineToArchive
     })
+    if (!res.ok) return handleError(res.error, 'Error archiving machine')
 
-    if (response?.success) {
-      notificationStore.pushNotification('success', 'Machine added to archives successfully')
-      navigateTo('/')
-    }
+    notificationStore.pushNotification('success', 'Machine added to archives successfully')
+    navigateTo('/')
   }
   catch (error: any) {
     return handleError(error, 'Error archiving machine')
@@ -113,18 +141,17 @@ export async function sellMachine() {
   const notificationStore = useNotificationStore()
 
   try {
-    const response = await $fetch('/machine/sold', {
+    const res = await apiFetch<any>('/api/machines/sold', {
       method: 'POST',
       body: {
         machine,
         sold: soldMachine
       }
     })
+    if (!res.ok) return handleError(res.error, 'Error selling machine')
 
-    if (response.success) {
-      notificationStore.pushNotification('success', 'Machine added to sold table successfully')
-      navigateTo('/')
-    }
+    notificationStore.pushNotification('success', 'Machine added to sold table successfully')
+    navigateTo('/')
   }
   catch (error: any) {
     return handleError(error, 'Error selling machine')
@@ -138,16 +165,15 @@ export async function deleteMachine(id?: string) {
   const notificationStore = useNotificationStore()
 
   try {
-    const response = await $fetch<{ success: boolean }>('/machine', {
+    const res = await apiFetch<any>(`/api/machines/${id}`, {
       method: 'DELETE',
-      query: { id, location: machineStore.filters.location }
+      query: { location: machineStore.filters.location }
     })
+    if (!res.ok) return handleError(res.error, 'Error deleting machine')
 
-    if (response.success) {
-      machineStore.refreshMachines++
-      notificationStore.pushNotification('success', 'Machine deleted successfully')
-      navigateTo('/')
-    }
+    machineStore.refreshMachines++
+    notificationStore.pushNotification('success', 'Machine deleted successfully')
+    navigateTo('/')
   }
   catch (error: any) {
     return handleError(error, 'Error deleting machine')
@@ -158,9 +184,13 @@ function handleError(error: any, defaultMessage: string) {
   const notificationStore = useNotificationStore()
   notificationStore.pushNotification('error', defaultMessage)
 
+  const statusCode = error?.status ?? error?.statusCode ?? 500
+  const statusMessage = error?.title ?? error?.statusMessage ?? defaultMessage
+  const data = error?.detail ?? error?.data ?? error?.message ?? 'Client: Unexpected error'
+
   return createError({
-    statusCode: error.statusCode || 500,
-    statusMessage: error.statusMessage || defaultMessage,
-    data: error.data || error.message || 'Client: Unexpected error'
+    statusCode,
+    statusMessage,
+    data
   })
 }

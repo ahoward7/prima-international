@@ -19,7 +19,8 @@ export default defineEventHandler(async (event) => {
 
     setResponseStatus(event, 204)
     return null
-  } catch (e: any) {
+  }
+  catch (e: any) {
     return problem(event, e?.statusCode || 500, 'Delete failed', e?.message || 'Unexpected error')
   }
 })

@@ -181,7 +181,8 @@ export async function deleteMachine(id?: string) {
   try {
     // Server improvement: DELETE /api/machines/:id -> 204 No Content
     const res = await apiFetch<any>(`/api/machines/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      query: { location: machineStore.filters.location }
     })
     if (!res.ok) return handleError(res.error, 'Error deleting machine')
 

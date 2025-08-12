@@ -1,6 +1,3 @@
-import { defineEventHandler, getQuery, getRouterParam } from 'h3'
-import { ok, problem } from '~~/server/utils/api'
-
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   if (!id) return problem(event, 400, 'Missing id', 'Machine id route param is required')

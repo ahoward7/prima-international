@@ -1,10 +1,3 @@
-import { defineEventHandler, getQuery, getRouterParam, readBody } from 'h3'
-import { ArchiveSchema } from '~~/server/models/archive'
-import { MachineSchema } from '~~/server/models/machine'
-import { SoldSchema } from '~~/server/models/sold'
-import { ok, problem } from '~~/server/utils/api'
-import { handleContactUpdateOrCreate } from '~~/shared/utils/handleContactUpdateOrCreate'
-
 export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, 'id')
@@ -15,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
     const { location } = getQuery(event)
     const date = new Date().toISOString()
-
+    
     if (location === 'located') {
       const locatedMachine = body as MachineForm
       if (!locatedMachine?.m_id && !id) return problem(event, 400, 'Invalid body', 'm_id is required')

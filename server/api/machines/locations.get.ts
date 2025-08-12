@@ -1,6 +1,3 @@
-import { defineEventHandler, getQuery } from 'h3'
-import { ok } from '~~/server/utils/api'
-
 export default defineEventHandler(async (event) => {
   const { serialNumber }: { [key: string]: string } = getQuery(event)
 

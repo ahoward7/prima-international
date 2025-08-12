@@ -1,6 +1,3 @@
-import { defineEventHandler, getQuery } from 'h3'
-import { ok, problem } from '~~/server/utils/api'
-
 export default defineEventHandler(async (event) => {
   try {
     const { search, page = '1', pageSize = '10' } = getQuery(event)

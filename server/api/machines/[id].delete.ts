@@ -1,6 +1,3 @@
-import { defineEventHandler, getQuery, getRouterParam, setResponseStatus } from 'h3'
-import { problem } from '~~/server/utils/api'
-
 export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, 'id')

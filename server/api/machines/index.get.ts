@@ -1,6 +1,3 @@
-import { defineEventHandler, getQuery } from 'h3'
-import { ok, problem } from '~~/server/utils/api'
-
 export default defineEventHandler(async (event) => {
   const filters = getQuery(event) as MachineFilterStrings
   const location = (filters.location || 'located') as MachineLocationString

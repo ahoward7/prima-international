@@ -1,6 +1,3 @@
-import { defineEventHandler } from 'h3'
-import { ok, problem } from '~~/server/utils/api'
-
 export default defineEventHandler(async (event) => {
   try {
     const [machineModels, archiveModels, soldModels] = await Promise.all([

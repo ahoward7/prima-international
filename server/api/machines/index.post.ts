@@ -1,7 +1,3 @@
-import { defineEventHandler, readBody } from 'h3'
-import { created, problem } from '~~/server/utils/api'
-// ...removed zod validation import...
-
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody<unknown>(event)

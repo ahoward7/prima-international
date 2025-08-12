@@ -1,9 +1,3 @@
-import { defineEventHandler, readBody } from 'h3'
-import { SoldSchema } from '~~/server/models/sold'
-import { created, problem } from '~~/server/utils/api'
-import { generateRandom10DigitNumber } from '~~/shared/utils/generateRandom10DigitNumber'
-import { handleContactUpdateOrCreate } from '~~/shared/utils/handleContactUpdateOrCreate'
-
 export default defineEventHandler(async (event) => {
   try {
     const raw = await readBody<unknown>(event)

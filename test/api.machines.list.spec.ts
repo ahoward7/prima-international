@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { setup, $fetch } from '@nuxt/test-utils/e2e'
+import { $fetch, setup } from '@nuxt/test-utils/e2e'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as mocks from './mocks/nuxt-mongoose'
 
 vi.mock('#nuxt/mongoose', async () => await import('./mocks/nuxt-mongoose'))
@@ -23,7 +23,7 @@ const machine = {
 }
 const contact = { c_id: 'C1', name: 'Name', company: 'Co', createDate: 'd', lastModDate: 'd' }
 
-describe('GET /api/machines list', async () => {
+describe('get /api/machines list', async () => {
   await setup({ server: true, browser: false, rootDir: process.cwd() })
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe('GET /api/machines list', async () => {
   })
 
   it('returns located machines joined with contact', async () => {
-  const res: any = await $fetch('/api/machines?location=located')
+    const res: any = await $fetch('/api/machines?location=located')
     expect(res).toHaveProperty('data')
     expect(res.data.total).toBe(1)
     expect(res.data.data[0].contact?.c_id).toBe('C1')

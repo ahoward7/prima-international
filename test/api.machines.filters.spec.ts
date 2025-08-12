@@ -1,13 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { setup, $fetch } from '@nuxt/test-utils/e2e'
+import { $fetch, setup } from '@nuxt/test-utils/e2e'
+// Explicitly mock the actual schema import paths used in the API
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as mocks from './mocks/nuxt-mongoose'
 
-// Mock auto-imported models by aliasing the module Nuxt compiles to.
-vi.mock('#nuxt/mongoose', async () => {
-  return await import('./mocks/nuxt-mongoose')
+vi.mock('~/server/models/machine', async () => {
+  return { MachineSchema: (await import('./mocks/nuxt-mongoose')).MachineSchema }
+})
+vi.mock('~/server/models/archive', async () => {
+  return { ArchiveSchema: (await import('./mocks/nuxt-mongoose')).ArchiveSchema }
+})
+vi.mock('~/server/models/sold', async () => {
+  return { SoldSchema: (await import('./mocks/nuxt-mongoose')).SoldSchema }
 })
 
-describe('GET /api/machines/filters', async () => {
+describe('get /api/machines/filters', async () => {
   await setup({ server: true, browser: false, rootDir: process.cwd() })
 
   beforeEach(() => {

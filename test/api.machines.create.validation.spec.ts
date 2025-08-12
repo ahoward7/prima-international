@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeAll } from 'vitest'
-import { setup, $fetch } from '@nuxt/test-utils/e2e'
+import { $fetch, setup } from '@nuxt/test-utils/e2e'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 vi.mock('#nuxt/mongoose', async () => await import('./mocks/nuxt-mongoose'))
 
@@ -13,7 +13,7 @@ vi.mock('~/shared/utils/generateRandom10DigitNumber', () => ({
   generateRandom10DigitNumber: () => '1234567890'
 }))
 
-describe('POST /api/machines (validation)', async () => {
+describe('post /api/machines (validation)', async () => {
   await setup({ server: true, browser: false, rootDir: process.cwd() })
 
   it('rejects invalid body with Zod problem details', async () => {

@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { setup, $fetch } from '@nuxt/test-utils/e2e'
+import { $fetch, setup } from '@nuxt/test-utils/e2e'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as mocks from './mocks/nuxt-mongoose'
 
 vi.mock('#nuxt/mongoose', async () => await import('./mocks/nuxt-mongoose'))
 
-describe('GET /api/machines/:id by location', async () => {
+describe('get /api/machines/:id by location', async () => {
   await setup({ server: true, browser: false, rootDir: process.cwd() })
 
   beforeEach(() => {

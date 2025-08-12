@@ -43,8 +43,6 @@ const mappedContacts = computed(() => {
     data: c.c_id
   }))
 
-  // const newContact = { label: 'Create New Contact', data: 'new' }
-
   return [...mcs]
 })
 

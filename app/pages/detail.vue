@@ -1,7 +1,6 @@
 <template>
   <div class="flex justify-center py-12 px-8">
     <div class="w-[920px] flex flex-col items-center gap-8">
-      <!-- Header -->
       <div class="w-full">
         <NuxtLink to="/" class="flex items-center text-prima-red">
           <Icon name="carbon:chevron-left" size="28" />
@@ -9,8 +8,7 @@
         </NuxtLink>
         <HeaderPrimary>Machine Detail</HeaderPrimary>
       </div>
-
-      <!-- Contact -->
+      
       <div class="flex flex-col gap-4 w-full">
         <div class="grid grid-cols-2 gap-8">
           <InputContactSearch class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
@@ -18,8 +16,7 @@
           <InputText v-model="machine.contact.company" label="Company Name" placeholder="Company Inc." @input="setContactNew" />
         </div>
       </div>
-
-      <!-- Machine -->
+      
       <template v-if="machine">
         <DividerLine class="w-full" />
         <div class="grid grid-cols-6 gap-8">
@@ -35,8 +32,7 @@
           <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-6" />
         </div>
       </template>
-
-      <!-- Selling Machine -->
+      
       <template v-if="(id && sellingMachine) || location === 'sold'">
         <DividerLine class="w-full" />
         <div class="grid grid-cols-6 gap-8">
@@ -51,8 +47,7 @@
           <InputTextarea v-model="soldMachine.notes" label="Notes On Sale" placeholder="Other information..." class="col-span-6" />
         </div>
       </template>
-
-      <!-- Machine Actions -->
+      
       <template v-if="id && !sellingMachine">
         <DividerLine class="w-full" />
         <div class="w-full flex items-center gap-2 bg-prima-yellow/20 px-4 py-3">
@@ -97,8 +92,7 @@
           </div>
         </div>
       </template>
-
-      <!-- Selling Machine Buttons -->
+      
       <div v-if="id && sellingMachine" class="w-full flex justify-end gap-4">
         <ButtonConfirmation class="!bg-red-600" @confirm="sellingMachine = false">
           Cancel
@@ -107,8 +101,7 @@
           Sell Machine
         </ButtonConfirmation>
       </div>
-
-      <!-- Creating Machine Buttons -->
+      
       <div v-else-if="!id" class="w-full flex justify-end">
         <ButtonConfirmation class="!bg-green-600" @confirm="createMachine()">
           Create Machine

@@ -1,7 +1,5 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
-
-// RFC7807-style error and response envelope used by the server
 interface ProblemDetails {
   type?: string
   title?: string
@@ -11,10 +9,8 @@ interface ProblemDetails {
   code?: string
   errors?: Record<string, string[]>
 }
-// Change to discriminated union so TS can narrow on `ok`
 type ApiEnvelope<T> = { ok: true; data: T } | { ok: false; error: ProblemDetails }
 
-// Thin wrapper that accepts both the new { data } envelope and legacy { success } shapes
 async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
   try {
     const res: any = await $fetch(url, opts)
@@ -40,7 +36,6 @@ export async function createMachine() {
   const notificationStore = useNotificationStore()
 
   try {
-    // Server improvement: return 201, Location header, and { data: Machine }
     const res = await apiFetch<Machine>('/api/machines', {
       method: 'POST',
       body: machine
@@ -104,14 +99,12 @@ export async function updateMachine(id?: string) {
   }
 
   try {
-    // Single endpoint handles updates for all locations; server uses query.location to route
     const url = `/api/machines/${id}`
 
     const res = await apiFetch<any>(url, {
       method: 'PUT',
       query: { location },
       body: machineToUpdate
-      // headers: { 'If-Match': (machine as any)?.version ?? (machine as any)?.etag ?? '' }
     })
     if (!res.ok) return handleError(res.error, 'Error updating machine')
 
@@ -129,7 +122,6 @@ export async function archiveMachine(machineFromTable?: Machine) {
   const machineToArchive = machineFromTable || machine
 
   try {
-    // New endpoint: POST /api/machines/archive accepts a Machine object; returns { data: ArchivedMachine }
     const res = await apiFetch<any>('/api/machines/archive', {
       method: 'POST',
       body: machineToArchive
@@ -149,14 +141,12 @@ export async function sellMachine() {
   const notificationStore = useNotificationStore()
 
   try {
-    // New endpoint: POST /api/machines/sold accepts Machine + sold details; returns { data: SoldMachine }
     const res = await apiFetch<any>('/api/machines/sold', {
       method: 'POST',
       body: {
         machine,
         sold: soldMachine
       }
-      // headers: { 'Idempotency-Key': crypto.randomUUID() }
     })
     if (!res.ok) return handleError(res.error, 'Error selling machine')
 
@@ -175,7 +165,6 @@ export async function deleteMachine(id?: string) {
   const notificationStore = useNotificationStore()
 
   try {
-    // Server improvement: DELETE /api/machines/:id -> 204 No Content
     const res = await apiFetch<any>(`/api/machines/${id}`, {
       method: 'DELETE',
       query: { location: machineStore.filters.location }
@@ -195,7 +184,6 @@ function handleError(error: any, defaultMessage: string) {
   const notificationStore = useNotificationStore()
   notificationStore.pushNotification('error', defaultMessage)
 
-  // Prefer RFC7807 fields when available
   const statusCode = error?.status ?? error?.statusCode ?? 500
   const statusMessage = error?.title ?? error?.statusMessage ?? defaultMessage
   const data = error?.detail ?? error?.data ?? error?.message ?? 'Client: Unexpected error'

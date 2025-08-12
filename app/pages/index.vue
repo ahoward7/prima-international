@@ -68,8 +68,7 @@ const debouncedSearch = useDebounceFn((value: string) => {
 watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
-
-// New API returns an envelope { data }, unwrap for the table
+ 
 const { data: machinesEnvelope, refresh } = await useFetch<{ data: ApiData<Machine | ArchivedMachine | SoldMachine> }>(
   '/api/machines',
   {

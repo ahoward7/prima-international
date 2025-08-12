@@ -31,13 +31,11 @@ const props = defineProps<{
 
 const model = defineModel<number | undefined>()
 const rawValue = ref('')
-
-// Format number with commas
+ 
 function formatNumber(value: number | undefined): string {
   return value?.toLocaleString('en-US') ?? ''
 }
-
-// Remove commas from string and parse to number
+ 
 function unformatNumber(str: string): number | undefined {
   const cleaned = str.replace(/,/g, '')
   return cleaned === '' || Number.isNaN(Number(cleaned)) ? undefined : Number(cleaned)

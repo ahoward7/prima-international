@@ -133,12 +133,10 @@ export async function archiveMachine(machineFromTable?: Machine) {
   const machineToArchive = machineFromTable || machine
 
   try {
-    // Server improvement: action endpoint with id in path; return { data: ArchivedMachine }
-    const id = (machineToArchive as any)?.m_id
-    const res = await apiFetch<any>(`/api/machines/${id}/archive`, {
+    // New endpoint: POST /api/machines/archive accepts a Machine object; returns { data: ArchivedMachine }
+    const res = await apiFetch<any>('/api/machines/archive', {
       method: 'POST',
-      body: { archiveDate: (machine as any)?.archiveDate } // or include only needed fields
-      // headers: { 'Idempotency-Key': crypto.randomUUID() }
+      body: machineToArchive
     })
     if (!res.ok) return handleError(res.error, 'Error archiving machine')
 

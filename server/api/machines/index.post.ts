@@ -10,14 +10,15 @@ export default defineEventHandler(async (event) => {
     const date = new Date().toISOString()
     const { contactId, contactChanged } = await handleContactUpdateOrCreate(machine.contact, date)
 
+    const { contact, ...machineRest } = machine
     const toCreate: DBMachine = {
-      ...machine,
+      ...machineRest,
+      salesman: machineRest.salesman ?? '',
       m_id: generateRandom10DigitNumber(),
       contactId,
       createDate: date,
       lastModDate: date
-    } as unknown as DBMachine
-    delete (toCreate as any).contact
+    }
 
     const result = await MachineSchema.create(toCreate)
     const payload = {

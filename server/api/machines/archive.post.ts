@@ -1,17 +1,20 @@
-// Create an archived record from a provided Machine object (no id in route)
 export default defineEventHandler(async (event) => {
   try {
     const raw = await readBody<unknown>(event)
-
-    // Accept either a Machine directly or { machine: Machine, archiveDate?: string }
-    const maybeWrapper = raw as any
-    const machine: Machine | undefined = maybeWrapper?.machine ?? (raw as Machine)
+    let machine: Machine | undefined
+    let archiveDate: string | undefined
+    if (typeof raw === 'object' && raw !== null && 'machine' in raw) {
+      machine = (raw as { machine: Machine }).machine
+      archiveDate = (raw as { archiveDate?: string }).archiveDate
+    }
+    else {
+      machine = raw as Machine
+    }
     if (!machine) return problem(event, 400, 'Invalid body', 'Machine object is required')
     if (!machine?.contact) return problem(event, 400, 'Invalid body', 'Machine contact is required')
 
-    const date = maybeWrapper?.archiveDate || new Date().toISOString()
+    const date = archiveDate || new Date().toISOString()
 
-    // Upsert contact and construct machine payload for archive
     const { contactId, contactChanged } = await handleContactUpdateOrCreate(machine.contact, date)
 
     const machineCopy: any = { ...machine, contactId, lastModDate: date }

@@ -4,14 +4,18 @@ import { created, problem } from '~~/server/utils/api'
 import { generateRandom10DigitNumber } from '~~/shared/utils/generateRandom10DigitNumber'
 import { handleContactUpdateOrCreate } from '~~/shared/utils/handleContactUpdateOrCreate'
 
-// Create a sold record from a provided Machine object and sold details (no id in route)
 export default defineEventHandler(async (event) => {
   try {
-    const raw = await readBody(event)
-    const input = raw as any
-
-    const machine: Machine | undefined = input?.machine ?? (raw as Machine)
-    const sold = input?.sold
+    const raw = await readBody<unknown>(event)
+    let machine: Machine | undefined
+    let sold: Partial<Omit<SoldMachine, 'machine' | 's_id'>> | undefined
+    if (typeof raw === 'object' && raw !== null && 'machine' in raw) {
+      machine = (raw as { machine: Machine }).machine
+      sold = (raw as { sold?: Partial<Omit<SoldMachine, 'machine' | 's_id'>> }).sold
+    }
+    else {
+      machine = raw as Machine
+    }
     if (!machine) return problem(event, 400, 'Invalid body', 'Machine object is required')
     if (!machine?.contact) return problem(event, 400, 'Invalid body', 'Machine contact is required')
 

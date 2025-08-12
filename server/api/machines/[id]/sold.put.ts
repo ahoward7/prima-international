@@ -22,7 +22,8 @@ export default defineEventHandler(async (event) => {
     await SoldSchema.updateOne({ s_id: toPut.s_id || id }, { $set: toPut })
     const updated = await SoldSchema.findOne({ s_id: toPut.s_id || id }).lean()
     return ok(event, { success: true, contactUpdated: contactChanged, machineUpdated: true, machine: updated })
-  } catch (e: any) {
+  }
+  catch (e: any) {
     return problem(event, e?.statusCode || 500, 'Sold update failed', e?.message || 'Unexpected error')
   }
 })

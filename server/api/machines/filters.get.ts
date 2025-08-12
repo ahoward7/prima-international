@@ -48,7 +48,8 @@ export default defineEventHandler(async (event) => {
         { label: '100', data: 100}
       ]
     })
-  } catch (error: any) {
+  }
+  catch (error: any) {
     return problem(event, error?.statusCode || 500, 'Server: Error fetching filters', error?.message || 'Server: Unexpected error')
   }
 })

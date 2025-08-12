@@ -7,10 +7,10 @@ export default defineEventHandler(async (event) => {
     const id = getRouterParam(event, 'id')
     if (!id) return problem(event, 400, 'Missing id', 'Machine id route param is required')
 
-  const raw = await readBody<unknown>(event)
-  const parsed = SoldBodySchema.safeParse(raw)
-  if (!parsed.success) return zodProblem(event, parsed.error)
-  const input = parsed.data as { machine: Machine, sold: Partial<DBSoldMachine> }
+    const raw = await readBody<unknown>(event)
+    const parsed = SoldBodySchema.safeParse(raw)
+    if (!parsed.success) return zodProblem(event, parsed.error)
+    const input = parsed.data as { machine: Machine, sold: Partial<DBSoldMachine> }
     const date = new Date().toISOString()
 
     const machine = input?.machine
@@ -44,7 +44,8 @@ export default defineEventHandler(async (event) => {
 
     const result = await SoldSchema.create(soldMachine)
     return ok(event, { success: true, contactUpdated: contactChanged, machineCreated: true, machine: result.toObject?.() ?? result })
-  } catch (e: any) {
+  }
+  catch (e: any) {
     return problem(event, e?.statusCode || 500, 'Sell failed', e?.message || 'Unexpected error')
   }
 })

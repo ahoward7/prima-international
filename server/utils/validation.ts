@@ -42,7 +42,7 @@ export const ArchiveBodySchema = z.union([
 export const SoldBodySchema = z.object({
   machine: MachineCreateSchema,
   sold: z.object({
-  dateSold: z.string().optional(),
+    dateSold: z.string().optional(),
     truckingCompany: z.string().optional(),
     buyer: z.string().optional(),
     buyerLocation: z.string().optional(),

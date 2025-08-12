@@ -4,10 +4,10 @@ import { MachineCreateSchema, zodProblem } from '~~/server/utils/validation'
 
 export default defineEventHandler(async (event) => {
   try {
-  const body = await readBody<unknown>(event)
-  const parsed = MachineCreateSchema.safeParse(body)
-  if (!parsed.success) return zodProblem(event, parsed.error)
-  const machine = parsed.data as MachineForm
+    const body = await readBody<unknown>(event)
+    const parsed = MachineCreateSchema.safeParse(body)
+    if (!parsed.success) return zodProblem(event, parsed.error)
+    const machine = parsed.data as MachineForm
 
     const date = new Date().toISOString()
     const { contactId, contactChanged } = await handleContactUpdateOrCreate(machine.contact, date)
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     } as unknown as DBMachine
     delete (toCreate as any).contact
 
-  const result = await MachineSchema.create(toCreate)
+    const result = await MachineSchema.create(toCreate)
     const payload = {
       success: true,
       contactUpdated: contactChanged,
@@ -30,7 +30,8 @@ export default defineEventHandler(async (event) => {
     }
 
     return created(event, payload, `/api/machines/${toCreate.m_id}`)
-  } catch (e: any) {
+  }
+  catch (e: any) {
     return problem(event, e?.statusCode || 500, 'Create failed', e?.message || 'Unexpected error')
   }
 })

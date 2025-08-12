@@ -10,7 +10,8 @@ export default defineEventHandler(async (event) => {
     const fetchFn = getFetchFunction((location as string) || 'sold')
     const data = await fetchFn(id)
     return ok(event, data)
-  } catch (error: any) {
+  }
+  catch (error: any) {
     return problem(event, error?.statusCode || 500, 'Fetch failed', error?.message || 'Unexpected error')
   }
 })

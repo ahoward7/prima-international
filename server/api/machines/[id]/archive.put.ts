@@ -24,7 +24,8 @@ export default defineEventHandler(async (event) => {
     await ArchiveSchema.updateOne({ a_id: toPut.a_id || id }, { $set: toPut })
     const updated = await ArchiveSchema.findOne({ a_id: toPut.a_id || id }).lean()
     return ok(event, { success: true, contactUpdated: contactChanged, machineUpdated: true, machine: updated })
-  } catch (e: any) {
+  }
+  catch (e: any) {
     return problem(event, e?.statusCode || 500, 'Archive update failed', e?.message || 'Unexpected error')
   }
 })

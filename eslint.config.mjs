@@ -12,6 +12,9 @@ export default withNuxt(
       'node/prefer-global/process': 'off',
       'no-console': ['warn', { allow: ['info', 'error'] }],
       'comma-dangle': ['error', 'never'],
+      // Enforce Stroustrup style so `else`/`catch` start on the next line after the closing brace
+      'brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
+      'vue/brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
       'indent': ['error', 2, { SwitchCase: 1 }],
       'semi': ['error', 'never']
     }

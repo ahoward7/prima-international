@@ -13,7 +13,8 @@ export default defineEventHandler(async (event) => {
       return ok(event, await getLocatedMachines(filters))
     }
     return ok(event, await getSoldMachines(filters))
-  } catch (error: any) {
+  }
+  catch (error: any) {
     return problem(event, error?.statusCode || 500, 'Server: Error getting machine', error?.message || 'Server: Unexpected error')
   }
 })

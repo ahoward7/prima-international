@@ -7,10 +7,10 @@ export default defineEventHandler(async (event) => {
     const id = getRouterParam(event, 'id')
     if (!id) return problem(event, 400, 'Missing id', 'Machine id route param is required')
 
-  const raw = await readBody<unknown>(event)
-  const parsed = ArchiveBodySchema.safeParse(raw)
-  if (!parsed.success) return zodProblem(event, parsed.error)
-  const body = parsed.data as { archiveDate?: string } | Machine
+    const raw = await readBody<unknown>(event)
+    const parsed = ArchiveBodySchema.safeParse(raw)
+    if (!parsed.success) return zodProblem(event, parsed.error)
+    const body = parsed.data as { archiveDate?: string } | Machine
     const date = body && 'archiveDate' in (body as any) && (body as any).archiveDate
       ? (body as any).archiveDate
       : new Date().toISOString()
@@ -24,7 +24,8 @@ export default defineEventHandler(async (event) => {
       const { contactId, contactChanged: changed } = await handleContactUpdateOrCreate(fullMachine.contact, date)
       contactChanged = changed
       machineCopy = { ...fullMachine, contactId, lastModDate: date }
-    } else {
+    }
+    else {
       const existing = await MachineSchema.findOne({ m_id: id }).lean()
       if (!existing) return problem(event, 404, 'Not found', 'Machine not found')
       machineCopy = { ...existing, lastModDate: date }
@@ -41,7 +42,8 @@ export default defineEventHandler(async (event) => {
 
     const result = await ArchiveSchema.create(archive)
     return ok(event, { success: true, contactUpdated: contactChanged, machineCreated: true, machine: result.toObject?.() ?? result })
-  } catch (e: any) {
+  }
+  catch (e: any) {
     return problem(event, e?.statusCode || 500, 'Archive failed', e?.message || 'Unexpected error')
   }
 })

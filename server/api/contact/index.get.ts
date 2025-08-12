@@ -25,7 +25,8 @@ export default defineEventHandler(async (event) => {
     ])
 
     return ok(event, { data: contacts, total } satisfies ApiData<Contact>)
-  } catch (error: any) {
+  }
+  catch (error: any) {
     return problem(event, error?.statusCode || 500, 'Server: Error fetching contacts', error?.message || 'Server: Unexpected error')
   }
 })

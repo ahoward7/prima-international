@@ -1,13 +1,11 @@
 import { defineEventHandler, readBody } from 'h3'
 import { created, problem } from '~~/server/utils/api'
-import { MachineCreateSchema, zodProblem } from '~~/server/utils/validation'
+// ...removed zod validation import...
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody<unknown>(event)
-    const parsed = MachineCreateSchema.safeParse(body)
-    if (!parsed.success) return zodProblem(event, parsed.error)
-    const machine = parsed.data as MachineForm
+    const machine = body as MachineForm
 
     const date = new Date().toISOString()
     const { contactId, contactChanged } = await handleContactUpdateOrCreate(machine.contact, date)

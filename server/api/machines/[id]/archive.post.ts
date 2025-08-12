@@ -1,6 +1,6 @@
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
 import { ok, problem } from '~~/server/utils/api'
-import { ArchiveBodySchema, zodProblem } from '~~/server/utils/validation'
+// ...removed zod validation import...
 
 export default defineEventHandler(async (event) => {
   try {
@@ -8,9 +8,7 @@ export default defineEventHandler(async (event) => {
     if (!id) return problem(event, 400, 'Missing id', 'Machine id route param is required')
 
     const raw = await readBody<unknown>(event)
-    const parsed = ArchiveBodySchema.safeParse(raw)
-    if (!parsed.success) return zodProblem(event, parsed.error)
-    const body = parsed.data as { archiveDate?: string } | Machine
+    const body = raw as { archiveDate?: string } | Machine
     const date = body && 'archiveDate' in (body as any) && (body as any).archiveDate
       ? (body as any).archiveDate
       : new Date().toISOString()

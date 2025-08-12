@@ -34,13 +34,23 @@ export const MachineCreateSchema = z.object({
   contact: ContactFormSchema.extend({ c_id: z.string().optional() })
 })
 
+export const MachinePostSchema = MachineCreateSchema.extend({
+  createDate: z.string().optional(),
+  lastModDate: z.string().optional()
+})
+
+export const MachineArchiveSchema = MachineCreateSchema.extend({
+  createDate: z.string().optional(),
+  lastModDate: z.string().optional()
+})
+
 export const ArchiveBodySchema = z.union([
   z.object({ archiveDate: z.string().optional() }),
-  MachineCreateSchema // allow full machine body as an alternative
+  MachineArchiveSchema
 ])
 
 export const SoldBodySchema = z.object({
-  machine: MachineCreateSchema,
+  machine: MachinePostSchema,
   sold: z.object({
     dateSold: z.string().optional(),
     truckingCompany: z.string().optional(),

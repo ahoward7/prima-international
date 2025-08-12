@@ -156,10 +156,13 @@ export async function sellMachine() {
 
   try {
     // Server improvement: action endpoint; return { data: SoldMachine }
-    const id = (machine as any)?.m_id
+    const id = (machine as any)?.m_id || (machine as any)?.a_id
     const res = await apiFetch<any>(`/api/machines/${id}/sold`, {
       method: 'POST',
-      body: soldMachine
+      body: {
+        machine,
+        sold: soldMachine
+      }
       // headers: { 'Idempotency-Key': crypto.randomUUID() }
     })
     if (!res.ok) return handleError(res.error, 'Error selling machine')

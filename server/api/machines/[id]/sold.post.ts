@@ -7,10 +7,12 @@ export default defineEventHandler(async (event) => {
     const id = getRouterParam(event, 'id')
     if (!id) return problem(event, 400, 'Missing id', 'Machine id route param is required')
 
-    const raw = await readBody<unknown>(event)
+    const raw = await readBody(event)
     const parsed = SoldBodySchema.safeParse(raw)
+
     if (!parsed.success) return zodProblem(event, parsed.error)
-    const input = parsed.data as { machine: Machine, sold: Partial<DBSoldMachine> }
+
+    const input = parsed.data as any
     const date = new Date().toISOString()
 
     const machine = input?.machine
@@ -22,12 +24,12 @@ export default defineEventHandler(async (event) => {
     const machineCopy = { ...machine }
     machineCopy.contactId = contactId
     machineCopy.lastModDate = date
-    delete (machineCopy as any).contact
-    delete (machineCopy as any).m_id
+    delete machineCopy.contact
+    delete machineCopy.m_id
 
     const soldMachine: SoldMachine = {
       s_id: generateRandom10DigitNumber(),
-      machine: machineCopy as unknown as Omit<Machine, 'm_id'>,
+      machine: machineCopy as Omit<Machine, 'm_id'>,
       dateSold: date,
       truckingCompany: sold?.truckingCompany,
       buyer: sold?.buyer,

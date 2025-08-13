@@ -8,17 +8,17 @@ const contact: ContactForm = {
 const emptyMachine: MachineForm = {
   serialNumber: undefined,
   contact: {...contact},
-  location: "",
-  type: "",
-  model: "",
+  location: '',
+  type: '',
+  model: '',
   year: undefined,
   hours: undefined,
   price: undefined,
-  salesman: "",
-  description: "",
+  salesman: '',
+  description: '',
   createDate: undefined,
   lastModDate: undefined,
-  notes: ""
+  notes: ''
 }
 
 const defaultFilters: MachineFilters = {
@@ -34,20 +34,20 @@ const defaultFilters: MachineFilters = {
 
 const emptySoldMachine: SoldMachineForm = {
   buyer: '',
-  buyerLocation: "",
-  truckingCompany: "",
+  buyerLocation: '',
+  truckingCompany: '',
   totalCost: undefined,
   machineCost: undefined,
   freightCost: undefined,
   paintCost: undefined,
   otherCost: undefined,
   profit: undefined,
-  purchaseFob: "",
-  notes: ""
+  purchaseFob: '',
+  notes: ''
 }
 
 const emptyArchivedMachine: ArchivedMachineForm = {
-  archiveDate: ""
+  archiveDate: ''
 }
 
 export const useMachineStore = defineStore('machine', () => {

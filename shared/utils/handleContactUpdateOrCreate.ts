@@ -1,6 +1,6 @@
-import type { Contact } from "../types/main"
-import { ContactSchema } from "../../server/models/contact"
-import { generateRandom10DigitNumber } from "./generateRandom10DigitNumber"
+import type { Contact } from '../types/main'
+import { ContactSchema } from '../../server/models/contact'
+import { generateRandom10DigitNumber } from './generateRandom10DigitNumber'
 
 interface ContactReturn {
   contactId: string

@@ -59,5 +59,5 @@ const props = defineProps<{
 const { filters } = useMachineStore()
 
 const rowClass = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-50'
-const displayClass = computed(() => props.displayFormat === "twoLine" ? '' : 'h-6 overflow-hidden')
+const displayClass = computed(() => props.displayFormat === 'twoLine' ? '' : 'h-6 overflow-hidden')
 </script>

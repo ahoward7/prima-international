@@ -1,5 +1,5 @@
-import type { Contact } from "../types/main"
-import { generateRandom10DigitNumber } from "./generateRandom10DigitNumber"
+import type { Contact } from '../types/main'
+import { generateRandom10DigitNumber } from './generateRandom10DigitNumber'
 
 export function generateContact(name: string, company: string, date: string): Contact {
   return {

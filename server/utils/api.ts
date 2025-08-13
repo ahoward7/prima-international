@@ -23,13 +23,7 @@ export function created<T>(event: H3Event, data: T, location: string) {
   return ok(event, data, 201, { Location: location })
 }
 
-export function problem(
-  event: H3Event,
-  status: number,
-  title: string,
-  detail?: string,
-  extra?: Partial<ProblemDetails>
-) {
+export function problem( event: H3Event, status: number, title: string, detail?: string, extra?: Partial<ProblemDetails>) {
   setResponseStatus(event, status)
   return {
     error: {

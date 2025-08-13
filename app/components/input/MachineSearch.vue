@@ -99,7 +99,7 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue)
 })
 
-const { data: machinesEnvelope, pending } = await useFetch<{ data: ApiData<Machine> }>(
+const { data: machinesEnvelope, pending } = await useFetch<FetchResponse<ApiData<Machine>>>(
   '/api/machines',
   {
     method: 'GET',

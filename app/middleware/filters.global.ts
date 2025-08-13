@@ -6,12 +6,9 @@ export default defineNuxtRouteMiddleware(async () => {
 
   if (machineStore.filterOptions.model) return
 
-  const { data, error } = await useFetch<{ data: FilterOptions }>(
-    '/api/machines/filters',
-    {
-      deep: true
-    }
-  )
+  const { data, error } = await useFetch<FetchResponse<FilterOptions>>('/api/machines/filters', {
+    deep: true
+  })
 
   if (error.value) {
     console.error('Failed to load machine filters:', error.value)

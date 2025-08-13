@@ -131,7 +131,7 @@ if (location && !['located', 'archived', 'sold'].includes(location as string)) {
 }
 
 if (id) {
-  const { data: dataMachineEnv } = await useFetch<{ data: Machine }>(`/api/machines/${id}`, {
+  const { data: dataMachineEnv } = await useFetch<FetchResponse<Machine>>(`/api/machines/${id}`, {
     query: { location }
   })
   const dataMachine = computed(() => dataMachineEnv.value?.data)
@@ -140,7 +140,7 @@ if (id) {
     machineStore.setMachine(dataMachine.value, location as MachineLocationString)
   }
 
-  const { data: dataMachineLocatonsEnv } = await useFetch<{ data: MachineLocations }>(
+  const { data: dataMachineLocatonsEnv } = await useFetch<FetchResponse<MachineLocations>>(
     '/api/machines/locations',
     {
       query: {

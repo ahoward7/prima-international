@@ -1,16 +1,6 @@
 import type { H3Event} from 'h3'
 import { setResponseHeader, setResponseStatus } from 'h3'
 
-export interface ProblemDetails {
-  type?: string
-  title?: string
-  status?: number
-  detail?: string
-  instance?: string
-  code?: string
-  errors?: Record<string, string[]>
-}
-
 export function ok<T>(event: H3Event, data: T, status = 200, headers?: Record<string, string>) {
   setResponseStatus(event, status)
   if (headers) {

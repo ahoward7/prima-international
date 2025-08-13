@@ -20,7 +20,7 @@ const filters = ref({
   pageSize: 50
 })
 
-const { data: contactsEnvelope } = await useFetch<{ data: ApiData<Contact> }>(
+const { data: contactsEnvelope } = await useFetch<FetchResponse<ApiData<Contact>>>(
   '/api/contact',
   {
     query: filters,

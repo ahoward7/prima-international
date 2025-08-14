@@ -1,5 +1,5 @@
 <template>
-  <div class="w-68 min-h-24 flex flex-col items-center gap-2 border px-3 py-4" :class="[backgroundColor(), borderColor()]">
+  <div class="w-68 min-h-24 flex flex-col items-center gap-2 border px-4 py-4" :class="[backgroundColor(), borderColor()]">
     <span class="font-semibold" :class="[headerColor()]">{{ header() }}</span>
     <span class="text-center">{{ message }}</span>
   </div>

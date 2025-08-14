@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center py-12 px-8">
+  <div class="flex justify-center py-16 px-8">
     <div class="w-[920px] flex flex-col items-center gap-8">
       <div class="w-full">
         <NuxtLink to="/" class="flex items-center text-prima-red">
@@ -51,7 +51,7 @@
       
       <template v-if="id && !sellingMachine">
         <DividerLine class="w-full" />
-        <div class="w-full flex items-center gap-2 bg-prima-yellow/20 px-4 py-3">
+        <div class="w-full flex items-center gap-2 bg-prima-yellow/20 px-4 py-4">
           <label class="font-semibold">Table Locations:</label>
           <div v-for="ids, key in machineLocations" :key="key">
             <span>{{ `${titleCase(key)} ` }}</span>

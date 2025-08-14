@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex justify-center px-4 md:px-8 py-12">
+  <div class="min-h-screen flex justify-center px-4 md:px-8 py-16">
     <div class="flex flex-col gap-8 w-full">
       <HeaderPrimary>
         Inventory

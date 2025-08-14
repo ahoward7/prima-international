@@ -11,7 +11,7 @@
         type="text"
         inputmode="decimal"
         class="bg-gray-100 px-2 py-1 border border-prima-red text-prima-red w-full" :class="[
-          price ? 'pl-5' : ''
+          price ? 'pl-4' : ''
         ]"
         :placeholder="placeholder"
         @input="handleInput"

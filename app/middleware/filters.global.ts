@@ -1,13 +1,16 @@
 import { defineNuxtRouteMiddleware, useFetch } from '#app'
 import { useMachineStore } from '~~/stores/machine'
+import { useApiBase } from '~/composables/useApiBase'
 
 export default defineNuxtRouteMiddleware(async () => {
   const machineStore = useMachineStore()
 
   if (machineStore.filterOptions.model) return
 
-  const { data, error } = await useFetch<FetchResponse<FilterOptions>>('/api/machines/filters', {
-    deep: true
+  const { url: withBase } = useApiBase()
+  const { data, error } = await useFetch<FetchResponse<FilterOptions>>(withBase('/api/machines/filters'), {
+    deep: true,
+    server: false
   })
 
   if (error.value) {

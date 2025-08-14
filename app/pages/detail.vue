@@ -115,6 +115,7 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
+import { useApiBase } from '~/composables/useApiBase'
 
 const { filterOptions, machine, archivedMachine, soldMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
@@ -130,9 +131,12 @@ if (location && !['located', 'archived', 'sold'].includes(location as string)) {
   navigateTo('/')
 }
 
+const { url: withBase } = useApiBase()
+
 if (id) {
-  const { data: dataMachineEnv } = await useFetch<FetchResponse<Machine>>(`/api/machines/${id}`, {
-    query: { location }
+  const { data: dataMachineEnv } = await useFetch<FetchResponse<Machine>>(withBase(`/api/machines/${id}`), {
+    query: { location },
+    server: false
   })
   const dataMachine = computed(() => dataMachineEnv.value?.data)
 
@@ -141,11 +145,12 @@ if (id) {
   }
 
   const { data: dataMachineLocatonsEnv } = await useFetch<FetchResponse<MachineLocations>>(
-    '/api/machines/locations',
+    withBase('/api/machines/locations'),
     {
       query: {
         serialNumber: machine.value?.serialNumber
-      }
+      },
+      server: false
     }
   )
   const dataMachineLocatons = computed(() => dataMachineLocatonsEnv.value?.data)
@@ -173,7 +178,7 @@ function setContactNew() {
 const fetchLocations = useDebounceFn(async () => {
   if (machine.value.serialNumber) {
     const dataMachineLocationsEnv = await $fetch<{ data: MachineLocations }>(
-      '/api/machines/locations',
+      withBase('/api/machines/locations'),
       {
         query: {
           serialNumber: machine.value?.serialNumber

@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
+import { useApiBase } from '~/composables/useApiBase'
 
 const machineStore = useMachineStore()
 const { filterOptions, filters: storeFilters, refreshMachines } = storeToRefs(machineStore)
@@ -69,12 +70,14 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
  
+const { url: withBase } = useApiBase()
 const { data: machinesEnvelope, refresh } = await useFetch<FetchResponse<ApiData<Machine | ArchivedMachine | SoldMachine>>>(
-  '/api/machines',
+  withBase('/api/machines'),
   {
     method: 'GET',
     query: filters,
-    watch: [filters]
+    watch: [filters],
+    server: false
   }
 )
 const machines = computed(() => machinesEnvelope.value?.data)

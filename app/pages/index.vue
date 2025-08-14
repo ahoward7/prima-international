@@ -79,19 +79,55 @@ const { data: machinesEnvelope, refresh } = await useFetch<FetchResponse<ApiData
   }
 )
 const offline = useOfflineStore()
+// Track connectivity
+const isOffline = ref(typeof navigator !== 'undefined' ? !navigator?.onLine : false)
+if (import.meta.client) {
+  const updateOnline = () => { isOffline.value = !navigator?.onLine }
+  window.addEventListener('online', updateOnline)
+  window.addEventListener('offline', updateOnline)
+}
+
+// Local snapshot fallback cache
+const localApiData = ref<ApiData<any> | null>(null)
+
+watch([filters, machinesEnvelope, isOffline], async () => {
+  const env = machinesEnvelope.value
+  const hasNetworkData = !!(env?.data?.data && (env.data.data as any[]).length)
+  if (isOffline.value || !hasNetworkData) {
+    try {
+      const local = await localQueryMachines(filters.value)
+      localApiData.value = local
+    }
+    catch {
+      localApiData.value = null
+    }
+  }
+  else {
+    localApiData.value = null
+  }
+}, { immediate: true, deep: true })
+
 const machines = computed<ApiData<any> | undefined>(() => {
   const env = machinesEnvelope.value // FetchResponse<ApiData<T>> | undefined
   const apiData = env?.data // ApiData<T> | undefined
-  const baseList = (apiData?.data as any[] | undefined) || []
-  const items = offline.applyOverlay(
-    baseList,
-    (filters.value.location as any),
-    filters.value
-  )
-  if (!env) return undefined
-  const baseTotal = apiData?.total ?? baseList.length
+  const baseList = (localApiData.value?.data as any[] | undefined) || (apiData?.data as any[] | undefined) || []
+  const items = offline.applyOverlay(baseList, (filters.value.location as any), filters.value)
+  const baseTotal = localApiData.value?.total ?? apiData?.total ?? baseList.length
   const total = baseTotal + (items.length - baseList.length)
+  if (!env && !localApiData.value) return undefined
   return { data: items, total }
+})
+
+// Initial snapshot sync on first load (non-blocking)
+onMounted(async () => {
+  if (navigator?.onLine) {
+    try {
+      await syncAllSnapshots()
+    }
+    catch {
+      // ignore
+    }
+  }
 })
 
 watch(refreshMachines, () => {

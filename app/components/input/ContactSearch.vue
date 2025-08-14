@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
+// offline helpers auto-import (localQueryContacts)
 
 const emit = defineEmits(['select', 'clear'])
 
@@ -20,25 +21,43 @@ const filters = ref({
   pageSize: 50
 })
 
-const { data: contactsEnvelope } = await useFetch<FetchResponse<ApiData<Contact>>>(
+const { data: contactsEnvelope, error } = await useFetch<FetchResponse<ApiData<Contact>>>(
   '/api/contact',
   {
     query: filters,
     lazy: true
   }
 )
-const contacts = computed(() => contactsEnvelope.value?.data)
+const contacts = computed<ApiData<Contact> | null>(() => contactsEnvelope.value?.data || null)
+
+// Local fallback when offline or network fails
+const localContacts = ref<ApiData<Contact> | null>(null)
+watch([filters, contacts, error], async () => {
+  const hasNetwork = !!(contacts.value?.data && contacts.value.data.length)
+  if (!navigator?.onLine || !hasNetwork || error.value) {
+    try {
+      localContacts.value = await localQueryContacts(filters.value)
+    }
+    catch {
+      localContacts.value = null
+    }
+  }
+  else {
+    localContacts.value = null
+  }
+}, { immediate: true, deep: true })
 
 const debouncedSearch = useDebounceFn((value: string) => {
   filters.value.search = value
 }, 200)
 
 const mappedContacts = computed(() => {
-  if (!contacts.value?.data) {
+  const source = localContacts.value || contacts.value
+  if (!source?.data) {
     return []
   }
 
-  const mcs = contacts.value.data.map(c => ({
+  const mcs = source.data.map(c => ({
     label: `${c.name || 'NO NAME'} | ${c.company || 'NO COMPANY'}`,
     data: c.c_id
   }))

@@ -115,6 +115,7 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
+// offline helpers are auto-imported (localGetMachineDetail, localGetLocationsBySerial)
 
 const { filterOptions, machine, archivedMachine, soldMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
@@ -131,7 +132,8 @@ if (location && !['located', 'archived', 'sold'].includes(location as string)) {
 }
 
 if (id) {
-  const { data: dataMachineEnv } = await useFetch<FetchResponse<Machine>>(`/api/machines/${id}`, {
+  // Try network first
+  const { data: dataMachineEnv, error: detailErr } = await useFetch<FetchResponse<Machine>>(`/api/machines/${id}`, {
     query: { location }
   })
   const dataMachine = computed(() => dataMachineEnv.value?.data)
@@ -139,8 +141,15 @@ if (id) {
   if (dataMachine.value) {
     machineStore.setMachine(dataMachine.value, location as MachineLocationString)
   }
+  else if (detailErr.value || !navigator?.onLine) {
+    const local = await localGetMachineDetail(String(id), location as MachineLocationString)
+    if (local) {
+      const m = (location === 'located') ? (local as Machine) : (local as any).machine
+      machineStore.setMachine(m, location as MachineLocationString)
+    }
+  }
 
-  const { data: dataMachineLocatonsEnv } = await useFetch<FetchResponse<MachineLocations>>(
+  const { data: dataMachineLocatonsEnv, error: locErr } = await useFetch<FetchResponse<MachineLocations>>(
     '/api/machines/locations',
     {
       query: {
@@ -152,6 +161,9 @@ if (id) {
 
   if (dataMachineLocatons.value) {
     machineLocations.value = dataMachineLocatons.value
+  }
+  else if (locErr.value || !navigator?.onLine) {
+    machineLocations.value = await localGetLocationsBySerial(machine.value?.serialNumber)
   }
 }
 else {
@@ -172,21 +184,31 @@ function setContactNew() {
 
 const fetchLocations = useDebounceFn(async () => {
   if (machine.value.serialNumber) {
-    const dataMachineLocationsEnv = await $fetch<{ data: MachineLocations }>(
-      '/api/machines/locations',
-      {
-        query: {
-          serialNumber: machine.value?.serialNumber
+    let locations: MachineLocations | null = null
+    try {
+      const dataMachineLocationsEnv = await $fetch<{ data: MachineLocations }>(
+        '/api/machines/locations',
+        {
+          query: {
+            serialNumber: machine.value?.serialNumber
+          }
         }
-      }
-    )
+      )
+      locations = dataMachineLocationsEnv?.data || null
+    }
+    catch {
+      // ignore
+    }
 
-    if (dataMachineLocationsEnv?.data) {
-      machineLocations.value = dataMachineLocationsEnv.data
+    if (!locations) {
+      locations = await localGetLocationsBySerial(machine.value?.serialNumber)
+    }
+    if (locations) {
+      machineLocations.value = locations
     }
 
     const locationToSearch = !id ? 'located' : location
-    const locationLength = dataMachineLocationsEnv?.data?.[locationToSearch as MachineLocationString]?.length || 0
+    const locationLength = (locations?.[locationToSearch as MachineLocationString]?.length) || 0
 
     if (!id && locationLength > 0) {
       serialNumberMessage.value = 'This number already exists'

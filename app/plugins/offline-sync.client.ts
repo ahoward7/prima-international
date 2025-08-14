@@ -8,10 +8,20 @@ export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   const apiBase = ((config.public as any)?.apiBase as string) || ''
 
+  const isOnline = () => {
+    try {
+      // Treat unknown as online to avoid blocking flush; network will fail gracefully if truly offline
+      return typeof window !== 'undefined' && (navigator?.onLine ?? true)
+    }
+    catch {
+      return true
+    }
+  }
+
   async function flush() {
     // Prefer configured base; fall back to current origin (useful in dev)
     const baseUrl = apiBase || (window?.location?.origin || '')
-    if (!isTauri || !navigator.onLine || !baseUrl) return
+    if (!isTauri || !isOnline() || !baseUrl) return
     try {
       const flushed = await invoke<number>('flush_outbox', { baseUrl, bearer: null })
       if (typeof flushed === 'number' && flushed > 0) {

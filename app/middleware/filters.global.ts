@@ -1,4 +1,5 @@
 import { defineNuxtRouteMiddleware, useFetch } from '#app'
+// offline helper auto-import: localGetFilters
 import { useMachineStore } from '~~/stores/machine'
 
 export default defineNuxtRouteMiddleware(async () => {
@@ -10,12 +11,17 @@ export default defineNuxtRouteMiddleware(async () => {
     deep: true
   })
 
-  if (error.value) {
-    console.error('Failed to load machine filters:', error.value)
+  if (data.value?.data) {
+    machineStore.setFilterOptions(data.value.data)
     return
   }
 
-  if (data.value?.data) {
-    machineStore.setFilterOptions(data.value.data)
+  // Fallback to local snapshot
+  try {
+    const local = await localGetFilters()
+    if (local) machineStore.setFilterOptions(local)
+  }
+  catch (e) {
+    console.error('Failed to load machine filters:', error.value || e)
   }
 })

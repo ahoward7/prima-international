@@ -1,4 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
+// Fallbacks to SQLite-backed offline DB when snapshots are missing
+import { dbGetMachineDetail, dbQueryContacts, dbQueryMachines } from './useOfflineDb'
 
 type AnyMachine = Machine | ArchivedMachine | SoldMachine
 
@@ -108,6 +110,17 @@ export async function localQueryMachines(filters: MachineFilters): Promise<ApiDa
   const location = (filters.location || 'located') as MachineLocationString
   const key = SNAP_KEYS[location]
   const list = (await getSnap<AnyMachine[]>(key)) || []
+  // If running in Tauri and snapshot is empty, fallback to SQLite query
+  const isTauri = typeof window !== 'undefined' && '__TAURI__' in window
+  if (isTauri && list.length === 0) {
+    try {
+      const db = await dbQueryMachines(filters)
+      return db as ApiData<AnyMachine>
+    }
+    catch {
+      // continue to snapshot path if DB query fails
+    }
+  }
   const filtered = applyClientFilters(list, filters)
   const sorted = applySort(filtered, filters.sortBy)
   const pageSize = filters.pageSize || 20
@@ -120,6 +133,14 @@ export async function localQueryMachines(filters: MachineFilters): Promise<ApiDa
 export async function localGetMachineDetail(id: string, location: MachineLocationString): Promise<AnyMachine | null> {
   const key = SNAP_KEYS[location]
   const list = (await getSnap<AnyMachine[]>(key)) || []
+  const isTauri = typeof window !== 'undefined' && '__TAURI__' in window
+  if (isTauri && list.length === 0) {
+    try {
+      const v = await dbGetMachineDetail(id, location as any)
+      if (v) return v as AnyMachine
+    }
+    catch {}
+  }
   const idKey = location === 'located' ? 'm_id' : (location === 'archived' ? 'a_id' : 's_id')
   return (list.find((it: any) => String(it?.[idKey]) === String(id)) as AnyMachine) || null
 }
@@ -158,6 +179,13 @@ export async function localGetLocationsBySerial(serialNumber?: string): Promise<
 
 export async function localQueryContacts(q: { search?: string; pageSize?: number }): Promise<ApiData<Contact>> {
   const list = (await getSnap<Contact[]>(SNAP_KEYS.contacts)) || []
+  const isTauri = typeof window !== 'undefined' && '__TAURI__' in window
+  if (isTauri && list.length === 0) {
+    try {
+      return await dbQueryContacts(q)
+    }
+    catch {}
+  }
   const term = (q.search || '').toLowerCase()
   const filtered = !term
     ? list

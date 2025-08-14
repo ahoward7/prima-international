@@ -31,6 +31,39 @@ async fn flush_outbox(state: State<'_, AppState>, base_url: String, bearer: Opti
   db.flush(&base_url, bearer.as_deref()).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+async fn clear_snapshot(state: State<'_, AppState>, category: String) -> Result<(), String> {
+  let db = state.db.lock().map_err(|_| "db lock".to_string())?;
+  db.clear_snapshot(&category).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn upsert_snapshot(state: State<'_, AppState>, category: String, items: serde_json::Value) -> Result<u32, String> {
+  let mut db = state.db.lock().map_err(|_| "db lock".to_string())?;
+  let arr = items.as_array().cloned().unwrap_or_default();
+  db.upsert_snapshot(&category, arr.as_slice()).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn query_machines(state: State<'_, AppState>, location: String, search: Option<String>, model: Option<String>, mtype: Option<String>, contact_id: Option<String>, sort_by: Option<String>, page: u32, page_size: u32) -> Result<(serde_json::Value, u32), String> {
+  let db = state.db.lock().map_err(|_| "db lock".to_string())?;
+  let (list, total) = db.query_machines(&location, search, model, mtype, contact_id, sort_by, page, page_size).map_err(|e| e.to_string())?;
+  Ok((serde_json::Value::Array(list), total))
+}
+
+#[tauri::command]
+async fn get_machine_detail(state: State<'_, AppState>, location: String, id: String) -> Result<Option<serde_json::Value>, String> {
+  let db = state.db.lock().map_err(|_| "db lock".to_string())?;
+  db.get_machine_detail(&location, &id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn query_contacts(state: State<'_, AppState>, search: Option<String>, page_size: u32) -> Result<serde_json::Value, String> {
+  let db = state.db.lock().map_err(|_| "db lock".to_string())?;
+  let list = db.query_contacts(search, page_size).map_err(|e| e.to_string())?;
+  Ok(serde_json::Value::Array(list))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -50,7 +83,17 @@ pub fn run() {
       }
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![queue_request, get_cached, set_cached, flush_outbox])
+    .invoke_handler(tauri::generate_handler![
+      queue_request,
+      get_cached,
+      set_cached,
+      flush_outbox,
+      clear_snapshot,
+      upsert_snapshot,
+      query_machines,
+      get_machine_detail,
+      query_contacts
+    ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

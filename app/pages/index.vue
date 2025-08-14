@@ -127,6 +127,20 @@ onMounted(async () => {
     catch {
       // ignore
     }
+
+    // Periodic full DB sync (once per day) for robust offline mode
+    try {
+      const k = 'offline:lastFullDbSync'
+      const last = Number.parseInt(localStorage.getItem(k) || '0', 10) || 0
+      const dayMs = 24 * 60 * 60 * 1000
+      if (!last || Date.now() - last > dayMs) {
+        await dbSyncAll()
+        localStorage.setItem(k, String(Date.now()))
+      }
+    }
+    catch {
+      // ignore
+    }
   }
 })
 

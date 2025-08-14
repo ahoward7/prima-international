@@ -7,6 +7,7 @@ export default defineNuxtPlugin(() => {
   const isTauri = '__TAURI__' in window
   const config = useRuntimeConfig()
   const apiBase = ((config.public as any)?.apiBase as string) || ''
+  const isHttpApiBase = /^https?:\/\//i.test(apiBase)
 
   const isOnline = () => {
     try {
@@ -20,8 +21,9 @@ export default defineNuxtPlugin(() => {
 
   async function flush() {
     // Prefer configured base; fall back to current origin (useful in dev)
-    const baseUrl = apiBase || (window?.location?.origin || '')
-    if (!isTauri || !isOnline() || !baseUrl) return
+    const fallbackOrigin = (window?.location?.origin || '')
+    const baseUrl = (isHttpApiBase ? apiBase : fallbackOrigin)
+    if (!isTauri || !isOnline() || !/^https?:\/\//i.test(baseUrl)) return
     try {
       const flushed = await invoke<number>('flush_outbox', { baseUrl, bearer: null })
       if (typeof flushed === 'number' && flushed > 0) {

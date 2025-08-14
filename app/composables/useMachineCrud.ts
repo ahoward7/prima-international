@@ -1,5 +1,6 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
+import { useOfflineStore } from '~~/stores/offline'
 
 async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
   try {
@@ -24,8 +25,12 @@ async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
 export async function createMachine() {
   const { machine } = useMachineStore()
   const notificationStore = useNotificationStore()
+  const offline = useOfflineStore()
 
   try {
+    // Optimistic add to overlay (temp id assigned in store)
+    offline.addCreate('located', { ...machine })
+
     const res = await apiFetch<Machine>('/api/machines', {
       method: 'POST',
       body: machine
@@ -53,6 +58,7 @@ export async function updateMachine(id?: string) {
 
   const { machine, archivedMachine, soldMachine, filters } = useMachineStore()
   const notificationStore = useNotificationStore()
+  const offline = useOfflineStore()
 
   let machineToUpdate
   const location = filters.location
@@ -90,6 +96,9 @@ export async function updateMachine(id?: string) {
 
   try {
     const url = `/api/machines/${id}`
+    // Optimistic update
+    const patch = (location === 'located') ? machineToUpdate : { machine: (machineToUpdate as any).machine }
+    offline.addUpdate(location as any, id, patch)
 
     const res = await apiFetch<any>(url, {
       method: 'PUT',
@@ -110,8 +119,16 @@ export async function archiveMachine(machineFromTable?: Machine) {
   const { machine } = useMachineStore()
   const notificationStore = useNotificationStore()
   const machineToArchive = machineFromTable || machine
+  const offline = useOfflineStore()
 
   try {
+    // Optimistic create in archived
+    offline.addCreate('archived', {
+      a_id: `tmp-${Date.now()}`,
+      archiveDate: new Date().toISOString(),
+      machine: { ...machineToArchive, m_id: undefined }
+    })
+
     const res = await apiFetch<any>('/api/machines/archive', {
       method: 'POST',
       body: machineToArchive
@@ -129,8 +146,16 @@ export async function archiveMachine(machineFromTable?: Machine) {
 export async function sellMachine() {
   const { machine, soldMachine } = useMachineStore()
   const notificationStore = useNotificationStore()
+  const offline = useOfflineStore()
 
   try {
+    // Optimistic create in sold
+    offline.addCreate('sold', {
+      s_id: `tmp-${Date.now()}`,
+      machine: { ...machine, m_id: undefined },
+      ...soldMachine
+    })
+
     const res = await apiFetch<any>('/api/machines/sold', {
       method: 'POST',
       body: {
@@ -153,8 +178,12 @@ export async function deleteMachine(id?: string) {
 
   const machineStore = useMachineStore()
   const notificationStore = useNotificationStore()
+  const offline = useOfflineStore()
 
   try {
+    // Optimistic delete
+    offline.addDelete(machineStore.filters.location as any, id)
+
     const res = await apiFetch<any>(`/api/machines/${id}`, {
       method: 'DELETE',
       query: { location: machineStore.filters.location }

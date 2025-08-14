@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
+import { useOfflineStore } from '~~/stores/offline'
 
 const machineStore = useMachineStore()
 const { filterOptions, filters: storeFilters, refreshMachines } = storeToRefs(machineStore)
@@ -77,7 +78,21 @@ const { data: machinesEnvelope, refresh } = await useFetch<FetchResponse<ApiData
     watch: [filters]
   }
 )
-const machines = computed(() => machinesEnvelope.value?.data)
+const offline = useOfflineStore()
+const machines = computed<ApiData<any> | undefined>(() => {
+  const env = machinesEnvelope.value // FetchResponse<ApiData<T>> | undefined
+  const apiData = env?.data // ApiData<T> | undefined
+  const baseList = (apiData?.data as any[] | undefined) || []
+  const items = offline.applyOverlay(
+    baseList,
+    (filters.value.location as any),
+    filters.value
+  )
+  if (!env) return undefined
+  const baseTotal = apiData?.total ?? baseList.length
+  const total = baseTotal + (items.length - baseList.length)
+  return { data: items, total }
+})
 
 watch(refreshMachines, () => {
   refresh()

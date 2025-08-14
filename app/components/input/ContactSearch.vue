@@ -12,7 +12,6 @@
 
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
-import { useApiBase } from '~/composables/useApiBase'
 
 const emit = defineEmits(['select', 'clear'])
 
@@ -21,13 +20,11 @@ const filters = ref({
   pageSize: 50
 })
 
-const { url: withBase } = useApiBase()
 const { data: contactsEnvelope } = await useFetch<FetchResponse<ApiData<Contact>>>(
-  withBase('/api/contact'),
+  '/api/contact',
   {
     query: filters,
-    lazy: true,
-    server: false
+    lazy: true
   }
 )
 const contacts = computed(() => contactsEnvelope.value?.data)

@@ -135,8 +135,7 @@ const { url: withBase } = useApiBase()
 
 if (id) {
   const { data: dataMachineEnv } = await useFetch<FetchResponse<Machine>>(withBase(`/api/machines/${id}`), {
-    query: { location },
-    server: false
+    query: { location }
   })
   const dataMachine = computed(() => dataMachineEnv.value?.data)
 
@@ -149,8 +148,7 @@ if (id) {
     {
       query: {
         serialNumber: machine.value?.serialNumber
-      },
-      server: false
+      }
     }
   )
   const dataMachineLocatons = computed(() => dataMachineLocatonsEnv.value?.data)

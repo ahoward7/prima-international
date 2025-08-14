@@ -76,8 +76,7 @@ const { data: machinesEnvelope, refresh } = await useFetch<FetchResponse<ApiData
   {
     method: 'GET',
     query: filters,
-    watch: [filters],
-    server: false
+    watch: [filters]
   }
 )
 const machines = computed(() => machinesEnvelope.value?.data)

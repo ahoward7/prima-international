@@ -1,11 +1,9 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
-import { useApiBase } from '~/composables/useApiBase'
 
 async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
-  const { url: withBase } = useApiBase()
   try {
-    const res: any = await $fetch(withBase(url), opts)
+    const res: any = await $fetch(url, opts)
     if (res?.data !== undefined) return { ok: true, data: res.data as T }
     if (res?.success === true && res?.data === undefined) return { ok: true, data: res as T }
     if (res?.error) return { ok: false, error: res.error as ProblemDetails }

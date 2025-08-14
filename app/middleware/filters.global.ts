@@ -9,8 +9,7 @@ export default defineNuxtRouteMiddleware(async () => {
 
   const { url: withBase } = useApiBase()
   const { data, error } = await useFetch<FetchResponse<FilterOptions>>(withBase('/api/machines/filters'), {
-    deep: true,
-    server: false
+    deep: true
   })
 
   if (error.value) {

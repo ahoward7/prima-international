@@ -2,13 +2,13 @@ export function useManualSync() {
   const syncing = ref(false)
   const lastResult = ref<any>(null)
 
-  async function syncNow(baseOverride?: string) {
+  async function syncNow(mongoUriOverride?: string) {
     syncing.value = true
     try {
       const offlineBase = 'http://127.0.0.1:27271'
       const res = await $fetch<{ ok: boolean; counts?: any; error?: string }>(`${offlineBase}/api/sync`, {
         method: 'POST',
-        query: baseOverride ? { base: baseOverride } : undefined
+        query: mongoUriOverride ? { mongo_uri: mongoUriOverride } : undefined
       })
       lastResult.value = res
       return res

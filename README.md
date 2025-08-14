@@ -84,5 +84,17 @@ Endpoints mirrored:
 - GET /api/machines/filters
 - GET /api/contact
 
-Health: GET /health -> 200 ok
+Health: GET /health -> { ok: true, mongo: boolean }
+
+### Local MongoDB sidecar (optional)
+
+The app can start a local MongoDB server (mongod) for full offline parity.
+- Port: 27272
+- DB Path: <AppData>/mongo-data
+
+Dev options:
+- Place your platform's `mongod` binary into `src-tauri/bin/` (make it executable).
+- Or run your own `mongod --port 27272` outside the app.
+
+The offline server health reports `mongo: true` when it can ping the local mongod.
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

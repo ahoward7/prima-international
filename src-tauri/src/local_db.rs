@@ -10,18 +10,18 @@ pub struct Contact {
     pub c_id: String,
     pub company: Option<String>,
     pub name: Option<String>,
-    #[serde(alias = "createDate")]
+    #[serde(alias = "createDate", rename = "createDate")]
     pub create_date: Option<String>,
-    #[serde(alias = "lastModDate")]
+    #[serde(alias = "lastModDate", rename = "lastModDate")]
     pub last_mod_date: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DBMachine {
     pub m_id: String,
-    #[serde(alias = "contactId")]
+    #[serde(alias = "contactId", rename = "contactId")]
     pub contact_id: Option<String>,
-    #[serde(alias = "serialNumber")]
+    #[serde(alias = "serialNumber", rename = "serialNumber")]
     pub serial_number: Option<String>,
     pub model: Option<String>,
     pub r#type: Option<String>,
@@ -29,9 +29,9 @@ pub struct DBMachine {
     pub hours: Option<i64>,
     pub description: Option<String>,
     pub salesman: Option<String>,
-    #[serde(alias = "createDate")]
+    #[serde(alias = "createDate", rename = "createDate")]
     pub create_date: String,
-    #[serde(alias = "lastModDate")]
+    #[serde(alias = "lastModDate", rename = "lastModDate")]
     pub last_mod_date: String,
     pub price: Option<f64>,
     pub location: Option<String>,
@@ -44,7 +44,7 @@ pub struct DBMachine {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ArchivedMachine {
     pub a_id: String,
-    #[serde(alias = "archiveDate")]
+    #[serde(alias = "archiveDate", rename = "archiveDate")]
     pub archive_date: String,
     pub machine: DBMachine,
 }
@@ -53,25 +53,25 @@ pub struct ArchivedMachine {
 pub struct SoldMachine {
     pub s_id: String,
     pub machine: DBMachine,
-    #[serde(alias = "dateSold")]
+    #[serde(alias = "dateSold", rename = "dateSold")]
     pub date_sold: Option<String>,
-    #[serde(alias = "truckingCompany")]
+    #[serde(alias = "truckingCompany", rename = "truckingCompany")]
     pub trucking_company: Option<String>,
     pub buyer: Option<String>,
-    #[serde(alias = "buyerLocation")]
+    #[serde(alias = "buyerLocation", rename = "buyerLocation")]
     pub buyer_location: Option<String>,
-    #[serde(alias = "purchaseFob")]
+    #[serde(alias = "purchaseFob", rename = "purchaseFob")]
     pub purchase_fob: Option<String>,
-    #[serde(alias = "machineCost")]
+    #[serde(alias = "machineCost", rename = "machineCost")]
     pub machine_cost: Option<f64>,
-    #[serde(alias = "freightCost")]
+    #[serde(alias = "freightCost", rename = "freightCost")]
     pub freight_cost: Option<f64>,
-    #[serde(alias = "paintCost")]
+    #[serde(alias = "paintCost", rename = "paintCost")]
     pub paint_cost: Option<f64>,
-    #[serde(alias = "otherCost")]
+    #[serde(alias = "otherCost", rename = "otherCost")]
     pub other_cost: Option<f64>,
     pub profit: Option<f64>,
-    #[serde(alias = "totalCost")]
+    #[serde(alias = "totalCost", rename = "totalCost")]
     pub total_cost: Option<f64>,
     pub notes: Option<String>,
 }
@@ -546,7 +546,12 @@ impl LocalDatabase {
 
     pub fn get_distinct_values(&self, column: &str, table: &str) -> Result<Vec<String>> {
         let conn = self.conn.lock().unwrap();
-        let query = format!("SELECT DISTINCT {} FROM {} WHERE {} IS NOT NULL ORDER BY {}", column, table, column, column);
+        // Exclude NULLs and empty strings
+        let query = format!(
+            "SELECT DISTINCT {col} FROM {tbl} WHERE {col} IS NOT NULL AND TRIM({col}) <> '' ORDER BY {col}",
+            col = column,
+            tbl = table
+        );
         
         let mut stmt = conn.prepare(&query)?;
         let value_iter = stmt.query_map([], |row| {

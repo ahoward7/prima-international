@@ -83,7 +83,8 @@ mod offline_server {
 
     let ctx = AppCtx { local_db };
     
-    let app = Router::new()
+  // Offline HTTP API surface mirrors the Nuxt server for inventory UI to consume
+  let app = Router::new()
       .route("/health", get(health))
       .route("/api/machines", get(list_machines_api).post(create_machine_api))
       .route("/api/machines/:id", get(get_machine_api).put(update_machine_api).delete(delete_machine_api))
@@ -121,22 +122,42 @@ mod offline_server {
   async fn initial_sync(local_db: LocalDatabase, base_override: Option<String>) -> anyhow::Result<()> {
     // Determine if we can reach the online Nuxt server
     let http = HttpClient::new();
-    let base = base_override.as_deref().unwrap_or("mongodb+srv://averydhoward:devpassword@prima.6kie7z4.mongodb.net/prima");
-    
-    // Health check on Nuxt side
-    let timeout = std::time::Duration::from_secs(5);
-    let online_ok = http
-      .get(format!("{}/api/machines?location=located&pageSize=1&page=1", base))
-      .timeout(timeout)
-      .send()
-      .await
-      .map(|r| r.status().is_success())
-      .unwrap_or(false);
-      
-    if !online_ok {
-      log::warn!("Cannot reach online server for sync");
-      return Ok(());
+
+    // Build candidate base URLs (prefer override, then env, then local dev)
+    let mut candidates: Vec<String> = Vec::new();
+    if let Some(b) = base_override {
+      candidates.push(b);
+    } else if let Ok(env_base) = std::env::var("PRIMA_ONLINE_BASE") {
+      if !env_base.trim().is_empty() { candidates.push(env_base); }
     }
+    // Local dev fallbacks
+    candidates.push("http://127.0.0.1:3000".to_string());
+    candidates.push("http://localhost:3000".to_string());
+
+    // Probe candidates for reachability
+    let timeout = std::time::Duration::from_secs(5);
+    let mut base: Option<String> = None;
+    for cand in &candidates {
+      let probe_url = format!("{}/api/machines?location=located&pageSize=1&page=1", cand);
+      let ok = http
+        .get(&probe_url)
+        .timeout(timeout)
+        .send()
+        .await
+        .map(|r| r.status().is_success())
+        .unwrap_or(false);
+      if ok {
+        base = Some(cand.clone());
+        break;
+      } else {
+        log::warn!("Sync probe failed for {}", cand);
+      }
+    }
+
+    let Some(base) = base else {
+      log::warn!("Cannot reach any online server for sync; skipping initial sync");
+      return Ok(());
+    };
 
     log::info!("Starting initial sync with online server");
 
@@ -144,10 +165,10 @@ mod offline_server {
     local_db.clear_all_data()?;
 
     // Pull all datasets
-    let machines = fetch_all_machines(&http, base, "located").await?;
-    let archived = fetch_all_archived(&http, base).await?;
-    let sold = fetch_all_sold(&http, base).await?;
-    let contacts = fetch_contacts(&http, base).await?;
+    let machines = fetch_all_machines(&http, &base, "located").await?;
+    let archived = fetch_all_archived(&http, &base).await?;
+    let sold = fetch_all_sold(&http, &base).await?;
+    let contacts = fetch_contacts(&http, &base).await?;
 
     // Bulk insert into local database
     if !contacts.is_empty() {
@@ -275,6 +296,9 @@ mod offline_server {
     let size = q.pageSize.unwrap_or(20).max(1);
     let offset = (page - 1) * size;
 
+    // Note: Local DB get_machines doesn't have a location parameter yet. For now,
+    // we'll fetch and filter in-memory when location is specified.
+    let location = q.location.clone();
     match ctx.local_db.get_machines(
       q.search.as_deref(),
       q.model.as_deref(),
@@ -284,6 +308,11 @@ mod offline_server {
       offset
     ) {
       Ok((machines, total)) => {
+        let (machines, total) = if let Some(loc) = location.filter(|s| !s.is_empty()) {
+          let filtered: Vec<_> = machines.into_iter().filter(|m| m.location.as_deref() == Some(loc.as_str())).collect();
+          let total = filtered.len();
+          (filtered, total)
+        } else { (machines, total) };
         Json(serde_json::json!({
           "data": {
             "data": machines,
@@ -440,19 +469,30 @@ mod offline_server {
   }
 
   async fn get_filters_api(State(ctx): State<AppCtx>) -> Response {
-    let models = ctx.local_db.get_distinct_values("model", "machines").unwrap_or_default();
-    let types = ctx.local_db.get_distinct_values("type", "machines").unwrap_or_default();
-    let salesmen = ctx.local_db.get_distinct_values("salesman", "machines").unwrap_or_default();
+    // Pull distinct values and drop blanks/whitespace-only entries
+    let clean = |mut v: Vec<String>| -> Vec<String> {
+      v.retain(|s| !s.trim().is_empty());
+      v.into_iter().map(|s| s.trim().to_string()).collect()
+    };
 
-    let models_json: Vec<_> = models.into_iter()
-      .map(|value| serde_json::json!({"label": value.clone(), "data": value}))
-      .collect();
-    let types_json: Vec<_> = types.into_iter()
-      .map(|value| serde_json::json!({"label": value.clone(), "data": value}))
-      .collect();
-    let salesmen_json: Vec<_> = salesmen.into_iter()
-      .map(|value| serde_json::json!({"label": value.clone(), "data": value}))
-      .collect();
+    let models = clean(ctx.local_db.get_distinct_values("model", "machines").unwrap_or_default());
+    let types = clean(ctx.local_db.get_distinct_values("type", "machines").unwrap_or_default());
+    let salesmen = clean(ctx.local_db.get_distinct_values("salesman", "machines").unwrap_or_default());
+
+    let to_opts = |vals: Vec<String>| -> Vec<serde_json::Value> {
+      vals.into_iter()
+        .map(|value| serde_json::json!({"label": value.clone(), "data": value}))
+        .collect()
+    };
+
+    let models_json = to_opts(models);
+    let types_json = to_opts(types);
+    let salesmen_json = to_opts(salesmen);
+
+    log::info!(
+      "Filters: models={}, types={}, salesmen={}",
+      models_json.len(), types_json.len(), salesmen_json.len()
+    );
 
     Json(serde_json::json!({
       "data": {

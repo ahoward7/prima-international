@@ -1,6 +1,5 @@
 use tauri::Manager;
-use mongodb::{Client as MongoClient, options::ClientOptions, Collection};
-use bson::{doc, Document};
+// Removed unused MongoDB imports at the crate root; they are imported within the offline_server module.
 
 mod local_db;
 use local_db::LocalDatabase;
@@ -57,11 +56,11 @@ mod offline_server {
   use serde::Deserialize;
   use tauri::{AppHandle, Manager};
   use crate::local_db::{LocalDatabase, Contact, DBMachine, ArchivedMachine, SoldMachine};
-  use mongodb::{Client as MongoClient, options::ClientOptions, Collection, Database};
+  use mongodb::{Client as MongoClient, options::ClientOptions, Collection};
   use bson::{doc, Document};
-  use futures_util::stream::StreamExt;
   use serde_json::to_value;
   use tower_http::cors::{Any, CorsLayer};
+  use reqwest::Client as HttpClient;
 
   #[derive(Deserialize)]
   struct ListQuery {
@@ -268,7 +267,7 @@ mod offline_server {
     match initial_sync(ctx.local_db.clone(), mongo_uri).await {
       Ok(_) => {
         // Get counts from database
-        let machines_count = ctx.local_db.get_machines(None, None, None, None, 0, 0)
+  let machines_count = ctx.local_db.get_machines(None, None, None, None, None, None, 0, 0)
           .map(|(_, total)| total).unwrap_or(0);
         let contacts_count = ctx.local_db.get_contacts(None, 0, 0)
           .map(|(_, total)| total).unwrap_or(0);
@@ -428,19 +427,29 @@ mod offline_server {
       })
     };
 
-    let model = clean(q.model.clone());
-    let machine_type = clean(q.r#type.clone());
-    let contact_id = clean(q.contactId.clone());
+  let model = clean(q.model.clone());
+  let machine_type = clean(q.r#type.clone());
+  let contact_id = clean(q.contactId.clone());
+  let location = clean(q.location.clone());
+  let sort_by = clean(q.sortBy.clone());
     let search = q.search.as_ref().and_then(|s| {
       let t = s.trim();
       if t.is_empty() { None } else { Some(t.to_string()) }
     });
+
+    // Treat `location=located` (active inventory) as no DB column filter.
+    let loc_param: Option<&str> = match location.as_deref() {
+      Some(s) if s.eq_ignore_ascii_case("located") => None,
+      other => other,
+    };
 
     match ctx.local_db.get_machines(
       search.as_deref(),
       model.as_deref(),
       machine_type.as_deref(),
       contact_id.as_deref(),
+      loc_param,
+      sort_by.as_deref(),
       size,
       offset
     ) {
@@ -667,25 +676,60 @@ mod offline_server {
   }
 
   async fn get_filters_api(State(ctx): State<AppCtx>) -> Response {
-    let models = ctx.local_db.get_distinct_values("model", "machines").unwrap_or_default();
-    let types = ctx.local_db.get_distinct_values("type", "machines").unwrap_or_default();
-    let salesmen = ctx.local_db.get_distinct_values("salesman", "machines").unwrap_or_default();
+    // Pull distinct values from local DB and clean them up
+    let mut models = ctx.local_db.get_distinct_values("model", "machines").unwrap_or_default();
+    let mut types = ctx.local_db.get_distinct_values("type", "machines").unwrap_or_default();
+    let mut salesmen = ctx.local_db.get_distinct_values("salesman", "machines").unwrap_or_default();
 
-    let models_json: Vec<_> = models.into_iter()
-      .map(|value| serde_json::json!({"label": value.clone(), "data": value}))
-      .collect();
-    let types_json: Vec<_> = types.into_iter()
-      .map(|value| serde_json::json!({"label": value.clone(), "data": value}))
-      .collect();
-    let salesmen_json: Vec<_> = salesmen.into_iter()
-      .map(|value| serde_json::json!({"label": value.clone(), "data": value}))
-      .collect();
+    let clean = |vals: &mut Vec<String>| {
+      vals.retain(|s| !s.trim().is_empty());
+      vals.iter_mut().for_each(|s| { let t = s.trim().to_string(); *s = t; });
+      vals.sort();
+      vals.dedup();
+    };
+    clean(&mut models);
+    clean(&mut types);
+    clean(&mut salesmen);
+
+    // If we don't have any options locally (e.g., first run, schema empty),
+    // try to proxy from the online Nuxt API as a graceful fallback.
+    if models.is_empty() && types.is_empty() && salesmen.is_empty() {
+      let http = HttpClient::new();
+      // Candidate bases: env override then local dev
+      let mut bases: Vec<String> = Vec::new();
+      if let Ok(env_base) = std::env::var("PRIMA_ONLINE_BASE") { if !env_base.trim().is_empty() { bases.push(env_base); } }
+      bases.push("http://127.0.0.1:3000".to_string());
+      bases.push("http://localhost:3000".to_string());
+
+      for b in bases {
+        let url = format!("{}/api/machines/filters", b.trim_end_matches('/'));
+        match http.get(&url).send().await {
+          Ok(resp) if resp.status().is_success() => {
+            if let Ok(val) = resp.json::<serde_json::Value>().await {
+              log::info!("Filters proxied from {}", url);
+              return Json(val).into_response();
+            }
+          }
+          Ok(resp) => {
+            log::warn!("Filters proxy failed from {} with status {}", url, resp.status());
+          }
+          Err(e) => {
+            log::warn!("Filters proxy error from {}: {}", url, e);
+          }
+        }
+      }
+      log::info!("No remote filters available; returning empty options");
+    }
+
+    let to_opts = |vals: Vec<String>| -> Vec<serde_json::Value> {
+      vals.into_iter().map(|v| serde_json::json!({"label": v.clone(), "data": v})).collect()
+    };
 
     Json(serde_json::json!({
       "data": {
-        "model": models_json,
-        "type": types_json,
-        "salesman": salesmen_json,
+        "model": to_opts(models),
+        "type": to_opts(types),
+        "salesman": to_opts(salesmen),
         "location": [
           {"label": "Located", "data": "located"},
           {"label": "Sold", "data": "sold"},

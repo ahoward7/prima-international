@@ -330,32 +330,75 @@ impl LocalDatabase {
         model: Option<&str>,
         machine_type: Option<&str>,
         contact_id: Option<&str>,
+        location: Option<&str>,
+        sort_by: Option<&str>,
         limit: usize, 
         offset: usize
     ) -> Result<(Vec<DBMachine>, usize)> {
         let conn = self.conn.lock().unwrap();
         
-        let mut where_clauses = Vec::new();
+    let mut where_clauses: Vec<String> = Vec::new();
         let mut params: Vec<String> = Vec::new();
         
         if let Some(search_term) = search {
-            where_clauses.push("(serial_number LIKE ? OR model LIKE ? OR type LIKE ? OR location LIKE ?)");
+            where_clauses.push("(serial_number LIKE ? OR model LIKE ? OR type LIKE ? OR location LIKE ?)".to_string());
             let search_pattern = format!("%{}%", search_term);
             params.extend([search_pattern.clone(), search_pattern.clone(), search_pattern.clone(), search_pattern]);
         }
         if let Some(m) = model {
-            where_clauses.push("model = ?");
+            where_clauses.push("model = ?".to_string());
             params.push(m.to_string());
         }
         if let Some(t) = machine_type {
-            where_clauses.push("type = ?");
+            where_clauses.push("type = ?".to_string());
             params.push(t.to_string());
         }
         if let Some(cid) = contact_id {
-            where_clauses.push("contact_id = ?");
+            where_clauses.push("contact_id = ?".to_string());
             params.push(cid.to_string());
         }
+        if let Some(loc) = location {
+            where_clauses.push("location = ?".to_string());
+            params.push(loc.to_string());
+        }
 
+        // Determine ORDER BY based on sort_by, using a whitelist to prevent injection
+        let (order_col, order_dir) = match sort_by.map(|s| s.trim()).filter(|s| !s.is_empty()) {
+            Some(sb) if sb.starts_with('-') => (sb.trim_start_matches('-'), "DESC"),
+            Some(sb) => (sb, "ASC"),
+            None => ("type", "ASC"),
+        };
+
+        // Map API sort fields to DB columns
+        let order_col_mapped = match order_col {
+            "type" => "type",
+            "model" => "model",
+            "serialNumber" => "serial_number",
+            "salesman" => "salesman",
+            "createDate" => "create_date",
+            "year" => "year",
+            "hours" => "hours",
+            "price" => "price",
+            "lastModDate" => "last_mod_date",
+            "location" => "location",
+            _ => "model",
+        };
+
+        // When sorting by a column, exclude rows where that column is falsy (NULL/empty for text, NULL for numbers)
+        match order_col_mapped {
+            // Text columns: exclude NULL and empty/whitespace-only
+            "type" | "model" | "serial_number" | "location" | "salesman" | "last_mod_date" | "create_date" => {
+                where_clauses.push(format!("({col} IS NOT NULL AND TRIM({col}) <> '')", col = order_col_mapped));
+            }
+            // Numeric columns: exclude NULL (allow 0 values)
+            // Treat 0 as falsy as well so it’s excluded when sorting by these fields
+            "year" | "hours" | "price" => {
+                where_clauses.push(format!("({col} IS NOT NULL AND {col} <> 0)", col = order_col_mapped));
+            }
+            _ => {}
+        }
+
+        // Build WHERE clause after all filters (including falsy-sort filter) are added
         let where_clause = if where_clauses.is_empty() {
             String::new()
         } else {
@@ -365,8 +408,10 @@ impl LocalDatabase {
         let base_query = format!(
             "SELECT m_id, contact_id, serial_number, model, type, year, hours,
                     description, salesman, create_date, last_mod_date, price, location, notes, extra_fields
-             FROM machines {} ORDER BY last_mod_date DESC",
-            where_clause
+             FROM machines {} ORDER BY {} {}, m_id ASC",
+            where_clause,
+            order_col_mapped,
+            order_dir
         );
 
         let count_query = format!("SELECT COUNT(*) FROM machines {}", where_clause);

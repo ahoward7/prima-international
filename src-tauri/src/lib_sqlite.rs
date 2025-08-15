@@ -296,23 +296,24 @@ mod offline_server {
     let size = q.pageSize.unwrap_or(20).max(1);
     let offset = (page - 1) * size;
 
-    // Note: Local DB get_machines doesn't have a location parameter yet. For now,
-    // we'll fetch and filter in-memory when location is specified.
-    let location = q.location.clone();
+    // Treat `location=located` as the active inventory (machines table). Don't filter by the
+    // location column in this case, or you'll get zero results.
+    let loc_param: Option<&str> = match q.location.as_deref() {
+      Some(s) if s.eq_ignore_ascii_case("located") || s.trim().is_empty() => None,
+      other => other,
+    };
+
     match ctx.local_db.get_machines(
       q.search.as_deref(),
       q.model.as_deref(),
       q.r#type.as_deref(),
       q.contactId.as_deref(),
+      loc_param,
+      q.sortBy.as_deref(),
       size,
       offset
     ) {
       Ok((machines, total)) => {
-        let (machines, total) = if let Some(loc) = location.filter(|s| !s.is_empty()) {
-          let filtered: Vec<_> = machines.into_iter().filter(|m| m.location.as_deref() == Some(loc.as_str())).collect();
-          let total = filtered.len();
-          (filtered, total)
-        } else { (machines, total) };
         Json(serde_json::json!({
           "data": {
             "data": machines,
@@ -332,7 +333,7 @@ mod offline_server {
     log::info!("🔍 GET /api/machines/{} - Fetching machine details from lib_sqlite.rs", id);
     
     // For simplicity, search through machines first
-    match ctx.local_db.get_machines(None, None, None, None, 1000, 0) {
+  match ctx.local_db.get_machines(None, None, None, None, None, None, 1000, 0) {
       Ok((machines, _)) => {
         let machine = machines.into_iter().find(|m| m.m_id == id);
         if machine.is_some() {
@@ -407,7 +408,7 @@ mod offline_server {
 
   async fn update_machine_api(State(ctx): State<AppCtx>, Path(id): Path<String>, Json(body): Json<serde_json::Value>) -> Response {
     // Get existing machine first
-    match ctx.local_db.get_machines(None, None, None, None, 1000, 0) {
+  match ctx.local_db.get_machines(None, None, None, None, None, None, 1000, 0) {
       Ok((machines, _)) => {
         if let Some(mut machine) = machines.into_iter().find(|m| m.m_id == id) {
           // Update fields from body

@@ -361,6 +361,7 @@ mod offline_server {
       contact_id: body.get("contactId")
         .and_then(|v| v.as_str())
         .map(|s| s.to_string()),
+  contact: None,
       serial_number: body.get("serialNumber")
         .and_then(|v| v.as_str())
         .map(|s| s.to_string()),
@@ -387,6 +388,7 @@ mod offline_server {
       notes: body.get("notes")
         .and_then(|v| v.as_str())
         .map(|s| s.to_string()),
+  extra_fields: std::collections::HashMap::new(),
     };
 
     match ctx.local_db.create_machine(&machine) {

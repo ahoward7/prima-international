@@ -21,6 +21,9 @@ pub struct DBMachine {
     pub m_id: String,
     #[serde(alias = "contactId", rename = "contactId")]
     pub contact_id: Option<String>,
+    // Joined contact (not stored in machines table). Present when fetching.
+    #[serde(rename = "contact", skip_serializing_if = "Option::is_none")]
+    pub contact: Option<Contact>,
     #[serde(alias = "serialNumber", rename = "serialNumber")]
     pub serial_number: Option<String>,
     pub model: Option<String>,
@@ -82,6 +85,7 @@ impl Default for DBMachine {
         Self {
             m_id: String::new(),
             contact_id: None,
+            contact: None,
             serial_number: None,
             model: None,
             r#type: None,
@@ -341,29 +345,29 @@ impl LocalDatabase {
         let mut params: Vec<String> = Vec::new();
         
         if let Some(search_term) = search {
-            where_clauses.push("(serial_number LIKE ? OR model LIKE ? OR type LIKE ? OR location LIKE ?)".to_string());
+            where_clauses.push("(m.serial_number LIKE ? OR m.model LIKE ? OR m.type LIKE ? OR m.location LIKE ?)".to_string());
             let search_pattern = format!("%{}%", search_term);
             params.extend([search_pattern.clone(), search_pattern.clone(), search_pattern.clone(), search_pattern]);
         }
         if let Some(m) = model {
-            where_clauses.push("model = ?".to_string());
+            where_clauses.push("m.model = ?".to_string());
             params.push(m.to_string());
         }
         if let Some(t) = machine_type {
-            where_clauses.push("type = ?".to_string());
+            where_clauses.push("m.type = ?".to_string());
             params.push(t.to_string());
         }
         if let Some(cid) = contact_id {
-            where_clauses.push("contact_id = ?".to_string());
+            where_clauses.push("m.contact_id = ?".to_string());
             params.push(cid.to_string());
         }
         if let Some(loc) = location {
-            where_clauses.push("location = ?".to_string());
+            where_clauses.push("m.location = ?".to_string());
             params.push(loc.to_string());
         }
 
         // Determine ORDER BY based on sort_by, using a whitelist to prevent injection
-        let (order_col, order_dir) = match sort_by.map(|s| s.trim()).filter(|s| !s.is_empty()) {
+    let (order_col, order_dir) = match sort_by.map(|s| s.trim()).filter(|s| !s.is_empty()) {
             Some(sb) if sb.starts_with('-') => (sb.trim_start_matches('-'), "DESC"),
             Some(sb) => (sb, "ASC"),
             None => ("type", "ASC"),
@@ -371,28 +375,28 @@ impl LocalDatabase {
 
         // Map API sort fields to DB columns
         let order_col_mapped = match order_col {
-            "type" => "type",
-            "model" => "model",
-            "serialNumber" => "serial_number",
-            "salesman" => "salesman",
-            "createDate" => "create_date",
-            "year" => "year",
-            "hours" => "hours",
-            "price" => "price",
-            "lastModDate" => "last_mod_date",
-            "location" => "location",
-            _ => "model",
+            "type" => "m.type",
+            "model" => "m.model",
+            "serialNumber" => "m.serial_number",
+            "salesman" => "m.salesman",
+            "createDate" => "m.create_date",
+            "year" => "m.year",
+            "hours" => "m.hours",
+            "price" => "m.price",
+            "lastModDate" => "m.last_mod_date",
+            "location" => "m.location",
+            _ => "m.model",
         };
 
         // When sorting by a column, exclude rows where that column is falsy (NULL/empty for text, NULL for numbers)
         match order_col_mapped {
             // Text columns: exclude NULL and empty/whitespace-only
-            "type" | "model" | "serial_number" | "location" | "salesman" | "last_mod_date" | "create_date" => {
+            "m.type" | "m.model" | "m.serial_number" | "m.location" | "m.salesman" | "m.last_mod_date" | "m.create_date" => {
                 where_clauses.push(format!("({col} IS NOT NULL AND TRIM({col}) <> '')", col = order_col_mapped));
             }
             // Numeric columns: exclude NULL (allow 0 values)
             // Treat 0 as falsy as well so it’s excluded when sorting by these fields
-            "year" | "hours" | "price" => {
+            "m.year" | "m.hours" | "m.price" => {
                 where_clauses.push(format!("({col} IS NOT NULL AND {col} <> 0)", col = order_col_mapped));
             }
             _ => {}
@@ -406,15 +410,19 @@ impl LocalDatabase {
         };
 
         let base_query = format!(
-            "SELECT m_id, contact_id, serial_number, model, type, year, hours,
-                    description, salesman, create_date, last_mod_date, price, location, notes, extra_fields
-             FROM machines {} ORDER BY {} {}, m_id ASC",
+            "SELECT
+                m.m_id, m.contact_id, m.serial_number, m.model, m.type, m.year, m.hours,
+                m.description, m.salesman, m.create_date, m.last_mod_date, m.price, m.location, m.notes, m.extra_fields,
+                c.c_id, c.company, c.name, c.create_date, c.last_mod_date
+             FROM machines m
+             LEFT JOIN contacts c ON c.c_id = m.contact_id
+             {} ORDER BY {} {}, m.m_id ASC",
             where_clause,
             order_col_mapped,
             order_dir
         );
 
-        let count_query = format!("SELECT COUNT(*) FROM machines {}", where_clause);
+        let count_query = format!("SELECT COUNT(*) FROM machines m {}", where_clause);
         
         // Get total count
         let total: usize = {
@@ -434,10 +442,19 @@ impl LocalDatabase {
         let machine_iter = stmt.query_map(rusqlite::params_from_iter(param_refs.iter()), |row| {
             let extra_fields_str: String = row.get(14).unwrap_or_default();
             let extra_fields = serde_json::from_str(&extra_fields_str).unwrap_or_default();
+            let contact = row.get::<_, Option<String>>(15)?
+                .map(|c_id| Contact {
+                    c_id,
+                    company: row.get(16).ok(),
+                    name: row.get(17).ok(),
+                    create_date: row.get(18).ok(),
+                    last_mod_date: row.get(19).ok(),
+                });
             
             Ok(DBMachine {
                 m_id: row.get(0)?,
                 contact_id: row.get(1)?,
+                contact,
                 serial_number: row.get(2)?,
                 model: row.get(3)?,
                 r#type: row.get(4)?,
@@ -494,18 +511,31 @@ impl LocalDatabase {
         let conn = self.conn.lock().unwrap();
         
         let mut stmt = conn.prepare(
-            "SELECT m_id, contact_id, serial_number, model, type, year, hours,
-                    description, salesman, create_date, last_mod_date, price, location, notes, extra_fields
-             FROM machines WHERE m_id = ?1"
+            "SELECT
+                m.m_id, m.contact_id, m.serial_number, m.model, m.type, m.year, m.hours,
+                m.description, m.salesman, m.create_date, m.last_mod_date, m.price, m.location, m.notes, m.extra_fields,
+                c.c_id, c.company, c.name, c.create_date, c.last_mod_date
+             FROM machines m
+             LEFT JOIN contacts c ON c.c_id = m.contact_id
+             WHERE m.m_id = ?1"
         )?;
         
         let machine_result = stmt.query_row(params![machine_id], |row| {
             let extra_fields_str: String = row.get(14).unwrap_or_default();
             let extra_fields = serde_json::from_str(&extra_fields_str).unwrap_or_default();
+            let contact = row.get::<_, Option<String>>(15)?
+                .map(|c_id| Contact {
+                    c_id,
+                    company: row.get(16).ok(),
+                    name: row.get(17).ok(),
+                    create_date: row.get(18).ok(),
+                    last_mod_date: row.get(19).ok(),
+                });
             
             Ok(DBMachine {
                 m_id: row.get(0)?,
                 contact_id: row.get(1)?,
+                contact,
                 serial_number: row.get(2)?,
                 model: row.get(3)?,
                 r#type: row.get(4)?,
@@ -543,19 +573,32 @@ impl LocalDatabase {
         let conn = self.conn.lock().unwrap();
 
         let mut stmt = conn.prepare(
-            "SELECT a_id, archive_date, m_id, contact_id, serial_number, model, type,
-                    year, hours, description, salesman, create_date, last_mod_date,
-                    price, location, notes, extra_fields
-             FROM archived_machines WHERE a_id = ?1"
+            "SELECT
+                a.a_id, a.archive_date, a.m_id, a.contact_id, a.serial_number, a.model, a.type,
+                a.year, a.hours, a.description, a.salesman, a.create_date, a.last_mod_date,
+                a.price, a.location, a.notes, a.extra_fields,
+                c.c_id, c.company, c.name, c.create_date, c.last_mod_date
+             FROM archived_machines a
+             LEFT JOIN contacts c ON c.c_id = a.contact_id
+             WHERE a.a_id = ?1"
         )?;
 
         let result = stmt.query_row(params![archive_id], |row| {
             let extra_fields_str: String = row.get(16).unwrap_or_default();
             let extra_fields = serde_json::from_str(&extra_fields_str).unwrap_or_default();
+            let contact = row.get::<_, Option<String>>(17)?
+                .map(|c_id| Contact {
+                    c_id,
+                    company: row.get(18).ok(),
+                    name: row.get(19).ok(),
+                    create_date: row.get(20).ok(),
+                    last_mod_date: row.get(21).ok(),
+                });
 
             let machine = DBMachine {
                 m_id: row.get(2)?,
                 contact_id: row.get(3)?,
+                contact,
                 serial_number: row.get(4)?,
                 model: row.get(5)?,
                 r#type: row.get(6)?,
@@ -590,20 +633,33 @@ impl LocalDatabase {
         let conn = self.conn.lock().unwrap();
 
         let mut stmt = conn.prepare(
-            "SELECT s_id, date_sold, trucking_company, buyer, buyer_location, purchase_fob,
-                    machine_cost, freight_cost, paint_cost, other_cost, profit, total_cost, notes,
-                    m_id, contact_id, serial_number, model, type, year, hours, description,
-                    salesman, create_date, last_mod_date, price, location, machine_notes, extra_fields
-             FROM sold_machines WHERE s_id = ?1"
+            "SELECT
+                s.s_id, s.date_sold, s.trucking_company, s.buyer, s.buyer_location, s.purchase_fob,
+                s.machine_cost, s.freight_cost, s.paint_cost, s.other_cost, s.profit, s.total_cost, s.notes,
+                s.m_id, s.contact_id, s.serial_number, s.model, s.type, s.year, s.hours, s.description,
+                s.salesman, s.create_date, s.last_mod_date, s.price, s.location, s.machine_notes, s.extra_fields,
+                c.c_id, c.company, c.name, c.create_date, c.last_mod_date
+             FROM sold_machines s
+             LEFT JOIN contacts c ON c.c_id = s.contact_id
+             WHERE s.s_id = ?1"
         )?;
 
         let result = stmt.query_row(params![sold_id], |row| {
             let extra_fields_str: String = row.get(27).unwrap_or_default();
             let extra_fields = serde_json::from_str(&extra_fields_str).unwrap_or_default();
+            let contact = row.get::<_, Option<String>>(28)?
+                .map(|c_id| Contact {
+                    c_id,
+                    company: row.get(29).ok(),
+                    name: row.get(30).ok(),
+                    create_date: row.get(31).ok(),
+                    last_mod_date: row.get(32).ok(),
+                });
 
             let machine = DBMachine {
                 m_id: row.get(13)?,
                 contact_id: row.get(14)?,
+                contact,
                 serial_number: row.get(15)?,
                 model: row.get(16)?,
                 r#type: row.get(17)?,
@@ -895,7 +951,7 @@ impl LocalDatabase {
                     "m_id" | "contactId" | "contact_id" | "serialNumber" | "serial_number" |
                     "model" | "type" | "year" | "hours" | "description" | "salesman" |
                     "createDate" | "create_date" | "lastModDate" | "last_mod_date" |
-                    "price" | "location" | "notes" | "contact" => {
+            "price" | "location" | "notes" | "contact" => {
                         // Skip standard fields
                     }
                     _ => {
@@ -914,6 +970,7 @@ impl LocalDatabase {
                 .or_else(|| value.get("contact_id"))
                 .and_then(|v| v.as_str())
                 .map(|s| s.to_string()),
+        contact: None,
             serial_number: value.get("serialNumber")
                 .or_else(|| value.get("serial_number"))
                 .and_then(|v| v.as_str())

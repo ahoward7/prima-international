@@ -121,7 +121,7 @@ mod offline_server {
   async fn initial_sync(local_db: LocalDatabase, base_override: Option<String>) -> anyhow::Result<()> {
     // Determine if we can reach the online Nuxt server
     let http = HttpClient::new();
-    let base = base_override.as_deref().unwrap_or("http://localhost:3000");
+    let base = base_override.as_deref().unwrap_or("mongodb+srv://averydhoward:devpassword@prima.6kie7z4.mongodb.net/prima");
     
     // Health check on Nuxt side
     let timeout = std::time::Duration::from_secs(5);
@@ -300,14 +300,21 @@ mod offline_server {
   }
 
   async fn get_machine_api(State(ctx): State<AppCtx>, Path(id): Path<String>) -> Response {
+    log::info!("🔍 GET /api/machines/{} - Fetching machine details from lib_sqlite.rs", id);
+    
     // For simplicity, search through machines first
     match ctx.local_db.get_machines(None, None, None, None, 1000, 0) {
       Ok((machines, _)) => {
         let machine = machines.into_iter().find(|m| m.m_id == id);
+        if machine.is_some() {
+          log::info!("✅ Found machine with ID: {} in lib_sqlite.rs", id);
+        } else {
+          log::warn!("❌ Machine not found with ID: {} in lib_sqlite.rs", id);
+        }
         Json(serde_json::json!({"data": machine})).into_response()
       }
       Err(e) => {
-        log::error!("Failed to get machine: {}", e);
+        log::error!("💥 Failed to get machine from lib_sqlite.rs: {}", e);
         (axum::http::StatusCode::INTERNAL_SERVER_ERROR,
          Json(serde_json::json!({"error": "Failed to get machine"}))).into_response()
       }

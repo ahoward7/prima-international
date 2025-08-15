@@ -444,6 +444,55 @@ impl LocalDatabase {
         Ok(())
     }
 
+    pub fn get_machine_by_id(&self, machine_id: &str) -> Result<Option<DBMachine>> {
+        log::info!("🔍 LocalDB: Looking up machine with ID: {}", machine_id);
+        let conn = self.conn.lock().unwrap();
+        
+        let mut stmt = conn.prepare(
+            "SELECT m_id, contact_id, serial_number, model, type, year, hours,
+                    description, salesman, create_date, last_mod_date, price, location, notes, extra_fields
+             FROM machines WHERE m_id = ?1"
+        )?;
+        
+        let machine_result = stmt.query_row(params![machine_id], |row| {
+            let extra_fields_str: String = row.get(14).unwrap_or_default();
+            let extra_fields = serde_json::from_str(&extra_fields_str).unwrap_or_default();
+            
+            Ok(DBMachine {
+                m_id: row.get(0)?,
+                contact_id: row.get(1)?,
+                serial_number: row.get(2)?,
+                model: row.get(3)?,
+                r#type: row.get(4)?,
+                year: row.get(5)?,
+                hours: row.get(6)?,
+                description: row.get(7)?,
+                salesman: row.get(8)?,
+                create_date: row.get(9)?,
+                last_mod_date: row.get(10)?,
+                price: row.get(11)?,
+                location: row.get(12)?,
+                notes: row.get(13)?,
+                extra_fields,
+            })
+        });
+        
+        match machine_result {
+            Ok(machine) => {
+                log::info!("✅ LocalDB: Found machine {} with model: {:?}", machine_id, machine.model);
+                Ok(Some(machine))
+            },
+            Err(rusqlite::Error::QueryReturnedNoRows) => {
+                log::warn!("❌ LocalDB: No machine found with ID: {}", machine_id);
+                Ok(None)
+            },
+            Err(e) => {
+                log::error!("💥 LocalDB: Database error for machine {}: {}", machine_id, e);
+                Err(e.into())
+            },
+        }
+    }
+
     pub fn delete_machine(&self, machine_id: &str) -> Result<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute("DELETE FROM machines WHERE m_id = ?1", params![machine_id])?;

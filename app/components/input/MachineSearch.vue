@@ -99,8 +99,9 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue)
 })
 
+const { url: withBase } = useApiBase()
 const { data: machinesEnvelope, pending } = await useFetch<FetchResponse<ApiData<Machine>>>(
-  '/api/machines',
+  withBase('/api/machines'),
   {
     method: 'GET',
     query: filters,

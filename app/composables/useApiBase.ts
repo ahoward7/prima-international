@@ -5,7 +5,9 @@ export function useApiBase() {
     const b = base.value
     if (b === '/' || path.startsWith('http')) return path
     // ensure single slash
-    return new URL(path.replace(/^\//, ''), b).toString()
+    const finalUrl = new URL(path.replace(/^\//, ''), b).toString()
+    console.info('🔗 API URL generated:', { path, base: b, finalUrl })
+    return finalUrl
   }
   return { base, url }
 }

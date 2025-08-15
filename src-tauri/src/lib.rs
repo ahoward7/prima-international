@@ -9,25 +9,25 @@ use local_db::LocalDatabase;
 pub fn run() {
   tauri::Builder::default()
     .setup(|app| {
-      if cfg!(debug_assertions) {
-        app.handle().plugin(
-          tauri_plugin_log::Builder::default()
-            .level(log::LevelFilter::Info)
-            .build(),
-        )?;
-      }
+      // Enable logging for both debug and release builds
+      app.handle().plugin(
+        tauri_plugin_log::Builder::default()
+          .level(log::LevelFilter::Info)
+          .build(),
+      )?;
 
       // Initialize local SQLite database
       let app_data = app.path().app_data_dir().or_else(|_| app.path().app_config_dir())?;
       std::fs::create_dir_all(&app_data).ok();
       let db_path = app_data.join("offline_database.db");
       
+      log::info!("🚀 Prima International starting up...");
       log::info!("Initializing SQLite database at: {}", db_path.display());
       
       // Initialize the database
       match LocalDatabase::new(db_path) {
         Ok(local_db) => {
-          log::info!("SQLite database initialized successfully");
+          log::info!("✓ SQLite database initialized successfully");
           // Store database in app state for access from HTTP handlers
           app.manage(local_db);
         }
@@ -84,12 +84,19 @@ mod offline_server {
     // Get the local database from app state
     let local_db = app.state::<LocalDatabase>().inner().clone();
 
+    log::info!("🌐 Starting offline HTTP server and background sync...");
+
     // Fire-and-forget initial sync when we can reach the primary Nuxt API
     let local_db_clone = local_db.clone();
     std::thread::spawn(move || {
       let rt = tokio::runtime::Runtime::new().ok();
       if let Some(rt) = rt {
-        let _ = rt.block_on(initial_sync(local_db_clone, None));
+        match rt.block_on(initial_sync(local_db_clone, None)) {
+          Ok(_) => log::info!("✅ Background sync completed successfully"),
+          Err(e) => log::error!("❌ Background sync failed: {}", e),
+        }
+      } else {
+        log::error!("Failed to create tokio runtime for background sync");
       }
     });
 
@@ -135,7 +142,7 @@ mod offline_server {
     let mongo_uri = mongo_uri_override.as_deref()
       .unwrap_or("mongodb+srv://averydhoward:devpassword@prima.6kie7z4.mongodb.net/prima"); // Change this to your MongoDB connection string
     
-    log::info!("Attempting to sync with MongoDB at: {}", mongo_uri);
+    log::info!("Starting initial sync - attempting to connect to MongoDB at: {}", mongo_uri);
     
     // Connect to MongoDB
     let client_options = ClientOptions::parse(mongo_uri).await?;
@@ -150,39 +157,101 @@ mod offline_server {
       }
     }
 
-    log::info!("Starting initial sync with MongoDB");
+    log::info!("Starting data sync from MongoDB to local SQLite database");
 
     // Clear existing data and pull fresh data
+    log::info!("Clearing existing local data before sync");
     local_db.clear_all_data()?;
 
     // Assuming your database is named "prima" - change this to your actual database name
     let db = mongo_client.database("prima");
     
     // Fetch all collections
+    log::info!("Fetching machines from MongoDB...");
     let machines = fetch_machines_from_mongo(&db).await?;
+    log::info!("Fetching archived machines from MongoDB...");
     let archived = fetch_archived_from_mongo(&db).await?;
+    log::info!("Fetching sold machines from MongoDB...");
     let sold = fetch_sold_from_mongo(&db).await?;
+    log::info!("Fetching contacts from MongoDB...");
     let contacts = fetch_contacts_from_mongo(&db).await?;
 
     // Bulk insert into local database
     if !contacts.is_empty() {
       local_db.bulk_insert_contacts(&contacts)?;
-      log::info!("Synced {} contacts", contacts.len());
+      log::info!("✓ Synced {} contacts to local database", contacts.len());
+      
+      // Log some sample contact IDs for debugging
+      let sample_contacts: Vec<_> = contacts.iter().take(5).map(|c| &c.c_id).collect();
+      log::info!("Sample contact IDs: {:?}", sample_contacts);
+    } else {
+      log::info!("No contacts found in MongoDB");
     }
-    if !machines.is_empty() {
-      local_db.bulk_insert_machines(&machines)?;
-      log::info!("Synced {} machines", machines.len());
-    }
+    
+    // Process machines
+    let machines_count = if !machines.is_empty() {
+      log::info!("Attempting to sync {} machines to local database", machines.len());
+      let original_count = machines.len();
+      
+      // Fix negative contact_id references before inserting
+      let mut fixed_machines = machines;
+      let mut fixed_count = 0;
+      for machine in &mut fixed_machines {
+        if let Some(contact_id) = &machine.contact_id {
+          if contact_id.starts_with('-') {
+            // Remove the negative sign
+            machine.contact_id = Some(contact_id.strip_prefix('-').unwrap().to_string());
+            fixed_count += 1;
+          }
+        }
+      }
+      
+      if fixed_count > 0 {
+        log::info!("Fixed {} machines with negative contact_id references", fixed_count);
+      }
+      
+      // Log some sample machine contact_id references for debugging
+      let sample_machines: Vec<_> = fixed_machines.iter().take(5)
+        .map(|m| (m.m_id.as_str(), m.contact_id.as_deref().unwrap_or("None")))
+        .collect();
+      log::info!("Sample machine contact_id references: {:?}", sample_machines);
+      
+      // Count machines with and without contact_id
+      let with_contact = fixed_machines.iter().filter(|m| m.contact_id.is_some()).count();
+      let without_contact = fixed_machines.len() - with_contact;
+      log::info!("Machines with contact_id: {}, without contact_id: {}", with_contact, without_contact);
+      
+      match local_db.bulk_insert_machines(&fixed_machines) {
+        Ok(_) => {
+          log::info!("✓ Synced {} machines to local database", fixed_machines.len());
+          original_count
+        },
+        Err(e) => {
+          log::error!("Failed to sync machines: {}", e);
+          return Err(e.into());
+        }
+      }
+    } else {
+      log::info!("No machines found in MongoDB");
+      0
+    };
+    
     if !archived.is_empty() {
       local_db.bulk_insert_archived(&archived)?;
-      log::info!("Synced {} archived machines", archived.len());
+      log::info!("✓ Synced {} archived machines to local database", archived.len());
+    } else {
+      log::info!("No archived machines found in MongoDB");
     }
+    
     if !sold.is_empty() {
       local_db.bulk_insert_sold(&sold)?;
-      log::info!("Synced {} sold machines", sold.len());
+      log::info!("✓ Synced {} sold machines to local database", sold.len());
+    } else {
+      log::info!("No sold machines found in MongoDB");
     }
 
-    log::info!("Initial sync completed successfully");
+    log::info!("🎉 Initial sync completed successfully - Total: {} machines, {} contacts, {} archived, {} sold", 
+      machines_count, contacts.len(), archived.len(), sold.len());
     Ok(())
   }
 
@@ -251,7 +320,7 @@ mod offline_server {
   }
 
   async fn fetch_archived_from_mongo(db: &mongodb::Database) -> anyhow::Result<Vec<ArchivedMachine>> {
-    let collection: Collection<Document> = db.collection("archived");
+    let collection: Collection<Document> = db.collection("archives");
     let mut cursor = collection.find(None, None).await?;
     let mut archived = Vec::new();
     
@@ -336,6 +405,9 @@ mod offline_server {
 
   // API Handlers
   async fn list_machines_api(State(ctx): State<AppCtx>, Query(q): Query<ListQuery>) -> Response {
+    log::info!("📋 GET /api/machines - Listing machines (page: {:?}, size: {:?}, search: {:?})", 
+      q.page, q.pageSize, q.search);
+    
     let page = q.page.unwrap_or(1).max(1);
     let size = q.pageSize.unwrap_or(20).max(1);
     let offset = (page - 1) * size;
@@ -349,6 +421,7 @@ mod offline_server {
       offset
     ) {
       Ok((machines, total)) => {
+        log::info!("✅ Found {} machines (total: {})", machines.len(), total);
         Json(serde_json::json!({
           "data": {
             "data": machines,
@@ -357,7 +430,7 @@ mod offline_server {
         })).into_response()
       }
       Err(e) => {
-        log::error!("Failed to get machines: {}", e);
+        log::error!("💥 Failed to get machines: {}", e);
         (axum::http::StatusCode::INTERNAL_SERVER_ERROR,
          Json(serde_json::json!({"error": "Failed to get machines"}))).into_response()
       }
@@ -365,14 +438,21 @@ mod offline_server {
   }
 
   async fn get_machine_api(State(ctx): State<AppCtx>, Path(id): Path<String>) -> Response {
-    // For simplicity, search through machines first
-    match ctx.local_db.get_machines(None, None, None, None, 1000, 0) {
-      Ok((machines, _)) => {
-        let machine = machines.into_iter().find(|m| m.m_id == id);
+    log::info!("🔍 GET /api/machines/{} - Fetching machine details", id);
+    
+    match ctx.local_db.get_machine_by_id(&id) {
+      Ok(Some(machine)) => {
+        log::info!("✅ Found machine with ID: {} (model: {:?}, type: {:?})", 
+          id, machine.model, machine.r#type);
         Json(serde_json::json!({"data": machine})).into_response()
       }
+      Ok(None) => {
+        log::warn!("❌ Machine not found with ID: {}", id);
+        (axum::http::StatusCode::NOT_FOUND,
+         Json(serde_json::json!({"error": "Machine not found"}))).into_response()
+      }
       Err(e) => {
-        log::error!("Failed to get machine: {}", e);
+        log::error!("💥 Database error getting machine {}: {}", id, e);
         (axum::http::StatusCode::INTERNAL_SERVER_ERROR,
          Json(serde_json::json!({"error": "Failed to get machine"}))).into_response()
       }
@@ -433,73 +513,72 @@ mod offline_server {
   }
 
   async fn update_machine_api(State(ctx): State<AppCtx>, Path(id): Path<String>, Json(body): Json<serde_json::Value>) -> Response {
-    // Get existing machine first
-    match ctx.local_db.get_machines(None, None, None, None, 1000, 0) {
-      Ok((machines, _)) => {
-        if let Some(mut machine) = machines.into_iter().find(|m| m.m_id == id) {
-          // Update fields from body - handle both direct fields and "machine" wrapper
-          let update_data = if let Some(machine_data) = body.get("machine") {
-            machine_data
-          } else {
-            &body
-          };
-
-          // Update fields flexibly
-          if let Some(contact_id) = update_data.get("contactId").and_then(|v| v.as_str()) {
-            machine.contact_id = Some(contact_id.to_string());
-          }
-          if let Some(serial) = update_data.get("serialNumber").and_then(|v| v.as_str()) {
-            machine.serial_number = Some(serial.to_string());
-          }
-          if let Some(model) = update_data.get("model").and_then(|v| v.as_str()) {
-            machine.model = Some(model.to_string());
-          }
-          if let Some(machine_type) = update_data.get("type").and_then(|v| v.as_str()) {
-            machine.r#type = Some(machine_type.to_string());
-          }
-          if let Some(year) = update_data.get("year").and_then(|v| v.as_i64()) {
-            machine.year = Some(year);
-          }
-          if let Some(hours) = update_data.get("hours").and_then(|v| v.as_i64()) {
-            machine.hours = Some(hours);
-          }
-          if let Some(description) = update_data.get("description").and_then(|v| v.as_str()) {
-            machine.description = Some(description.to_string());
-          }
-          if let Some(salesman) = update_data.get("salesman").and_then(|v| v.as_str()) {
-            machine.salesman = Some(salesman.to_string());
-          }
-          if let Some(price) = update_data.get("price").and_then(|v| v.as_f64()) {
-            machine.price = Some(price);
-          }
-          if let Some(location) = update_data.get("location").and_then(|v| v.as_str()) {
-            machine.location = Some(location.to_string());
-          }
-          if let Some(notes) = update_data.get("notes").and_then(|v| v.as_str()) {
-            machine.notes = Some(notes.to_string());
-          }
-
-          match ctx.local_db.update_machine(&machine) {
-            Ok(_) => {
-              Json(serde_json::json!({
-                "data": {
-                  "success": true,
-                  "contactUpdated": true,
-                  "machineUpdated": true,
-                  "machine": machine
-                }
-              })).into_response()
-            }
-            Err(e) => {
-              log::error!("Failed to update machine: {}", e);
-              (axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-               Json(serde_json::json!({"error": "Failed to update machine"}))).into_response()
-            }
-          }
+    // Get existing machine first using the efficient method
+    match ctx.local_db.get_machine_by_id(&id) {
+      Ok(Some(mut machine)) => {
+        // Update fields from body - handle both direct fields and "machine" wrapper
+        let update_data = if let Some(machine_data) = body.get("machine") {
+          machine_data
         } else {
-          (axum::http::StatusCode::NOT_FOUND,
-           Json(serde_json::json!({"error": "Machine not found"}))).into_response()
+          &body
+        };
+
+        // Update fields flexibly
+        if let Some(contact_id) = update_data.get("contactId").and_then(|v| v.as_str()) {
+          machine.contact_id = Some(contact_id.to_string());
         }
+        if let Some(serial) = update_data.get("serialNumber").and_then(|v| v.as_str()) {
+          machine.serial_number = Some(serial.to_string());
+        }
+        if let Some(model) = update_data.get("model").and_then(|v| v.as_str()) {
+          machine.model = Some(model.to_string());
+        }
+        if let Some(machine_type) = update_data.get("type").and_then(|v| v.as_str()) {
+          machine.r#type = Some(machine_type.to_string());
+        }
+        if let Some(year) = update_data.get("year").and_then(|v| v.as_i64()) {
+          machine.year = Some(year);
+        }
+        if let Some(hours) = update_data.get("hours").and_then(|v| v.as_i64()) {
+          machine.hours = Some(hours);
+        }
+        if let Some(description) = update_data.get("description").and_then(|v| v.as_str()) {
+          machine.description = Some(description.to_string());
+        }
+        if let Some(salesman) = update_data.get("salesman").and_then(|v| v.as_str()) {
+          machine.salesman = Some(salesman.to_string());
+        }
+        if let Some(price) = update_data.get("price").and_then(|v| v.as_f64()) {
+          machine.price = Some(price);
+        }
+        if let Some(location) = update_data.get("location").and_then(|v| v.as_str()) {
+          machine.location = Some(location.to_string());
+        }
+        if let Some(notes) = update_data.get("notes").and_then(|v| v.as_str()) {
+          machine.notes = Some(notes.to_string());
+        }
+
+        match ctx.local_db.update_machine(&machine) {
+          Ok(_) => {
+            Json(serde_json::json!({
+              "data": {
+                "success": true,
+                "contactUpdated": true,
+                "machineUpdated": true,
+                "machine": machine
+              }
+            })).into_response()
+          }
+          Err(e) => {
+            log::error!("Failed to update machine: {}", e);
+            (axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+             Json(serde_json::json!({"error": "Failed to update machine"}))).into_response()
+          }
+        }
+      }
+      Ok(None) => {
+        (axum::http::StatusCode::NOT_FOUND,
+         Json(serde_json::json!({"error": "Machine not found"}))).into_response()
       }
       Err(e) => {
         log::error!("Failed to get machine for update: {}", e);

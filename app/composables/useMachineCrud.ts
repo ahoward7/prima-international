@@ -1,15 +1,34 @@
 import { useMachineStore } from '~~/stores/machine'
 import { useNotificationStore } from '~~/stores/notification'
+import { useApiBase } from '~/composables/useApiBase'
 
 async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
+  // Route requests through the offline-aware base and retry once against the local server on network errors
+  const { url: withBase } = useApiBase()
+  const finalUrl = withBase(url)
   try {
-    const res: any = await $fetch(url, opts)
+    const res: any = await $fetch(finalUrl, opts)
     if (res?.data !== undefined) return { ok: true, data: res.data as T }
     if (res?.success === true && res?.data === undefined) return { ok: true, data: res as T }
     if (res?.error) return { ok: false, error: res.error as ProblemDetails }
     return { ok: true, data: res as T }
   }
   catch (e: any) {
+    // If first attempt fails and the URL was relative, try the local offline server directly as a fallback
+    const isRelative = typeof url === 'string' && !/^https?:\/\//i.test(url)
+    if (isRelative) {
+      try {
+        const offlineUrl = new URL(url.replace(/^\//, ''), 'http://127.0.0.1:27271/').toString()
+        const res: any = await $fetch(offlineUrl, opts)
+        if (res?.data !== undefined) return { ok: true, data: res.data as T }
+        if (res?.success === true && res?.data === undefined) return { ok: true, data: res as T }
+        if (res?.error) return { ok: false, error: res.error as ProblemDetails }
+        return { ok: true, data: res as T }
+      }
+      catch {
+        // fall through to standard error envelope below
+      }
+    }
     return {
       ok: false,
       error: {

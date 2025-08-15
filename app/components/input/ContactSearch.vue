@@ -20,8 +20,9 @@ const filters = ref({
   pageSize: 50
 })
 
+const { url: withBase } = useApiBase()
 const { data: contactsEnvelope } = await useFetch<FetchResponse<ApiData<Contact>>>(
-  '/api/contact',
+  withBase('/api/contact'),
   {
     query: filters,
     lazy: true

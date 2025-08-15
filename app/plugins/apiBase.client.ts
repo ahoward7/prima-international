@@ -19,13 +19,38 @@ export default defineNuxtPlugin(() => {
   }
 
   async function updateBase() {
-    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-      // offline: try local server
-      apiBase.value = (await isReachable(offlineBase)) ? offlineBase : '/'
+    // Check for force offline mode via URL parameter or localStorage
+    const forceOffline = typeof window !== 'undefined' && 
+      (new URLSearchParams(window.location.search).has('offline') || 
+       localStorage.getItem('forceOffline') === 'true')
+    
+    console.info('🔍 API Base Detection:', {
+      forceOffline,
+      navigatorOnline: typeof navigator !== 'undefined' ? navigator.onLine : 'unknown',
+      currentBase: apiBase.value
+    })
+    
+    if (forceOffline) {
+      console.info('🔧 Force offline mode enabled')
+      const isOfflineReachable = await isReachable(offlineBase)
+      console.info('🏠 Offline server reachable:', isOfflineReachable)
+      apiBase.value = isOfflineReachable ? offlineBase : '/'
+      console.info('📍 API Base set to:', apiBase.value)
       return
     }
-    // online: prefer Nuxt; but if local server is explicitly available and desired, keep '/'
+    
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      console.info('📴 Browser offline - trying local server')
+      const isOfflineReachable = await isReachable(offlineBase)
+      console.info('🏠 Offline server reachable:', isOfflineReachable)
+      apiBase.value = isOfflineReachable ? offlineBase : '/'
+      console.info('📍 API Base set to:', apiBase.value)
+      return
+    }
+    
+    console.info('🌐 Browser online - using Nuxt server')
     apiBase.value = '/'
+    console.info('📍 API Base set to:', apiBase.value)
   }
 
   // Initial check and listeners

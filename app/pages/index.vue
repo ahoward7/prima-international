@@ -70,13 +70,14 @@ watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
 })
  
-const { url: withBase } = useApiBase()
+const { base, url: withBase } = useApiBase()
 const { data: machinesEnvelope, refresh } = await useFetch<FetchResponse<ApiData<Machine | ArchivedMachine | SoldMachine>>>(
-  withBase('/api/machines'),
+  () => withBase('/api/machines'),
   {
     method: 'GET',
     query: filters,
-    watch: [filters]
+    watch: [filters, base],
+    server: false
   }
 )
 const machines = computed(() => machinesEnvelope.value?.data)

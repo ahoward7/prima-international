@@ -5,7 +5,7 @@
   "identifier": "com.tauri.prima",
   "build": {
     "frontendDist": "../.output/public",
-    "devUrl": "http://localhost:3000",
+  "devUrl": "http://localhost:3000?local=1",
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build"
   },

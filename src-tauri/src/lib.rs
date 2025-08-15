@@ -61,6 +61,7 @@ mod offline_server {
   use bson::{doc, Document};
   use futures_util::stream::StreamExt;
   use serde_json::to_value;
+  use tower_http::cors::{Any, CorsLayer};
 
   #[derive(Deserialize)]
   struct ListQuery {
@@ -102,6 +103,12 @@ mod offline_server {
 
     let ctx = AppCtx { local_db };
     
+    // CORS: allow all by default so both the Tauri webview and dev server can access
+    let cors = CorsLayer::new()
+      .allow_origin(Any)
+      .allow_methods(Any)
+      .allow_headers(Any);
+
     let app = Router::new()
       .route("/health", get(health))
       .route("/api/machines", get(list_machines_api).post(create_machine_api))
@@ -112,7 +119,8 @@ mod offline_server {
       .route("/api/machines/sold", post(sell_machine_api))
       .route("/api/sync", post(sync_api))
       .route("/api/contact", get(list_contacts_api))
-      .with_state(ctx);
+      .with_state(ctx)
+      .layer(cors);
 
     let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 27271));
     log::info!("Starting offline server on http://{addr}");
@@ -405,18 +413,34 @@ mod offline_server {
 
   // API Handlers
   async fn list_machines_api(State(ctx): State<AppCtx>, Query(q): Query<ListQuery>) -> Response {
-    log::info!("📋 GET /api/machines - Listing machines (page: {:?}, size: {:?}, search: {:?})", 
-      q.page, q.pageSize, q.search);
+    log::info!("📋 GET /api/machines - Listing machines (page: {:?}, size: {:?}, search: {:?}, model: {:?}, type: {:?}, contactId: {:?})", 
+      q.page, q.pageSize, q.search, q.model, q.r#type, q.contactId);
     
     let page = q.page.unwrap_or(1).max(1);
     let size = q.pageSize.unwrap_or(20).max(1);
     let offset = (page - 1) * size;
 
+    // Treat empty-string filters as None to avoid over-filtering
+    let clean = |v: Option<String>| -> Option<String> {
+      v.and_then(|s| {
+        let t = s.trim().to_string();
+        if t.is_empty() { None } else { Some(t) }
+      })
+    };
+
+    let model = clean(q.model.clone());
+    let machine_type = clean(q.r#type.clone());
+    let contact_id = clean(q.contactId.clone());
+    let search = q.search.as_ref().and_then(|s| {
+      let t = s.trim();
+      if t.is_empty() { None } else { Some(t.to_string()) }
+    });
+
     match ctx.local_db.get_machines(
-      q.search.as_deref(),
-      q.model.as_deref(),
-      q.r#type.as_deref(),
-      q.contactId.as_deref(),
+      search.as_deref(),
+      model.as_deref(),
+      machine_type.as_deref(),
+      contact_id.as_deref(),
       size,
       offset
     ) {

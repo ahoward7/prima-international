@@ -131,11 +131,13 @@ if (location && !['located', 'archived', 'sold'].includes(location as string)) {
   navigateTo('/')
 }
 
-const { url: withBase } = useApiBase()
+const { base, url: withBase } = useApiBase()
 
 if (id) {
-  const { data: dataMachineEnv } = await useFetch<FetchResponse<Machine>>(withBase(`/api/machines/${id}`), {
-    query: { location }
+  const { data: dataMachineEnv } = await useFetch<FetchResponse<Machine>>(() => withBase(`/api/machines/${id}`), {
+    query: { location },
+    watch: [base],
+    server: false
   })
   const dataMachine = computed(() => dataMachineEnv.value?.data)
 
@@ -144,11 +146,13 @@ if (id) {
   }
 
   const { data: dataMachineLocatonsEnv } = await useFetch<FetchResponse<MachineLocations>>(
-    withBase('/api/machines/locations'),
+    () => withBase('/api/machines/locations'),
     {
       query: {
         serialNumber: machine.value?.serialNumber
-      }
+      },
+      watch: [base],
+      server: false
     }
   )
   const dataMachineLocatons = computed(() => dataMachineLocatonsEnv.value?.data)

@@ -20,12 +20,13 @@ const filters = ref({
   pageSize: 50
 })
 
-const { url: withBase } = useApiBase()
+const { base, url: withBase } = useApiBase()
 const { data: contactsEnvelope } = await useFetch<FetchResponse<ApiData<Contact>>>(
-  withBase('/api/contact'),
+  () => withBase('/api/contact'),
   {
     query: filters,
-    lazy: true
+    lazy: true,
+    watch: [filters, base]
   }
 )
 const contacts = computed(() => contactsEnvelope.value?.data)

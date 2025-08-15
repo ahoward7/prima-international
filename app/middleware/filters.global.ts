@@ -7,9 +7,11 @@ export default defineNuxtRouteMiddleware(async () => {
 
   if (machineStore.filterOptions.model) return
 
-  const { url: withBase } = useApiBase()
-  const { data, error } = await useFetch<FetchResponse<FilterOptions>>(withBase('/api/machines/filters'), {
-    deep: true
+  const { base, url: withBase } = useApiBase()
+  const { data, error } = await useFetch<FetchResponse<FilterOptions>>(() => withBase('/api/machines/filters'), {
+    deep: true,
+    watch: [base],
+    server: false
   })
 
   if (error.value) {

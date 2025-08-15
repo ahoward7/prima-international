@@ -25,6 +25,7 @@ tauri = { version = "2.7.0", features = [] }
 tauri-plugin-log = "2"
 axum = { version = "0.7", features = ["macros"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal"] }
+tower-http = { version = "0.5", features = ["cors"] }
 parking_lot = "0.12"
 thiserror = "1"
 once_cell = "1"

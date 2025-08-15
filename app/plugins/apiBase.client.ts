@@ -1,9 +1,22 @@
-// Detect and manage API base URL: online uses Nuxt server ("/"), offline uses local Tauri server (http://127.0.0.1:27271)
+// Decide API base URL per runtime:
+// - In Tauri: always use the local SQLite HTTP server (http://127.0.0.1:27271)
+// - In the web/browser: always use Nuxt server routes ("/")
 export default defineNuxtPlugin(() => {
   const apiBase = useState<string>('apiBase', () => '/')
   const offlineBase = 'http://127.0.0.1:27271/'
 
-  async function isReachable(url: string, timeoutMs = 800): Promise<boolean> {
+  // Heuristic to detect Tauri runtime
+  const isTauri = typeof window !== 'undefined' && (
+    // Newer Tauri
+    (window as any).__TAURI__ !== undefined ||
+    // Older Tauri bridge
+    (window as any).__TAURI_IPC__ !== undefined ||
+    // Fallback UA check in dev
+    (navigator?.userAgent || '').toLowerCase().includes('tauri')
+  )
+
+  // Optional: fast health-check for local server readiness
+  async function isReachable(url: string, timeoutMs = 600): Promise<boolean> {
     const controller = new AbortController()
     const id = setTimeout(() => controller.abort(), timeoutMs)
     try {
@@ -18,53 +31,22 @@ export default defineNuxtPlugin(() => {
     }
   }
 
-  async function updateBase() {
-    // Check for force offline mode via URL parameter or localStorage
-    const forceOffline = typeof window !== 'undefined' && 
-      (new URLSearchParams(window.location.search).has('offline') || 
-       localStorage.getItem('forceOffline') === 'true')
-    
-    console.info('🔍 API Base Detection:', {
-      forceOffline,
-      navigatorOnline: typeof navigator !== 'undefined' ? navigator.onLine : 'unknown',
-      currentBase: apiBase.value
-    })
-    
-    if (forceOffline) {
-      console.info('🔧 Force offline mode enabled')
-      const isOfflineReachable = await isReachable(offlineBase)
-      console.info('🏠 Offline server reachable:', isOfflineReachable)
-      apiBase.value = isOfflineReachable ? offlineBase : '/'
-      console.info('📍 API Base set to:', apiBase.value)
+  async function setBase() {
+    if (isTauri) {
+      // Always prefer the local SQLite API when running inside Tauri
+      apiBase.value = offlineBase
+      // Optionally wait until server is up; keep base but log readiness
+      isReachable(offlineBase).then((ok) => {
+        if (!ok) console.info('Waiting for local SQLite server to start on 127.0.0.1:27271...')
+      })
       return
     }
-    
-    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-      console.info('📴 Browser offline - trying local server')
-      const isOfflineReachable = await isReachable(offlineBase)
-      console.info('🏠 Offline server reachable:', isOfflineReachable)
-      apiBase.value = isOfflineReachable ? offlineBase : '/'
-      console.info('📍 API Base set to:', apiBase.value)
-      return
-    }
-    
-    console.info('🌐 Browser online - using Nuxt server')
+
+    // Web/browser: always use Nuxt server routes
     apiBase.value = '/'
-    console.info('📍 API Base set to:', apiBase.value)
   }
 
-  // Initial check and listeners
-  updateBase()
-  if (typeof window !== 'undefined') {
-    window.addEventListener('online', updateBase)
-    window.addEventListener('offline', updateBase)
-    // Periodic sanity check (local server may start after app loads)
-    const interval = setInterval(updateBase, 3000)
-    // Cleanup on HMR dispose
-    if (import.meta && (import.meta as any).hot) {
-      ;(import.meta as any).hot.on('vite:beforeFullReload', () => clearInterval(interval))
-    }
-  }
+  setBase()
 
   return {
     provide: {

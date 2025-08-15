@@ -538,6 +538,113 @@ impl LocalDatabase {
         }
     }
 
+    pub fn get_archived_by_id(&self, archive_id: &str) -> Result<Option<ArchivedMachine>> {
+        log::info!("🔍 LocalDB: Looking up archived machine with A_ID: {}", archive_id);
+        let conn = self.conn.lock().unwrap();
+
+        let mut stmt = conn.prepare(
+            "SELECT a_id, archive_date, m_id, contact_id, serial_number, model, type,
+                    year, hours, description, salesman, create_date, last_mod_date,
+                    price, location, notes, extra_fields
+             FROM archived_machines WHERE a_id = ?1"
+        )?;
+
+        let result = stmt.query_row(params![archive_id], |row| {
+            let extra_fields_str: String = row.get(16).unwrap_or_default();
+            let extra_fields = serde_json::from_str(&extra_fields_str).unwrap_or_default();
+
+            let machine = DBMachine {
+                m_id: row.get(2)?,
+                contact_id: row.get(3)?,
+                serial_number: row.get(4)?,
+                model: row.get(5)?,
+                r#type: row.get(6)?,
+                year: row.get(7)?,
+                hours: row.get(8)?,
+                description: row.get(9)?,
+                salesman: row.get(10)?,
+                create_date: row.get(11)?,
+                last_mod_date: row.get(12)?,
+                price: row.get(13)?,
+                location: row.get(14)?,
+                notes: row.get(15)?,
+                extra_fields,
+            };
+
+            Ok(ArchivedMachine {
+                a_id: row.get(0)?,
+                archive_date: row.get(1)?,
+                machine,
+            })
+        });
+
+        match result {
+            Ok(arch) => Ok(Some(arch)),
+            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+            Err(e) => Err(e.into()),
+        }
+    }
+
+    pub fn get_sold_by_id(&self, sold_id: &str) -> Result<Option<SoldMachine>> {
+        log::info!("🔍 LocalDB: Looking up sold machine with S_ID: {}", sold_id);
+        let conn = self.conn.lock().unwrap();
+
+        let mut stmt = conn.prepare(
+            "SELECT s_id, date_sold, trucking_company, buyer, buyer_location, purchase_fob,
+                    machine_cost, freight_cost, paint_cost, other_cost, profit, total_cost, notes,
+                    m_id, contact_id, serial_number, model, type, year, hours, description,
+                    salesman, create_date, last_mod_date, price, location, machine_notes, extra_fields
+             FROM sold_machines WHERE s_id = ?1"
+        )?;
+
+        let result = stmt.query_row(params![sold_id], |row| {
+            let extra_fields_str: String = row.get(27).unwrap_or_default();
+            let extra_fields = serde_json::from_str(&extra_fields_str).unwrap_or_default();
+
+            let machine = DBMachine {
+                m_id: row.get(13)?,
+                contact_id: row.get(14)?,
+                serial_number: row.get(15)?,
+                model: row.get(16)?,
+                r#type: row.get(17)?,
+                year: row.get(18)?,
+                hours: row.get(19)?,
+                description: row.get(20)?,
+                salesman: row.get(21)?,
+                create_date: row.get(22)?,
+                last_mod_date: row.get(23)?,
+                price: row.get(24)?,
+                location: row.get(25)?,
+                // Note: in sold table, machine notes are stored separately
+                notes: row.get(26)?,
+                extra_fields,
+            };
+
+            Ok(SoldMachine {
+                s_id: row.get(0)?,
+                machine,
+                date_sold: row.get(1)?,
+                trucking_company: row.get(2)?,
+                buyer: row.get(3)?,
+                buyer_location: row.get(4)?,
+                purchase_fob: row.get(5)?,
+                machine_cost: row.get(6)?,
+                freight_cost: row.get(7)?,
+                paint_cost: row.get(8)?,
+                other_cost: row.get(9)?,
+                profit: row.get(10)?,
+                total_cost: row.get(11)?,
+                notes: row.get(12)?,
+            })
+        });
+
+        match result {
+            Ok(sold) => Ok(Some(sold)),
+            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+            Err(e) => Err(e.into()),
+        }
+    }
+
     pub fn delete_machine(&self, machine_id: &str) -> Result<()> {
         let conn = self.conn.lock().unwrap();
         conn.execute("DELETE FROM machines WHERE m_id = ?1", params![machine_id])?;

@@ -143,6 +143,8 @@ if (id) {
 
   if (dataMachine.value) {
     machineStore.setMachine(dataMachine.value, location as MachineLocationString)
+    // Ensure contact is initialized for bindings
+    if (!machine.value.contact) machine.value.contact = {}
   }
 
   const { data: dataMachineLocatonsEnv } = await useFetch<FetchResponse<MachineLocations>>(

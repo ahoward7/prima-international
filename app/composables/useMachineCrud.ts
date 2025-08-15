@@ -59,12 +59,13 @@ export async function createMachine() {
   }
 }
 
-export function selectMachine(id?: string) {
-  const { filters } = useMachineStore()
-
-  if (id) {
-    navigateTo(`/detail/?id=${id}&location=${filters.location}`)
-  }
+export async function selectMachine(id?: string) {
+  if (!id) return
+  const store = useMachineStore()
+  const location = store.filters?.location || 'located'
+  // Yield to next tick to avoid DOM patching race before route change
+  await nextTick()
+  navigateTo(`/detail/?id=${id}&location=${location}`)
 }
 
 export async function updateMachine(id?: string) {

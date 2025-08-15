@@ -63,7 +63,9 @@ export const useMachineStore = defineStore('machine', () => {
     if (location === 'archived') {
       const archive = m as ArchivedMachine
       archivedMachine.value.archiveDate = archive.archiveDate
-      machine.value = archive.machine
+      machine.value = archive.machine as MachineForm
+      // Ensure contact object exists for bindings
+      if (!machine.value.contact) machine.value.contact = { ...contact }
     }
     else if (location === 'sold') {
       const sold = m as SoldMachine
@@ -79,10 +81,12 @@ export const useMachineStore = defineStore('machine', () => {
       soldMachine.value.purchaseFob = sold.purchaseFob
       soldMachine.value.notes = sold.notes
       soldMachine.value.dateSold = sold.dateSold
-      machine.value = sold.machine
+      machine.value = sold.machine as MachineForm
+      if (!machine.value.contact) machine.value.contact = { ...contact }
     }
     else {
       machine.value = m as MachineForm
+      if (!machine.value.contact) machine.value.contact = { ...contact }
     }
   }
 

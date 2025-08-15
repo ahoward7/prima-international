@@ -470,26 +470,30 @@ mod offline_server {
     }
   }
 
-  async fn get_machine_api(State(ctx): State<AppCtx>, Path(id): Path<String>) -> Response {
-    log::info!("🔍 GET /api/machines/{} - Fetching machine details", id);
-    
-    match ctx.local_db.get_machine_by_id(&id) {
-      Ok(Some(machine)) => {
-        log::info!("✅ Found machine with ID: {} (model: {:?}, type: {:?})", 
-          id, machine.model, machine.r#type);
-        Json(serde_json::json!({"data": machine})).into_response()
-      }
-      Ok(None) => {
-        log::warn!("❌ Machine not found with ID: {}", id);
-        (axum::http::StatusCode::NOT_FOUND,
-         Json(serde_json::json!({"error": "Machine not found"}))).into_response()
-      }
-      Err(e) => {
-        log::error!("💥 Database error getting machine {}: {}", id, e);
-        (axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-         Json(serde_json::json!({"error": "Failed to get machine"}))).into_response()
-      }
-    }
+  async fn get_machine_api(State(ctx): State<AppCtx>, Path(id): Path<String>, Query(q): Query<HashMap<String, String>>) -> Response {
+    let location = q.get("location").map(|s| s.to_string());
+    log::info!("🔍 GET /api/machines/{} - Fetching machine details (location={:?})", id, location);
+
+    // Route to the correct table by location; default to active machines
+    let resp = match location.as_deref() {
+      Some("archived") => match ctx.local_db.get_archived_by_id(&id) {
+        Ok(Some(arch)) => Json(serde_json::json!({"data": arch})).into_response(),
+        Ok(None) => (axum::http::StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Archived machine not found"}))).into_response(),
+        Err(e) => (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": format!("DB error: {}", e)}))).into_response(),
+      },
+      Some("sold") => match ctx.local_db.get_sold_by_id(&id) {
+        Ok(Some(sold)) => Json(serde_json::json!({"data": sold})).into_response(),
+        Ok(None) => (axum::http::StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Sold machine not found"}))).into_response(),
+        Err(e) => (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": format!("DB error: {}", e)}))).into_response(),
+      },
+      _ => match ctx.local_db.get_machine_by_id(&id) {
+        Ok(Some(machine)) => Json(serde_json::json!({"data": machine})).into_response(),
+        Ok(None) => (axum::http::StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Machine not found"}))).into_response(),
+        Err(e) => (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": format!("DB error: {}", e)}))).into_response(),
+      },
+    };
+
+    resp
   }
 
   async fn create_machine_api(State(ctx): State<AppCtx>, Json(body): Json<serde_json::Value>) -> Response {

@@ -14,12 +14,12 @@
       <div v-else-if="column.key === 'lastModDate'">
         {{ isoToMMDDYYYY(machine.lastModDate) }}
       </div>
-      <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center">
-        <Icon name="carbon:currency-dollar" size="20" class="text-green-600" @click="navigateTo(`/detail/?id=${machineId}&location=${filters.location}&selling=1`)" />
-        <ButtonConfirmationIcon v-if="filters.location !== 'archived'" @confirm="archiveMachine(machine as Machine)">
+      <div v-else-if="column.key === ''" class="flex justify-around gap-1 items-center" @click.stop>
+        <Icon name="carbon:currency-dollar" size="20" class="text-green-600" @click.stop="navigateTo(`/detail/?id=${machineId}&location=${filters.location}&selling=1`)" />
+        <ButtonConfirmationIcon v-if="filters.location !== 'archived'" @click.stop @confirm="archiveMachine(machine as Machine)">
           <Icon name="carbon:volume-file-storage" size="20" class="text-blue-600" />
         </ButtonConfirmationIcon>
-        <ButtonConfirmationIcon @confirm="deleteMachine(machineId)">
+        <ButtonConfirmationIcon @click.stop @confirm="deleteMachine(machineId)">
           <Icon name="carbon:trash-can" size="20" class="text-red-600" />
         </ButtonConfirmationIcon>
       </div>

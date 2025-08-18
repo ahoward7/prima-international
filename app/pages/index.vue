@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen flex justify-center px-4 md:px-8 py-16">
     <div class="flex flex-col gap-8 w-full">
-      <HeaderPrimary>
-        Inventory
+      <HeaderPrimary class="-mb-8">
+        {{ titleCase(filters.location) }}
       </HeaderPrimary>
       <div class="flex flex-col gap-2">
         <HeaderSecondary>Search Filters</HeaderSecondary>

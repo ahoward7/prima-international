@@ -1,15 +1,18 @@
 <template>
   <div class="flex flex-col gap-4 relative min-w-[1400px] overflow-x-auto">
     <div class="flex justify-between items-end">
-      <div class="w-32" />
-      <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
-      <div class="flex justify-end w-32">
+      <div class="flex gap-4 w-72">
         <NuxtLink to="/detail">
           <Button class="!bg-green-600">
             Add Machine
           </Button>
         </NuxtLink>
+        <Button class="!bg-prima-yellow" @click="emit('clear')">
+          Clear Filters
+        </Button>
       </div>
+      <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
+      <div class="w-72" />
     </div>
 
     <div v-show="!machines">
@@ -83,7 +86,9 @@ const props = withDefaults(defineProps<{
   pageSize: 20
 })
 
-const { filters } = useMachineStore()
+const emit = defineEmits(['clear'])
+
+const { filters } = storeToRefs(useMachineStore())
 
 const sortBy = defineModel('sortBy', { type: String, default: 'type' })
 const page = defineModel('page', { default: 1 })
@@ -117,13 +122,13 @@ function handleSort(column: string) {
 function getId(item: any) {
   let idKey: string = ''
   
-  if (filters.location === 'located') {
+  if (filters.value.location === 'located') {
     idKey = 'm_id'
   }
-  else if (filters.location === 'archived') {
+  else if (filters.value.location === 'archived') {
     idKey = 'a_id'
   }
-  else if (filters.location === 'sold') {
+  else if (filters.value.location === 'sold') {
     idKey = 's_id'
   }
 
@@ -136,7 +141,7 @@ function getId(item: any) {
 function getMachine(item: any) {
   let machineKey: string = ''
   
-  if (filters.location !== 'located') {
+  if (filters.value.location !== 'located') {
     machineKey = 'machine'
   }
   return machineKey ? l.get(item, machineKey) : item

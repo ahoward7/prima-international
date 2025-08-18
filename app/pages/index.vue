@@ -12,11 +12,6 @@
           <InputTextSelect v-model="filters.type" label="Type" placeholder="Filter by type..." :options="filterOptions.type" />
           <InputTextSelect v-model="filters.model" label="Model" placeholder="Filter by model..." :options="filterOptions.model" />
           <InputContactSearch v-model="filters.contactId" class="!w-[440px]" />
-          <div class="flex items-end">
-            <Button class="!h-fit !px-2 !py-1 !bg-prima-yellow border border-prima-yellow" @click="clearFilters">
-              Clear
-            </Button>
-          </div>
         </div>
       </div>
       <div class="flex flex-col gap-2">
@@ -33,6 +28,7 @@
         :machines="machines"
         :display-format="displayFormat"
         :page-size="filters.pageSize"
+        @clear="clearFilters"
       />
     </div>
   </div>

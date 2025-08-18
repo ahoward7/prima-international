@@ -1,5 +1,5 @@
 <template>
-  <tr class="even:bg-gray-200 border-b border-gray-400 cursor-pointer">
+  <tr class="even:bg-gray-200 dark:even:bg-gray-800 border-b border-gray-400 cursor-pointer">
     <td
       v-for="column in columns"
       :key="column.key"

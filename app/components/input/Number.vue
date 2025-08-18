@@ -1,16 +1,17 @@
 <template>
   <div class="flex flex-col gap-1">
-    <label class="text-prima-red font-semibold">{{ label || 'No Label' }}</label>
+    <label class="text-prima-red dark:text-prima-dark-accent font-semibold">{{ label || 'No Label' }}</label>
     <div class="relative w-full">
       <span
         v-if="price"
-        class="absolute left-2 top-1/2 -translate-y-1/2 text-prima-red"
+        class="absolute left-2 top-1/2 -translate-y-1/2 text-prima-red dark:text-prima-dark-accent"
       >$</span>
       <input
         :value="displayValue"
         type="text"
         inputmode="decimal"
-        class="bg-gray-100 px-2 py-1 border border-prima-red text-prima-red w-full" :class="[
+        class="bg-gray-100 dark:bg-gray-800  px-2 py-1 border border-prima-red dark:border-prima-dark-accent text-prima-red dark:text-prima-dark-accent w-full"
+        :class="[
           price ? 'pl-4' : ''
         ]"
         :placeholder="placeholder"

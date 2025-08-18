@@ -1,6 +1,6 @@
 <template>
   <th
-    class="bg-prima-red text-white py-1 border-l first:border-l-0 border-white"
+    class="bg-prima-red dark:bg-prima-dark-accent text-white py-1 border-l first:border-l-0 border-white"
     :class="[isSorting ? 'px-1' : 'px-4', column.key === 'salesman' ? 'w-10' : '']"
     @click="handleSort(column.key)"
   >

@@ -1,5 +1,5 @@
 <template>
-  <button class="min-w-24 h-12 text-white font-semibold bg-prima-red px-4 cursor-pointer">
+  <button class="min-w-24 h-12 text-white font-semibold bg-prima-red dark:bg-prima-dark-accent px-4 cursor-pointer">
     <slot />
   </button>
 </template>

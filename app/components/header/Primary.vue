@@ -1,5 +1,5 @@
 <template>
-  <div class="text-prima-red text-4xl font-extrabold text-center dark:text-prima-dark-accent">
+  <div class="text-prima-red dark:text-prima-dark-accent text-4xl font-extrabold text-center">
     <slot />
   </div>
 </template>

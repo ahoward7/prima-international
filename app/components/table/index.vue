@@ -16,7 +16,7 @@
     </div>
 
     <div v-show="!machines">
-      <div class="w-full top-0 h-8 bg-prima-red" />
+      <div class="w-full top-0 h-8 bg-prima-red dark:bg-prima-dark-accent" />
       <div
         v-for="p in pageSize"
         :key="p"

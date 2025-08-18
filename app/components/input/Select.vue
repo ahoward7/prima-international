@@ -1,20 +1,23 @@
 <template>
-  <div class="flex flex-col gap-1" :class="width">
-    <label class="text-prima-red font-semibold">{{ label }}</label>
+  <div class="relative flex flex-col gap-1" :class="width">
+    <label class="text-prima-red dark:text-prima-dark-accent font-semibold">{{ label }}</label>
 
     <div ref="dropdownRef" class="relative">
-      <div class="bg-gray-100 border border-prima-red px-2 py-1 flex justify-between items-center cursor-pointer" @click="toggleDropdown">
-        <span class="select-none text-prima-red" :class="!selectedOption ? 'opacity-50' : ''">{{ selectedLabel || placeholder }}</span>
-        <Icon name="carbon:chevron-down" class="text-prima-red" size="20" />
+      <div
+        class="bg-gray-100 dark:bg-gray-800 border border-prima-red dark:border-prima-dark-accent px-2 py-1 flex justify-between items-center cursor-pointer"
+        @click="toggleDropdown"
+      >
+        <span class="select-none text-prima-red dark:text-prima-dark-accent" :class="!selectedOption ? 'opacity-50' : ''">{{ selectedLabel || placeholder }}</span>
+        <Icon name="carbon:chevron-down" class="text-prima-red dark:text-prima-dark-accent" size="20" />
       </div>
 
       <!-- Dropdown Panel -->
-      <div v-if="isOpen" class="absolute z-10 bg-white border border-prima-red mt-1 w-full max-h-80 overflow-auto shadow-md">
+      <div v-if="isOpen" class="absolute z-10 bg-white dark:bg-gray-800 border border-prima-red dark:border-prima-dark-accent mt-1 w-full max-h-80 overflow-auto shadow-md">
         <!-- Search Input -->
         <input v-model="search" type="text" placeholder="Search..." class="w-full px-2 py-1 border-b border-gray-200 outline-none" @input="emit('search', search)">
 
         <!-- Options -->
-        <div v-for="(option, index) in filteredOptions" :key="index" class="px-2 py-1 cursor-pointer hover:bg-gray-100" @click="selectOption(option)">
+        <div v-for="(option, index) in filteredOptions" :key="index" class="px-2 py-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" @click="selectOption(option)">
           {{ option.label }}
         </div>
 
@@ -23,14 +26,14 @@
           <div class="text-gray-400 mb-2">
             No results found.
           </div>
-          <button v-if="createable" class="w-full bg-prima-red text-white px-2 py-1 cursor-pointer" @click="createNewOption">
+          <button v-if="createable" class="w-full bg-prima-red dark:bg-prima-dark-accent text-white px-2 py-1 cursor-pointer" @click="createNewOption">
             Add <span class="uppercase">"{{ search }}"</span>
           </button>
         </div>
       </div>
 
       <!-- Clear Button -->
-      <Icon v-if="clearable && selectedOption" name="carbon:close" class="absolute right-7 top-2 text-prima-red cursor-pointer" size="20" @click="resetSelection" />
+      <Icon v-if="clearable && selectedOption" name="carbon:close" class="absolute right-7 top-2 text-prima-red dark:text-prima-dark-accent cursor-pointer" size="20" @click="resetSelection" />
     </div>
   </div>
 </template>

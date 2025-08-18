@@ -1,6 +1,6 @@
 <template>
   <div ref="dropdownRef" class="relative flex flex-col gap-1" :class="width">
-    <label class="text-prima-red font-semibold">{{ label }}</label>
+    <label class="text-prima-red dark:text-prima-dark-accent font-semibold">{{ label }}</label>
     
     <InputText
       v-model="search"
@@ -13,14 +13,14 @@
       @input="emitSearch"
     />
     
-    <div v-if="isOpen" tabindex="-1" class="absolute top-[58px] z-10 bg-white border border-prima-red mt-1 w-full max-h-80 overflow-auto shadow-md">
+    <div v-if="isOpen" tabindex="-1" class="absolute top-[58px] z-10 bg-white dark:bg-gray-800 border border-prima-red dark:border-prima-dark-accent mt-1 w-full max-h-80 overflow-auto shadow-md">
       <div
         v-for="(option, index) in filteredOptions"
         :key="index"
         class="px-2 py-1 cursor-pointer"
         :class="{
-          'bg-gray-100': index === highlightedIndex,
-          'hover:bg-gray-100': index !== highlightedIndex
+          'bg-gray-100 dark:bg-gray-800 ': index === highlightedIndex,
+          'hover:bg-gray-100 hover:dark:bg-gray-700 ': index !== highlightedIndex
         }"
         @click="selectOption(option)"
       >
@@ -37,7 +37,7 @@
     <Icon
       v-if="clearable && selectedOption && search"
       name="carbon:close"
-      class="absolute right-2 top-9 text-prima-red cursor-pointer"
+      class="absolute right-2 top-9 text-prima-red dark:text-prima-dark-accent cursor-pointer"
       size="20"
       @click="resetSelection"
     />

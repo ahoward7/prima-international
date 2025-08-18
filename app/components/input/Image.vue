@@ -1,6 +1,6 @@
 <template>
   <div class="relative flex flex-col gap-1">
-    <label v-if="label" class="text-prima-red font-semibold">{{ label || 'No Label' }}</label>
+    <label v-if="label" class="text-prima-red dark:text-prima-dark-accent font-semibold">{{ label || 'No Label' }}</label>
     <input
       ref="fileInput"
       type="file"
@@ -9,14 +9,14 @@
       @change="onFileChange"
     >
     <div
-      class="h-full flex items-center justify-center bg-gray-100 border border-dashed border-prima-red rounded cursor-pointer hover:bg-gray-200"
+      class="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800  border border-dashed border-prima-red dark:border-prima-dark-accent rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
       @click="triggerFileInput"
     >
       <template v-if="preview">
-        <img :src="preview" alt="Image preview" class="max-h-32 rounded border border-prima-red">
+        <img :src="preview" alt="Image preview" class="max-h-32 rounded border border-prima-red dark:border-prima-dark-accent">
       </template>
       <template v-else>
-        <span class="text-prima-red opacity-60">Click to select an image</span>
+        <span class="text-prima-red dark:text-prima-dark-accent opacity-60">Click to select an image</span>
       </template>
     </div>
     <InputMessage v-show="message" class="absolute top-[65px]">

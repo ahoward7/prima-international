@@ -4,7 +4,7 @@
     <div class="relative">
       <div v-if="searchInput.length !== 0" class="absolute z-10 w-full overflow-auto border-r border-gray-400">
         <table class="table-auto w-full text-sm">
-          <thead class="bg-gray-200 text-prima-red">
+          <thead class="bg-gray-200 text-prima-red dark:text-prima-dark-accent">
             <tr>
               <th class="border-l border-b border-gray-400 p-1 w-28">
                 Model
@@ -37,7 +37,7 @@
           </thead>
           <tbody>
             <template v-if="machines?.data.length && machines?.data.length > 0">
-              <tr v-for="machine in machines?.data" :key="machine.m_id" class="cursor-pointer hover:bg-gray-300 bg-gray-100" @click="selectMachine(machine)">
+              <tr v-for="machine in machines?.data" :key="machine.m_id" class="cursor-pointer hover:bg-gray-300 bg-gray-100 dark:bg-gray-800 " @click="selectMachine(machine)">
                 <td class="border-l border-b border-gray-400 p-1 font-bold whitespace-nowrap">
                   {{ machine.model }}
                 </td>
@@ -67,7 +67,7 @@
                 </td>
               </tr>
             </template>
-            <tr v-else-if="!pending" class="font-bold bg-gray-100 border-b border-l border-gray-400">
+            <tr v-else-if="!pending" class="font-bold bg-gray-100 dark:bg-gray-800  border-b border-l border-gray-400">
               <td colspan="9" class="p-1 font-bold">
                 No results
               </td>

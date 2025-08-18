@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center text-prima-red">
+  <div class="flex items-center text-prima-red dark:text-prima-dark-accent">
     <div class="flex" @click="page = 1">
       <Icon name="carbon:chevron-left" size="24" class="-mr-2 cursor-pointer" />
       <Icon name="carbon:chevron-left" size="24" class="-ml-2 cursor-pointer" />
@@ -12,7 +12,7 @@
         <span
           v-if="typeof dp === 'number'"
           class="w-8 h-8 flex justify-center items-center cursor-pointer rounded-md"
-          :class="page === dp ? 'bg-prima-red text-white' : 'hover:bg-prima-red hover:text-white'"
+          :class="page === dp ? 'bg-prima-red dark:bg-prima-dark-accent text-white' : 'hover:bg-prima-red dark:hover:bg-prima-dark-accent hover:text-white'"
           @click="page = dp"
         >
           {{ dp }}

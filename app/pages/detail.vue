@@ -2,7 +2,7 @@
   <div class="flex justify-center py-16 px-8">
     <div class="w-[920px] flex flex-col items-center gap-4">
       <div class="w-full">
-        <NuxtLink to="/" class="flex items-center text-prima-red">
+        <NuxtLink to="/" class="flex items-center text-prima-red dark:text-prima-dark-accent">
           <Icon name="carbon:chevron-left" size="28" />
           <span class="text-xl">Inventory</span>
         </NuxtLink>
@@ -62,19 +62,19 @@
         <div class="w-full flex justify-between">
           <div class="flex flex-col gap-1">
             <div>
-              <label class="font-semibold text-prima-red">Date Created: </label>
+              <label class="font-semibold text-prima-red dark:text-prima-dark-accent">Date Created: </label>
               <span>{{ isoToMMDDYYYY(machine?.createDate) }}</span>
             </div>
             <div>
-              <label class="font-semibold text-prima-red">Date Last Modified: </label>
+              <label class="font-semibold text-prima-red dark:text-prima-dark-accent">Date Last Modified: </label>
               <span>{{ isoToMMDDYYYY(machine?.lastModDate) }}</span>
             </div>
             <div v-if="archivedMachine?.archiveDate">
-              <label class="font-semibold text-prima-red">Date Archived: </label>
+              <label class="font-semibold text-prima-red dark:text-prima-dark-accent">Date Archived: </label>
               <span>{{ isoToMMDDYYYY(archivedMachine?.archiveDate) }}</span>
             </div>
             <div v-if="soldMachine?.dateSold">
-              <label class="font-semibold text-prima-red">Date Sold: </label>
+              <label class="font-semibold text-prima-red dark:text-prima-dark-accent">Date Sold: </label>
               <span>{{ isoToMMDDYYYY(soldMachine?.dateSold) }}</span>
             </div>
           </div>

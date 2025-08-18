@@ -79,7 +79,7 @@
           </div>
           <div class="flex gap-4">
             <ButtonConfirmation class="!bg-prima-yellow" @confirm="updateMachine(id as string)">
-              Update
+              Save
             </ButtonConfirmation>
             <Button v-if="location !== 'sold'" class="!bg-green-600" @click="sellingMachine = true">
               Sell

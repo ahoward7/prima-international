@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-center py-16 px-8">
-    <div class="w-[920px] flex flex-col items-center gap-8">
+    <div class="w-[920px] flex flex-col items-center gap-4">
       <div class="w-full">
         <NuxtLink to="/" class="flex items-center text-prima-red">
           <Icon name="carbon:chevron-left" size="28" />
@@ -9,8 +9,8 @@
         <HeaderPrimary>Machine Detail</HeaderPrimary>
       </div>
       
-      <div class="flex flex-col gap-4 w-full">
-        <div class="grid grid-cols-2 gap-8">
+      <div class="flex flex-col w-full">
+        <div class="grid grid-cols-2 gap-4">
           <InputContactSearch class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
           <InputText v-model="machine.contact.name" label="Contact Name" placeholder="First Last" @input="setContactNew" />
           <InputText v-model="machine.contact.company" label="Company Name" placeholder="Company Inc." @input="setContactNew" />
@@ -19,7 +19,7 @@
       
       <template v-if="machine">
         <DividerLine class="w-full" />
-        <div class="grid grid-cols-6 gap-8">
+        <div class="grid grid-cols-6 gap-4">
           <InputTextSelect v-model="machine.type" label="Type" placeholder="Type" :options="filterOptions.type" class="col-span-1" width="w-full" createable />
           <InputTextSelect v-model="machine.model" label="Model" placeholder="Model" :options="filterOptions.model" class="col-span-1" width="w-full" createable />
           <InputText v-model="machine.serialNumber" label="Serial Number" placeholder="Number" class="col-span-2" :message="serialNumberMessage" @input="fetchLocations" />
@@ -35,7 +35,7 @@
       
       <template v-if="(id && sellingMachine) || location === 'sold'">
         <DividerLine class="w-full" />
-        <div class="grid grid-cols-6 gap-8">
+        <div class="grid grid-cols-6 gap-4">
           <InputNumber v-model="soldMachine.totalCost" label="Total Cost" placeholder="Total sale cost" class="col-span-1" commas price />
           <InputNumber v-model="soldMachine.machineCost" label="Machine Cost" placeholder="Machine" class="col-span-1" commas price />
           <InputNumber v-model="soldMachine.freightCost" label="Freight Cost" placeholder="Freight" class="col-span-1" commas price />

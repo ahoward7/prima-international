@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@pinia/nuxt',
     'nuxt-mongoose',
-    '@nuxt/fonts'
+    '@nuxt/fonts',
+    '@nuxtjs/color-mode'
   ],
   css: ['~/assets/css/main.css'],
   vite: {

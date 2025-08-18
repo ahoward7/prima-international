@@ -1,10 +1,16 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-prima-red: #801607;
   --color-prima-red-100: #f5edec;
   --color-prima-yellow: #efbd00;
   --color-prima-link: #0073ff;
+  --color-prima-dark-bg: #18181b;
+  --color-prima-dark-surface: #23232a;
+  --color-prima-dark-text: #e5e7eb;
+  --color-prima-dark-accent: #efbd00;
   --font-roboto: 'Roboto', sans-serif;
   --font-roboto-i: 'Roboto Italics';
   --font-robcon: 'Roboto Condensed', sans-serif;

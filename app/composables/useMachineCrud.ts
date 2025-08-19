@@ -22,17 +22,20 @@ async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
 }
 
 export async function createMachine() {
-  const { machine } = useMachineStore()
+  const { machine, filters } = storeToRefs(useMachineStore())
+
   const notificationStore = useNotificationStore()
 
   try {
-    const res = await apiFetch<Machine>('/api/machines', {
+    const res = await apiFetch<ApiPayload<Machine>>('/api/machines', {
       method: 'POST',
-      body: machine
+      body: machine.value
     })
+
     if (!res.ok) return handleError(res.error, 'Error creating machine')
 
     notificationStore.pushNotification('success', 'Machine created successfully')
+    filters.value.search = res.data?.machine?.serialNumber || ''
     navigateTo('/')
   }
   catch (error: any) {
@@ -91,7 +94,7 @@ export async function updateMachine(id?: string) {
   try {
     const url = `/api/machines/${id}`
 
-    const res = await apiFetch<any>(url, {
+    const res = await apiFetch<ApiPayload<any>>(url, {
       method: 'PUT',
       query: { location },
       body: machineToUpdate

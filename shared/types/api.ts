@@ -14,3 +14,11 @@ export interface ProblemDetails {
 }
 
 export type ApiEnvelope<T> = { ok: true; data: T } | { ok: false; error: ProblemDetails }
+
+export interface ApiPayload<T> {
+  success: boolean,
+  contactId?: string
+  contactUpdated?: boolean,
+  machineCreated?: boolean,
+  machine?: T
+}

@@ -2,9 +2,10 @@ import { defineNuxtRouteMiddleware, useFetch } from '#app'
 import { useMachineStore } from '~~/stores/machine'
 
 export default defineNuxtRouteMiddleware(async () => {
+  const { filterStatus } = storeToRefs(useMachineStore())
   const machineStore = useMachineStore()
 
-  if (machineStore.filterOptions.model) return
+  if (filterStatus.value !== 'fetch') return
 
   const { data, error } = await useFetch<FetchResponse<FilterOptions>>('/api/machines/filters', {
     deep: true

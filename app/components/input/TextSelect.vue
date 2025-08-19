@@ -1,17 +1,26 @@
 <template>
   <div ref="dropdownRef" class="relative flex flex-col gap-1" :class="width">
-    <label class="text-prima-red dark:text-prima-dark-accent font-semibold">{{ label }}</label>
+    <label class="text-prima-red dark:text-prima-dark-accent font-semibold">
+      {{ label }}
+      {{ createdOption && createdOption.label === selectedOption ? '(new)' : '' }}
+    </label>
     
     <InputText
       v-model="search"
       :placeholder="placeholder"
+      :uppercase="uppercase"
       @focus="openDropdown"
       @keydown.down.prevent="navigate(1)"
       @keydown.up.prevent="navigate(-1)"
-      @keydown.enter.prevent="selectHighlighted"
+      @keydown.enter.exact.prevent="selectHighlighted"
+      @keydown.shift.enter.exact.prevent="handleShiftEnter"
       @keydown.tab="selectHighlighted"
       @input="emitSearch"
     />
+
+    <template v-if="createable">
+      <span class="h-0 indent-2 text-xs opacity-70">Create = Shift + Enter</span>
+    </template>
     
     <div v-if="isOpen" tabindex="-1" class="absolute top-[58px] z-10 bg-white dark:bg-gray-800 border border-prima-red dark:border-prima-dark-accent mt-1 w-full max-h-80 overflow-auto shadow-md">
       <div
@@ -19,7 +28,7 @@
         :key="index"
         class="px-2 py-1 cursor-pointer"
         :class="{
-          'bg-gray-100 dark:bg-gray-800 ': index === highlightedIndex,
+          'bg-gray-100 dark:bg-gray-700 ': index === highlightedIndex,
           'hover:bg-gray-100 hover:dark:bg-gray-700 ': index !== highlightedIndex
         }"
         @click="selectOption(option)"
@@ -55,17 +64,19 @@ const props = withDefaults(
     width?: string
     createable?: boolean
     placeholder?: string
+    uppercase?: boolean
   }>(),
   {
     options: () => [],
     clearable: true,
     width: 'w-48',
     createable: false,
-    placeholder: 'Search...'
+    placeholder: 'Search...',
+    uppercase: false
   }
 )
 
-const emit = defineEmits(['search', 'select', 'create', 'clear'])
+const emit = defineEmits(['search', 'select', 'clear'])
 const selectedOption = defineModel<string | number>()
 const search = ref('')
 const isOpen = ref(false)
@@ -120,7 +131,23 @@ function selectHighlighted() {
   if (!isOpen.value || filteredOptions.value.length === 0) return
   selectOption(filteredOptions.value[highlightedIndex.value] as FilterOption)
 }
- 
+
+function handleShiftEnter() {
+  if (!props.createable) return
+
+  const val = search.value?.trim()
+  if (!val) return
+
+  const newOption = {
+    label: val,
+    data: val
+  } as FilterOption
+
+  createdOption.value = newOption
+
+  selectOption(newOption)
+}
+
 watch(
   () => selectedOption.value,
   (val) => {

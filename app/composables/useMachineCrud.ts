@@ -22,11 +22,13 @@ async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
 }
 
 export async function createMachine() {
-  const { machine, filters } = storeToRefs(useMachineStore())
+  const { machine, filters, filterStatus } = storeToRefs(useMachineStore())
 
   const notificationStore = useNotificationStore()
 
   try {
+    filterStatus.value = 'fetch'
+    
     const res = await apiFetch<ApiPayload<Machine>>('/api/machines', {
       method: 'POST',
       body: machine.value
@@ -54,45 +56,46 @@ export function selectMachine(id?: string) {
 export async function updateMachine(id?: string) {
   if (!id) return
 
-  const { machine, archivedMachine, soldMachine, filters } = useMachineStore()
+  const { machine, archivedMachine, soldMachine, filters, filterStatus } = storeToRefs(useMachineStore())
   const notificationStore = useNotificationStore()
 
   let machineToUpdate
-  const location = filters.location
+  const location = filters.value.location
 
   if (location === 'located') {
-    machineToUpdate = machine as Machine
+    machineToUpdate = machine.value as Machine
   }
   else if (location === 'archived') {
-    const aMachine = machine as Omit<Machine, 'm_id'>
+    const aMachine = machine.value as Omit<Machine, 'm_id'>
     machineToUpdate = {
       a_id: id,
-      archiveDate: archivedMachine.archiveDate,
+      archiveDate: archivedMachine.value.archiveDate,
       machine: aMachine
     } as ArchivedMachine
   }
   else {
-    const sMachine = machine as Omit<Machine, 'm_id'>
+    const sMachine = machine.value as Omit<Machine, 'm_id'>
     machineToUpdate = {
       s_id: id,
-      dateSold: soldMachine.dateSold,
+      dateSold: soldMachine.value.dateSold,
       machine: sMachine,
-      truckingCompany: soldMachine.truckingCompany,
-      buyer: soldMachine.buyer,
-      buyerLocation: soldMachine.buyerLocation,
-      purchaseFob: soldMachine.purchaseFob,
-      machineCost: soldMachine.machineCost,
-      freightCost: soldMachine.freightCost,
-      paintCost: soldMachine.paintCost,
-      otherCost: soldMachine.otherCost,
-      profit: soldMachine.profit,
-      totalCost: soldMachine.totalCost,
-      notes: soldMachine.notes
+      truckingCompany: soldMachine.value.truckingCompany,
+      buyer: soldMachine.value.buyer,
+      buyerLocation: soldMachine.value.buyerLocation,
+      purchaseFob: soldMachine.value.purchaseFob,
+      machineCost: soldMachine.value.machineCost,
+      freightCost: soldMachine.value.freightCost,
+      paintCost: soldMachine.value.paintCost,
+      otherCost: soldMachine.value.otherCost,
+      profit: soldMachine.value.profit,
+      totalCost: soldMachine.value.totalCost,
+      notes: soldMachine.value.notes
     } as SoldMachine
   }
 
   try {
     const url = `/api/machines/${id}`
+    filterStatus.value = 'fetch'
 
     const res = await apiFetch<ApiPayload<any>>(url, {
       method: 'PUT',
@@ -102,6 +105,7 @@ export async function updateMachine(id?: string) {
     if (!res.ok) return handleError(res.error, 'Error updating machine')
 
     notificationStore.pushNotification('success', 'Machine updated successfully')
+    filters.value.search = res.data?.machine?.serialNumber || res.data?.machine?.machine?.serialNumber || ''
     navigateTo('/')
   }
   catch (error: any) {

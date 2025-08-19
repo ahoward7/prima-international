@@ -57,6 +57,7 @@ export const useMachineStore = defineStore('machine', () => {
 
   const filters = ref<MachineFilters>({...defaultFilters})
   const filterOptions: Ref<FilterOptions> = ref({})
+  const filterStatus: Ref<string> = ref('fetch')
   const refreshMachines = ref(0)
   
   function setMachine(m: MachineForm | ArchivedMachineForm | SoldMachineForm, location: string = 'located') {
@@ -94,6 +95,7 @@ export const useMachineStore = defineStore('machine', () => {
 
   function setFilterOptions(f: FilterOptions) {
     filterOptions.value = f
+    filterStatus.value = 'populated'
   }
 
   function setFilters(f: MachineFilters) {
@@ -110,6 +112,7 @@ export const useMachineStore = defineStore('machine', () => {
     archivedMachine,
     filterOptions,
     filters,
+    filterStatus,
     refreshMachines,
     setMachine,
     resetMachine,

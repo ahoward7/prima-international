@@ -38,3 +38,17 @@ function onInput() {
   emit('input', model.value)
 }
 </script>
+
+<style scoped>
+/* Keep placeholder text in its original case even when the input uses the
+   `uppercase` utility (which sets text-transform: uppercase). */
+input.uppercase::placeholder {
+  text-transform: none;
+}
+
+/* Vendor-prefixed fallbacks for older browsers */
+input.uppercase::-webkit-input-placeholder { text-transform: none; }
+input.uppercase::-moz-placeholder { text-transform: none; }
+input.uppercase:-ms-input-placeholder { text-transform: none; }
+input.uppercase::-ms-input-placeholder { text-transform: none; }
+</style>

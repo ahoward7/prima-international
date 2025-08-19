@@ -1,5 +1,5 @@
 <template>
-  <tr class="border-b border-gray-400 cursor-pointer" :class="[rowClass]" @click="selectMachine(machineId)">
+  <tr class="border-b border-gray-400 cursor-pointer" :class="[rowClass, isHovered ? 'bg-prima-red-200 dark:bg-prima-red' : '']" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave" @click="selectMachine(machineId)">
     <td v-for="column in columns" :key="column.key" class="border-l px-1 py-1 border-gray-400" :class="!column.key ? 'w-20' : ''">
       <div v-if="column.key === 'hours'" class="h-6 overflow-hidden text-right">
         {{ formatCommas(getNestedValue(machine, column.key) as number) }}
@@ -29,7 +29,7 @@
     </td>
   </tr>
 
-  <tr class="border-b border-gray-400 cursor-pointer" :class="[rowClass]" @click="selectMachine(machineId)">
+  <tr class="border-b border-gray-400 cursor-pointer" :class="[rowClass, isHovered ? 'bg-prima-red-200 dark:bg-prima-red' : '']" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave" @click="selectMachine(machineId)">
     <td colspan="6" class="px-1 py-1 border-l border-gray-400">
       <div :class="displayClass">
         <span class="!font-robconbold">Description: </span>
@@ -46,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { useMachineStore } from '~~/stores/machine'
 
 const props = defineProps<{
@@ -58,6 +59,10 @@ const props = defineProps<{
 
 const { filters } = useMachineStore()
 
-const rowClass = props.index % 2 === 1 ? 'bg-gray-200' : 'bg-gray-50'
+const isHovered = ref(false)
+const onMouseEnter = () => { isHovered.value = true }
+const onMouseLeave = () => { isHovered.value = false }
+
+const rowClass = computed(() => props.index % 2 === 1 ? 'bg-gray-200 dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900')
 const displayClass = computed(() => props.displayFormat === 'twoLine' ? '' : 'h-6 overflow-hidden')
 </script>

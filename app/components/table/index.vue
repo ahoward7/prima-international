@@ -20,7 +20,7 @@
       <div
         v-for="p in pageSize"
         :key="p"
-        class="w-full top-0 odd:bg-gray-200 border-b border-x border-gray-400"
+        class="w-full top-0 odd:bg-gray-200 dark:odd:bg-gray-700 border-b border-x border-gray-400"
         :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'"
       />
     </div>

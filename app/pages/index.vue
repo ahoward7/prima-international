@@ -2,13 +2,13 @@
   <div class="min-h-screen flex justify-center px-4 md:px-8 py-16 bg-white text-black dark:bg-prima-dark-bg dark:text-prima-dark-text">
     <div class="flex flex-col gap-8 w-full">
       <HeaderPrimary class="-mb-8">
-        {{ titleCase(filters.location) }}
+        {{ titleCase(filters.location as string) }}
       </HeaderPrimary>
       <div class="flex flex-col gap-2">
         <HeaderSecondary>Search Filters</HeaderSecondary>
         <div class="flex gap-4">
           <InputText v-model="searchInput" class="w-60" label="Universal" placeholder="Search anything..." />
-          <InputSelect v-model="filters.location" label="Loc/Sold/Arch" placeholder="Filter by location..." :options="filterOptions.location" width="w-52" />
+          <InputSelect v-model="filters.location" label="Loc/Sold/Arch" placeholder="Filter by location..." :options="filterOptions.location" width="w-52" :clearable="false" />
           <InputTextSelect v-model="filters.type" label="Type" placeholder="Filter by type..." :options="filterOptions.type" />
           <InputTextSelect v-model="filters.model" label="Model" placeholder="Filter by model..." :options="filterOptions.model" />
           <InputContactSearch v-model="filters.contactId" class="!w-[440px]" />

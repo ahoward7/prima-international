@@ -27,12 +27,44 @@ export default defineEventHandler(async (event) => {
       archiveDate: date
     }
 
-    const result = await ArchiveSchema.create(archive)
+    // try to create archive and delete original machine atomically when possible
+    const originalMid = machine.m_id
+
+    const connection = MachineSchema.db || ArchiveSchema.db
+    let result: any
+    if (connection?.startSession) {
+      const session = await connection.startSession()
+      try {
+        await session.withTransaction(async () => {
+          result = await ArchiveSchema.create([archive], { session })
+          await MachineSchema.deleteOne({ m_id: originalMid }).session(session)
+        })
+      }
+      finally {
+        session.endSession()
+      }
+    }
+    else {
+      result = await ArchiveSchema.create(archive)
+      try {
+        await MachineSchema.deleteOne({ m_id: originalMid })
+      }
+      catch (err) {
+        try {
+          await ArchiveSchema.deleteOne({ a_id: archive.a_id })
+        }
+        catch {
+          /* noop */
+        }
+        throw err
+      }
+    }
+
     const payload = {
       success: true,
       contactUpdated: contactChanged,
       machineCreated: true,
-      machine: result.toObject?.() ?? result
+      machine: Array.isArray(result) ? (result[0].toObject?.() ?? result[0]) : (result.toObject?.() ?? result)
     }
 
     return created(event, payload, `/api/machines/${archive.a_id}?location=archived`)

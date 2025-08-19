@@ -38,12 +38,43 @@ export default defineEventHandler(async (event) => {
       notes: sold?.notes as string
     }
 
-    const result = await SoldSchema.create(soldMachine)
+    const originalMid = machine.m_id
+
+    const connection = MachineSchema.db || SoldSchema.db
+    let result: any
+    if (connection?.startSession) {
+      const session = await connection.startSession()
+      try {
+        await session.withTransaction(async () => {
+          result = await SoldSchema.create([soldMachine], { session })
+          await MachineSchema.deleteOne({ m_id: originalMid }).session(session)
+        })
+      }
+      finally {
+        session.endSession()
+      }
+    }
+    else {
+      result = await SoldSchema.create(soldMachine)
+      try {
+        await MachineSchema.deleteOne({ m_id: originalMid })
+      }
+      catch (err) {
+        try {
+          await SoldSchema.deleteOne({ s_id: soldMachine.s_id })
+        }
+        catch {
+          /* noop */
+        }
+        throw err
+      }
+    }
+
     const payload = {
       success: true,
       contactUpdated: contactChanged,
       machineCreated: true,
-      machine: result.toObject?.() ?? result
+      machine: Array.isArray(result) ? (result[0].toObject?.() ?? result[0]) : (result.toObject?.() ?? result)
     }
 
     return created(event, payload, `/api/machines/${soldMachine.s_id}?location=sold`)

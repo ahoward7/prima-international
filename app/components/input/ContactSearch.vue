@@ -1,6 +1,6 @@
 <template>
   <InputTextSelect
-    model-value=""
+    :model-value="selectedContact"
     label="Contact Search"
     :options="mappedContacts"
     placeholder="Search contacts..."
@@ -13,7 +13,9 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 
+const props = defineProps<{ contact?: Partial<Contact> }>()
 const emit = defineEmits(['select', 'clear'])
+const selectedContact = ref('')
 
 const filters = ref({
   search: '',
@@ -34,17 +36,28 @@ const debouncedSearch = useDebounceFn((value: string) => {
 }, 200)
 
 const mappedContacts = computed(() => {
+  const newContactOption = [{ label: 'NEW CONTACT', data: 'new' }]
+
   if (!contacts.value?.data) {
-    return []
+    return newContactOption
   }
 
-  const mcs = contacts.value.data.map(c => ({
-    label: `${c.name || 'NO NAME'} | ${c.company || 'NO COMPANY'}`,
-    data: c.c_id
-  }))
+  const mcs = contacts.value.data.map(c => {
+    const label = formatContact(c)
 
-  return [...mcs]
+    return {
+      label,
+      data: c.c_id
+    }
+  })
+
+  return [...newContactOption, ...mcs]
 })
+
+function formatContact(c: Partial<Contact>) {
+  if (!c) return ''
+  return c.name && c.company ? `${c.name} | ${c.company}` : (c.name || c.company || '')
+}
 
 function selectContact(c_id: string) {
   if (c_id === 'new') {
@@ -66,4 +79,10 @@ function clearContact() {
   filters.value.search = ''
   emit('clear')
 }
+
+watch(() => props.contact, () => {
+  if (props.contact?.c_id === 'new') return
+
+  selectedContact.value = formatContact(props.contact as Contact)
+}, { deep: true, immediate: true })
 </script>

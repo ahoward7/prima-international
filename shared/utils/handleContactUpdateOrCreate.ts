@@ -1,4 +1,4 @@
-import type { Contact } from '../types/main'
+import type { Contact } from '../types/contact'
 import { ContactSchema } from '../../server/models/contact'
 import { generateRandom10DigitNumber } from './generateRandom10DigitNumber'
 
@@ -40,13 +40,10 @@ export async function handleContactUpdateOrCreate( contactInput: Partial<Contact
         }
       }
     } 
-    else {
-      contactChanged = true
-    }
 
     if (contactChanged) {
       contact.lastModDate = date
-      await ContactSchema.updateOne({ c_id: contactId }, { $set: contact }, { upsert: true })
+      await ContactSchema.updateOne({ c_id: contactId }, { $set: contact }, { upsert: false })
     }
   }
 

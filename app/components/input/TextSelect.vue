@@ -78,7 +78,7 @@ const props = withDefaults(
 
 const emit = defineEmits(['search', 'select', 'clear'])
 const selectedOption = defineModel<string | number>()
-const search = ref('')
+const search = ref(selectedOption.value as string)
 const isOpen = ref(false)
 const createdOption = ref<FilterOption>()
 const highlightedIndex = ref(0)
@@ -92,7 +92,7 @@ const allOptions = computed(() => {
 
 const filteredOptions = computed(() => {
   return allOptions.value.filter(option =>
-    option.label.toLowerCase().includes(search.value.toLowerCase())
+    option.label.toLowerCase().includes(search.value?.toLowerCase())
   )
 })
 
@@ -154,6 +154,10 @@ watch(
     const selected = allOptions.value.find(o => o.data === val)
     if (selected) search.value = selected.label
     if (!selectedOption.value) search.value = ''
+
+    if (selectedOption.value !== 'new') {
+      search.value = selectedOption.value as string
+    }
   },
   { immediate: true }
 )

@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
       return problem(event, 401, 'Invalid credentials', 'Invalid username or password')
     }
 
-    const valid = await verifyPassword(body.password, user.password)
+    const valid = await verifyPassword(user.password, body.password)
     if (!valid) {
       return problem(event, 401, 'Invalid credentials', 'Invalid username or password')
     }

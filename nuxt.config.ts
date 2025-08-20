@@ -9,7 +9,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-mongoose',
     '@nuxt/fonts',
-    '@nuxtjs/color-mode'
+    '@nuxtjs/color-mode',
+    'nuxt-auth-utils'
   ],
   css: ['~/assets/css/main.css'],
   vite: {

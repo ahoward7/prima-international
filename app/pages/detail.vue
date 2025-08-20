@@ -120,6 +120,9 @@ import { useMachineStore } from '~~/stores/machine'
 const { filterOptions, machine, archivedMachine, soldMachine } = storeToRefs(useMachineStore())
 const machineStore = useMachineStore()
 
+// Access the current user session to default salesman on create
+const { user, ready, fetch: fetchSession } = useUserSession()
+
 const { id, location, selling } = useRoute().query
 const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
 const serialNumberMessage = ref('')
@@ -157,6 +160,19 @@ if (id) {
 }
 else {
   machineStore.resetMachine()
+
+  // Default salesman to current user's initials when creating a new machine
+  try {
+    if (!ready.value) {
+      await fetchSession()
+    }
+  }
+  catch {}
+
+  const initials = (user.value as any)?.initials as string | undefined
+  if (initials && !machine.value.salesman) {
+    machine.value.salesman = initials
+  }
 }
 
 function fillContact(c: Contact) {

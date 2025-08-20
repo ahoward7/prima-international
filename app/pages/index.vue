@@ -22,14 +22,16 @@
         </div>
       </div>
       <DividerLine />
-      <Table
-        v-model:sort-by="filters.sortBy"
-        v-model:page="filters.page"
-        :machines="machines"
-        :display-format="displayFormat"
-        :page-size="filters.pageSize"
-        @clear="clearFilters"
-      />
+      <div class="print-area">
+        <Table
+          v-model:sort-by="filters.sortBy"
+          v-model:page="filters.page"
+          :machines="machines"
+          :display-format="displayFormat"
+          :page-size="filters.pageSize"
+          @clear="clearFilters"
+        />
+      </div>
     </div>
   </div>
 </template>

@@ -49,3 +49,77 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* Global print styles */
+@media print {
+  /* Page-level: Only print elements inside .print-area */
+  body * {
+    visibility: hidden !important;
+  }
+  .print-area, .print-area * {
+    visibility: visible !important;
+    font-size: 14px !important;
+    letter-spacing: -1px;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* Component-level: ensure tables inside .print-table-only render cleanly */
+  .print-table-only {
+    overflow: visible !important;
+    min-width: 0 !important;
+    font-size: 14px !important;
+    letter-spacing: -1px;
+  }
+  /* Hide everything in this component except the table */
+  .print-table-only > :not(table) {
+    display: none !important;
+  }
+  /* Ensure the table prints cleanly */
+  .print-table-only table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1px solid #000 !important; /* outer border */
+  }
+  .print-table-only thead {
+    display: table-header-group;
+  }
+  .print-table-only tr,
+  .print-table-only td,
+  .print-table-only th {
+    page-break-inside: avoid;
+  }
+  /* Force all table text and icons to print black */
+  .print-table-only table,
+  .print-table-only table *,
+  .print-table-only th,
+  .print-table-only td {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important; /* Safari */
+    fill: #000 !important;   /* SVG icons */
+    stroke: #000 !important; /* SVG strokes */
+  }
+  /* 1px black grid lines for all cells */
+  .print-table-only th,
+  .print-table-only td {
+    border: 1px solid #000 !important;
+    padding: 1px 2px !important;
+    height: 9px !important;
+  }
+  .print-table-only tr {
+    height: 9px !important;
+  }
+  /* Hide the last two columns (header and body) when printing */
+  .print-table-only thead th:last-child,
+  .print-table-only thead th:nth-last-child(2),
+  .print-table-only tbody td:last-child,
+  .print-table-only tbody td:nth-last-child(2),
+  .print-table-only tfoot td:last-child,
+  .print-table-only tfoot td:nth-last-child(2) {
+    display: none !important;
+  }
+}

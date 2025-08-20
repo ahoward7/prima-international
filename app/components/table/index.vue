@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 relative min-w-[1400px] overflow-x-auto">
+  <div class="flex flex-col gap-4 relative min-w-[1400px] overflow-x-auto print-table-only">
     <div class="flex justify-between items-end">
       <div class="flex gap-4 w-72">
         <NuxtLink to="/detail">
@@ -11,7 +11,7 @@
           Clear Filters
         </Button>
       </div>
-      <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
+      <TablePagination v-if="pageSize !== 1" v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
       <div class="w-72" />
     </div>
 
@@ -68,7 +68,7 @@
       </tbody>
     </table>
 
-    <div class="flex justify-center">
+    <div v-if="pageSize !== 1" class="flex justify-center">
       <TablePagination v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
     </div>
   </div>

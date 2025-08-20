@@ -42,7 +42,8 @@ export default defineEventHandler(async (event) => {
         { label: '30', data: 30},
         { label: '40', data: 40},
         { label: '50', data: 50},
-        { label: '100', data: 100}
+        { label: '100', data: 100},
+        { label: 'All', data: 1}
       ]
     })
   }

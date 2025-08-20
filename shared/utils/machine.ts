@@ -1,5 +1,6 @@
 // utils/machineQueryUtils.ts
-import type { ApiData, MachineFilterStrings } from '../types/main'
+import type { ApiData } from '../types/api'
+import type { MachineFilterStrings } from '../types/machine'
 
 interface PipelineOptions {
   filters: Record<string, any>
@@ -53,12 +54,15 @@ export function buildPipeline({ filters, sortBy, pageSize = '10', page = '1', de
     })
   }
 
-  const pageSizeNum = Number.parseInt(pageSize, 10) || 10
-  const pageNum = Number.parseInt(page, 10) || 1
-  const skip = (pageNum - 1) * pageSizeNum
+  // If pageSize is '1', fetch all machines (do not paginate)
+  if (pageSize !== '1') {
+    const pageSizeNum = Number.parseInt(pageSize, 10) || 10
+    const pageNum = Number.parseInt(page, 10) || 1
+    const skip = (pageNum - 1) * pageSizeNum
 
-  pipeline.push({ $skip: skip })
-  pipeline.push({ $limit: pageSizeNum })
+    pipeline.push({ $skip: skip })
+    pipeline.push({ $limit: pageSizeNum })
+  }
 
   return pipeline
 }

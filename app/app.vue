@@ -9,14 +9,9 @@
       >
         <Icon :name="modeClass === 'dark' ? 'carbon:sun' : 'carbon:moon'" size="24" />
       </button>
-      <button
-        v-if="showLogout"
-        class="text-prima-red dark:text-prima-dark-accent cursor-pointer flex items-center justify-center"
-        title="Log out"
-        @click="onLogout"
-      >
-        <Icon name="carbon:logout" size="24" />
-      </button>
+      <ButtonConfirmationIcon v-if="showLogout" @confirm="onLogout">
+        <Icon name="carbon:logout" size="20" class="text-prima-red dark:text-prima-dark-accent" />
+      </ButtonConfirmationIcon>
     </div>
     <Notifications />
     <NuxtPage />

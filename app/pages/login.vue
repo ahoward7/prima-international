@@ -72,9 +72,30 @@ const route = useRoute()
 async function onSubmit() {
   error.value = null
   try {
-    if (!showReset.value && password.value === 'password') {
-      showReset.value = true
-      return
+    if (!showReset.value) {
+      try {
+        await $fetch('/api/auth/login', {
+          method: 'POST',
+          body: {
+            username: username.value,
+            password: password.value
+          }
+        })
+      }
+      catch (e: any) {
+        console.error(e)
+        error.value = 'Username or password incorrect.'
+        return
+      }
+
+      if (password.value === 'password') {
+        showReset.value = true
+        return
+      }
+
+      await fetchUserSession()
+      const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+      return navigateTo(redirect)
     }
 
     if (showReset.value) {
@@ -93,19 +114,10 @@ async function onSubmit() {
       })
 
       password.value = newPassword.value
+      await fetchUserSession()
+      const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
+      return navigateTo(redirect)
     }
-
-    await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: {
-        username: username.value,
-        password: password.value
-      }
-    })
-
-    await fetchUserSession()
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
-    return navigateTo(redirect)
   }
   catch (err: any) {
     const apiError = err?.data?.error

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-4 relative min-w-[1400px] overflow-x-auto print-table-only">
     <div class="flex justify-between items-end">
-      <div class="flex gap-4 w-72">
+      <div class="flex gap-4 w-[500px]">
         <NuxtLink to="/detail">
           <Button class="!bg-green-600">
             Add Machine
@@ -10,9 +10,12 @@
         <Button class="!bg-prima-yellow" @click="emit('clear')">
           Clear Filters
         </Button>
+        <Button v-if="filters.id" class="!bg-prima-red" @click="emit('restore')">
+          Restore Search
+        </Button>
       </div>
       <TablePagination v-if="pageSize !== 1" v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
-      <div class="w-72" />
+      <div class="w-[500px]" />
     </div>
 
     <div v-show="!machines">
@@ -86,7 +89,7 @@ const props = withDefaults(defineProps<{
   pageSize: 20
 })
 
-const emit = defineEmits(['clear'])
+const emit = defineEmits(['clear', 'restore'])
 
 const { filters } = storeToRefs(useMachineStore())
 

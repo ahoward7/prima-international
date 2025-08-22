@@ -30,6 +30,7 @@
           :display-format="displayFormat"
           :page-size="filters.pageSize"
           @clear="clearFilters"
+          @restore="restorePreviousSearch"
         />
       </div>
     </div>
@@ -41,7 +42,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { useMachineStore } from '~~/stores/machine'
 
 const machineStore = useMachineStore()
-const { filterOptions, filters: storeFilters, refreshMachines } = storeToRefs(machineStore)
+const { filterOptions, filters: storeFilters, refreshMachines, previousSearch } = storeToRefs(machineStore)
 
 const filters = ref<MachineFilters>(storeFilters.value)
 
@@ -60,11 +61,17 @@ const searchInput = ref(filters.value.search)
 const displayFormat = ref('oneLine')
 
 const debouncedSearch = useDebounceFn((value: string) => {
+  filters.value.id = ''
   filters.value.search = value
 }, 200)
 
 watch(searchInput, (newValue) => {
   debouncedSearch(newValue as string)
+
+  const s = String(newValue ?? '')
+  if (s.trim().length) {
+    previousSearch.value = s
+  }
 })
  
 const { data: machinesEnvelope, refresh } = await useFetch<FetchResponse<ApiData<Machine | ArchivedMachine | SoldMachine>>>(
@@ -85,5 +92,12 @@ function clearFilters() {
   machineStore.resetFilters()
   filters.value = storeFilters.value
   searchInput.value = ''
+}
+
+function restorePreviousSearch() {
+  filters.value.page = 1
+  filters.value.id = ''
+  searchInput.value = previousSearch.value
+  debouncedSearch(previousSearch.value)
 }
 </script>

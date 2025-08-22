@@ -2,14 +2,29 @@ export default defineEventHandler(async (event) => {
   const filters = getQuery(event) as MachineFilterStrings
   const location = (filters.location || 'located') as MachineLocationString
 
+  let effectiveFilters = filters
+  if (filters.id) {
+    // If filters.id is set, ignore all other filters and only use the relevant ID filter
+    const id = filters.id
+    if (location === 'archived') {
+      effectiveFilters = { a_id: id } as MachineFilterStrings
+    }
+    else if (location === 'sold') {
+      effectiveFilters = { s_id: id } as MachineFilterStrings
+    }
+    else {
+      effectiveFilters = { m_id: id } as MachineFilterStrings
+    }
+  }
+
   try {
     if (location === 'archived') {
-      return ok(event, await getArchivedMachines(filters))
+      return ok(event, await getArchivedMachines(effectiveFilters))
     }
     if (location === 'located') {
-      return ok(event, await getLocatedMachines(filters))
+      return ok(event, await getLocatedMachines(effectiveFilters))
     }
-    return ok(event, await getSoldMachines(filters))
+    return ok(event, await getSoldMachines(effectiveFilters))
   }
   catch (error: any) {
     return problem(event, error?.statusCode || 500, 'Server: Error getting machine', error?.message || 'Server: Unexpected error')
@@ -20,7 +35,7 @@ async function getArchivedMachines(filters: MachineFilterStrings) {
   const queryOptions = {
     searchable: true,
     defaultSortField: 'model',
-    fieldPrefix: 'machine.'
+    fieldPrefix: filters.a_id ? '' : 'machine.'
   }
 
   const { data: archives, total } = await buildQueryForSchema<ArchivedMachine>(ArchiveSchema, filters, queryOptions)
@@ -43,7 +58,7 @@ async function getSoldMachines(filters: MachineFilterStrings) {
   const queryOptions = {
     searchable: true,
     defaultSortField: 'model',
-    fieldPrefix: 'machine.'
+    fieldPrefix: filters.s_id ? '' : 'machine.'
   }
 
   const { data: soldMachines, total } = await buildQueryForSchema<SoldMachine>(SoldSchema, filters, queryOptions)
@@ -63,13 +78,15 @@ async function getSoldMachines(filters: MachineFilterStrings) {
 }
 
 async function getLocatedMachines(filters: MachineFilterStrings) {
+  const queryOptions = {
+    searchable: true,
+    defaultSortField: 'model',
+    fieldPrefix: filters.m_id ? '' : undefined
+  }
   const { data: machines, total } = await buildQueryForSchema<DBMachine>(
     MachineSchema,
     filters,
-    {
-      searchable: true,
-      defaultSortField: 'model'
-    }
+    queryOptions
   )
 
   const contactIds = extractContactIdsFromMachines(machines)

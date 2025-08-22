@@ -9,6 +9,7 @@ export interface MachineFilters {
   model?: string
   type?: string
   contactId?: string
+  id?: string
 }
 
 export interface MachineFilterStrings {

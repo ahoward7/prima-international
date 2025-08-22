@@ -29,7 +29,8 @@ const defaultFilters: MachineFilters = {
   sortBy: 'type',
   model: '',
   type: '',
-  contactId: ''
+  contactId: '',
+  id: ''
 }
 
 const emptySoldMachine: SoldMachineForm = {
@@ -59,6 +60,7 @@ export const useMachineStore = defineStore('machine', () => {
   const filterOptions: Ref<FilterOptions> = ref({})
   const filterStatus: Ref<string> = ref('fetch')
   const refreshMachines = ref(0)
+  const previousSearch = ref('')
   
   function setMachine(m: MachineForm | ArchivedMachineForm | SoldMachineForm, location: string = 'located') {
     if (location === 'archived') {
@@ -104,6 +106,7 @@ export const useMachineStore = defineStore('machine', () => {
 
   function resetFilters() {
     filters.value = {...defaultFilters}
+    previousSearch.value = ''
   }
 
   return {
@@ -114,6 +117,8 @@ export const useMachineStore = defineStore('machine', () => {
     filters,
     filterStatus,
     refreshMachines,
+    previousSearch,
+    // searchExternallyModified removed, use filters.id !== '' where needed
     setMachine,
     resetMachine,
     setFilterOptions,

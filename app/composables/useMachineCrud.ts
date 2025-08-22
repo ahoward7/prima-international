@@ -37,7 +37,18 @@ export async function createMachine() {
     if (!res.ok) return handleError(res.error, 'Error creating machine')
 
     notificationStore.pushNotification('success', 'Machine created successfully')
-    filters.value.search = res.data?.machine?.serialNumber || ''
+
+    const location = filters.value.location
+    if (location === 'archived') {
+      filters.value.id = (res.data?.machine && 'a_id' in res.data.machine) ? (res.data.machine as any).a_id || '' : ''
+    }
+    else if (location === 'sold') {
+      filters.value.id = (res.data?.machine && 's_id' in res.data.machine) ? (res.data.machine as any).s_id || '' : ''
+    }
+    else {
+      filters.value.id = res.data?.machine?.m_id || ''
+    }
+    filters.value.search = ''
     navigateTo('/')
   }
   catch (error: any) {
@@ -105,7 +116,34 @@ export async function updateMachine(id?: string) {
     if (!res.ok) return handleError(res.error, 'Error updating machine')
 
     notificationStore.pushNotification('success', 'Machine updated successfully')
-    filters.value.search = res.data?.machine?.serialNumber || res.data?.machine?.machine?.serialNumber || ''
+    
+    if (location === 'archived') {
+      if (res.data?.machine && 'a_id' in res.data.machine) {
+        filters.value.id = (res.data.machine as any).a_id || ''
+      }
+      else if (res.data?.machine?.machine && 'a_id' in res.data.machine.machine) {
+        filters.value.id = (res.data.machine.machine as any).a_id || ''
+      }
+      else {
+        filters.value.id = ''
+      }
+    }
+    else if (location === 'sold') {
+      if (res.data?.machine && 's_id' in res.data.machine) {
+        filters.value.id = (res.data.machine as any).s_id || ''
+      }
+      else if (res.data?.machine?.machine && 's_id' in res.data.machine.machine) {
+        filters.value.id = (res.data.machine.machine as any).s_id || ''
+      }
+      else {
+        filters.value.id = ''
+      }
+    }
+    else {
+      filters.value.id = res.data?.machine?.m_id || res.data?.machine?.machine?.m_id || ''
+    }
+    filters.value.search = ''
+    
     navigateTo('/')
   }
   catch (error: any) {

@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
       return problem(event, 401, 'Invalid credentials', 'Invalid username or password')
     }
 
-    const passwordToCheck = user.password === 'password' ? await hashPassword(user.password) : user.password
+    const passwordToCheck = body.currentPassword === 'password' ? await hashPassword(body.currentPassword) : body.currentPassword
 
     const valid = await verifyPassword(passwordToCheck, body.currentPassword)
 

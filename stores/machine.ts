@@ -26,7 +26,7 @@ const defaultFilters: MachineFilters = {
   search: '',
   pageSize: 20,
   page: 1,
-  sortBy: 'type',
+  sortBy: '-lastModDate',
   model: '',
   type: '',
   contactId: '',

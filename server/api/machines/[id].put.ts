@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     if (!body) return problem(event, 400, 'Invalid body', 'Request body is required')
 
     const { location } = getQuery(event)
-    const date = new Date().toISOString()
+    const date = getEasternDateISOString()
     
     if (location === 'located') {
       const locatedMachine = body as MachineForm

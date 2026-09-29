@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     if (!machine) return problem(event, 400, 'Invalid body', 'Machine object is required')
     if (!machine?.contact) return problem(event, 400, 'Invalid body', 'Machine contact is required')
 
-    const date = sold?.dateSold || new Date().toISOString()
+    const date = sold?.dateSold || getEasternDateISOString()
 
     const { contactId, contactChanged } = await handleContactUpdateOrCreate(machine.contact, date)
 

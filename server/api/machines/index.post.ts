@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
     const body = await readBody<unknown>(event)
     const machine = body as MachineForm
 
-    const date = new Date().toISOString()
+    const date = getEasternDateISOString()
     const { contactId, contactChanged } = await handleContactUpdateOrCreate(machine.contact, date)
 
     const { contact, ...machineRest } = machine

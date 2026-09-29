@@ -1,11 +1,23 @@
 <template>
   <div class="flex justify-center py-16 px-8">
-    <div class="w-[920px] flex flex-col items-center gap-4">
+    <div class="w-230 flex flex-col items-center gap-4">
       <div class="w-full">
-        <NuxtLink to="/" class="flex items-center text-prima-red dark:text-prima-dark-accent">
-          <Icon name="carbon:chevron-left" size="28" />
-          <span class="text-xl">Inventory</span>
-        </NuxtLink>
+        <div class="flex">
+          <NuxtLink v-if="!hasUnsavedChanges" to="/" class="flex items-center text-prima-red dark:text-prima-dark-accent">
+            <Icon name="carbon:chevron-left" size="28" />
+            <span class="text-xl">Inventory</span>
+          </NuxtLink>
+          <ButtonConfirmation
+            v-else
+            class="bg-transparent! text-prima-red! dark:text-prima-dark-accent! min-w-0! h-auto! px-0! my-0! font-normal! hover:scale-100! hover:brightness-100!"
+            @confirm="leaveConfirmed = true; navigateTo('/')"
+          >
+            <span class="flex items-center">
+              <Icon name="carbon:chevron-left" size="28" />
+              <span class="text-xl">Inventory</span>
+            </span>
+          </ButtonConfirmation>
+        </div>
         <HeaderPrimary>Machine Detail</HeaderPrimary>
       </div>
       
@@ -85,16 +97,16 @@
             </div>
           </div>
           <div class="flex gap-4">
-            <ButtonConfirmation class="!bg-prima-yellow" @confirm="updateMachine(id as string)">
+            <ButtonConfirmation class="bg-prima-yellow!" @confirm="updateMachine(id as string)">
               Save
             </ButtonConfirmation>
-            <Button v-if="location !== 'sold'" class="!bg-green-600" @click="sellingMachine = true">
+            <Button v-if="location !== 'sold'" class="bg-green-600!" @click="sellingMachine = true">
               Sell
             </Button>
-            <ButtonConfirmation v-if="location !== 'archived'" class="!bg-blue-600" @confirm="archiveMachine()">
+            <ButtonConfirmation v-if="location !== 'archived'" class="bg-blue-600!" @confirm="archiveMachine()">
               Archive
             </ButtonConfirmation>
-            <ButtonConfirmation class="!bg-red-600" @confirm="deleteMachine(id as string)">
+            <ButtonConfirmation class="bg-red-600!" @confirm="deleteMachine(id as string)">
               Delete
             </ButtonConfirmation>
           </div>
@@ -102,16 +114,16 @@
       </template>
       
       <div v-if="id && sellingMachine" class="w-full flex justify-end gap-4">
-        <ButtonConfirmation class="!bg-red-600" @confirm="sellingMachine = false">
+        <ButtonConfirmation class="bg-red-600!" @confirm="sellingMachine = false">
           Cancel
         </ButtonConfirmation>
-        <ButtonConfirmation class="!bg-green-600" @confirm="sellMachine()">
+        <ButtonConfirmation class="bg-green-600!" @confirm="sellMachine()">
           Sell Machine
         </ButtonConfirmation>
       </div>
       
       <div v-else-if="!id" class="w-full flex justify-end">
-        <ButtonConfirmation class="!bg-green-600" @confirm="createMachine()">
+        <ButtonConfirmation class="bg-green-600!" @confirm="createMachine()">
           Create Machine
         </ButtonConfirmation>
       </div>
@@ -134,6 +146,15 @@ const serialNumberMessage = ref('')
 const sellingMachine = ref(selling === '1')
 
 const originalContact = ref<Pick<Contact, 'name' | 'company' | 'c_id'> | undefined>()
+const originalMachineSnapshot = ref('')
+const originalSoldSnapshot = ref('')
+const leaveConfirmed = ref(false)
+
+const hasUnsavedChanges = computed(() => {
+  if (JSON.stringify(machine.value) !== originalMachineSnapshot.value) return true
+  if (sellingMachine.value && JSON.stringify(soldMachine.value) !== originalSoldSnapshot.value) return true
+  return false
+})
 
 const editingContact = computed(() => {
   const current = machine.value?.contact as Partial<Contact> | undefined
@@ -151,6 +172,20 @@ machineStore.resetMachine()
 if (location && !['located', 'archived', 'sold'].includes(location as string)) {
   navigateTo('/')
 }
+
+onBeforeRouteLeave((to, from, next) => {
+  if (leaveConfirmed.value) {
+    next()
+  }
+  else if (hasUnsavedChanges.value) {
+    // eslint-disable-next-line no-alert
+    const confirmed = window.confirm('You have unsaved changes. Leave without saving?')
+    next(confirmed)
+  }
+  else {
+    next()
+  }
+})
 
 if (id) {
   const { data: dataMachineEnv } = await useFetch<FetchResponse<Machine>>(`/api/machines/${id}`, {
@@ -197,6 +232,9 @@ else {
     machine.value.salesman = initials
   }
 }
+
+originalMachineSnapshot.value = JSON.stringify(machine.value)
+originalSoldSnapshot.value = JSON.stringify(soldMachine.value)
 
 function fillContact(c: Contact) {
   machine.value.contact = c

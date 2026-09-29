@@ -17,7 +17,13 @@ export default defineEventHandler(async (event) => {
     ])
 
     const toFilterOptions = (a: string[], b: string[], c: string[]): FilterOption[] =>
-      Array.from(new Set([...(a || []), ...(b || []), ...(c || [])].filter(Boolean))).map((value: string) => ({
+      Array.from(
+        new Set(
+          [...(a || []), ...(b || []), ...(c || [])]
+            .map((value: string) => value?.trim())
+            .filter(Boolean)
+        )
+      ).map((value: string) => ({
         label: value,
         data: value
       }))

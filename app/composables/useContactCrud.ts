@@ -20,8 +20,9 @@ async function apiFetch<T>(url: string, opts: any): Promise<ApiEnvelope<T>> {
   }
 }
 
-export async function createContact(contact: ContactForm) {
+export async function saveContact(contact: ContactForm, isUpdate: boolean) {
   const notificationStore = useNotificationStore()
+  const action = isUpdate ? 'updating' : 'creating'
 
   try {
     const res = await apiFetch<{ contactId: string, contactChanged: boolean, contact: Contact }>('/api/contact', {
@@ -29,13 +30,13 @@ export async function createContact(contact: ContactForm) {
       body: contact
     })
 
-    if (!res.ok) return handleError(res.error, 'Error creating contact')
+    if (!res.ok) return handleError(res.error, `Error ${action} contact`)
 
-    notificationStore.pushNotification('success', 'Contact created successfully')
+    notificationStore.pushNotification('success', `Contact ${isUpdate ? 'updated' : 'created'} successfully`)
     navigateTo('/')
   }
   catch (error: any) {
-    return handleError(error, 'Error creating contact')
+    return handleError(error, `Error ${action} contact`)
   }
 }
 

@@ -23,15 +23,9 @@
       
       <div class="flex flex-col w-full">
         <div class="grid grid-cols-2 gap-4">
-          <InputContactSearch :contact="machine.contact" class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
+          <InputContactSearch :contact="machine.contact" :allow-new-contact="false" class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
           <InputText v-model="machine.contact.name" readonly label="Contact Name" placeholder="First Last" />
           <InputText v-model="machine.contact.company" readonly label="Company Name" placeholder="Company Inc." />
-          <div v-if="editingContact" class="col-span-2 flex items-center gap-2 indent-2 -mt-2">
-            <span class="text-xs opacity-70">Contact has been edited</span>
-            <button type="button" class="text-xs text-prima-red dark:text-prima-dark-accent hover:underline cursor-pointer" @click="undoContactEdit">
-              Undo
-            </button>
-          </div>
         </div>
       </div>
       
@@ -145,7 +139,6 @@ const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
 const serialNumberMessage = ref('')
 const sellingMachine = ref(selling === '1')
 
-const originalContact = ref<Pick<Contact, 'name' | 'company' | 'c_id'> | undefined>()
 const originalMachineSnapshot = ref('')
 const originalSoldSnapshot = ref('')
 const leaveConfirmed = ref(false)
@@ -154,17 +147,6 @@ const hasUnsavedChanges = computed(() => {
   if (JSON.stringify(machine.value) !== originalMachineSnapshot.value) return true
   if (sellingMachine.value && JSON.stringify(soldMachine.value) !== originalSoldSnapshot.value) return true
   return false
-})
-
-const editingContact = computed(() => {
-  const current = machine.value?.contact as Partial<Contact> | undefined
-  if (!current) return false
-  if (current.c_id === 'new') return false
-  const original = originalContact.value
-  if (!original) return false
-  const nameChanged = (current.name ?? '') !== (original.name ?? '')
-  const companyChanged = (current.company ?? '') !== (original.company ?? '')
-  return nameChanged || companyChanged
 })
 
 machineStore.resetMachine()
@@ -195,11 +177,6 @@ if (id) {
 
   if (dataMachine.value) {
     machineStore.setMachine(dataMachine.value, location as MachineLocationString)
-
-    const c = machine.value?.contact as Partial<Contact> | undefined
-    originalContact.value = c
-      ? { name: c.name, company: c.company, c_id: c.c_id as any }
-      : undefined
   }
 
   const { data: dataMachineLocatonsEnv } = await useFetch<FetchResponse<MachineLocations>>(
@@ -218,7 +195,6 @@ if (id) {
 }
 else {
   machineStore.resetMachine()
-  originalContact.value = undefined
 
   try {
     if (!ready.value) {
@@ -275,17 +251,4 @@ const fetchLocations = useDebounceFn(async () => {
     serialNumberMessage.value = ''
   }
 }, 200)
-
-function undoContactEdit() {
-  if (!originalContact.value || !machine.value?.contact) return
-  const oc = originalContact.value
-
-  machine.value.contact = {
-    name: oc.name,
-    company: oc.company,
-    c_id: oc.c_id
-  }
-  
-  machine.value.contactId = oc.c_id
-}
 </script>

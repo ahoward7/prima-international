@@ -9,7 +9,7 @@
         </NuxtLink>
         <NuxtLink to="/contact">
           <Button class="bg-blue-600!">
-            Add Contact
+            Contacts
           </Button>
         </NuxtLink>
         <Button class="bg-prima-yellow!" @click="emit('clear')">

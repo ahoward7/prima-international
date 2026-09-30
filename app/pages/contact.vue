@@ -36,12 +36,15 @@
       </div>
 
       <DividerLine class="w-full" />
-      <div class="w-full flex justify-end">
+      <div class="w-full flex justify-end gap-4">
         <ButtonConfirmation v-if="isExistingContact" class="bg-prima-yellow!" @confirm="saveContact(contact, true)">
           Update Contact
         </ButtonConfirmation>
         <ButtonConfirmation v-else class="bg-green-600!" @confirm="saveContact(contact, false)">
           Create Contact
+        </ButtonConfirmation>
+        <ButtonConfirmation v-if="isExistingContact" class="bg-red-600!" @confirm="deleteContact(contact.c_id)">
+          Delete Contact
         </ButtonConfirmation>
       </div>
     </div>

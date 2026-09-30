@@ -40,6 +40,38 @@ export async function saveContact(contact: ContactForm, isUpdate: boolean) {
   }
 }
 
+export async function deleteContact(c_id?: string) {
+  if (!c_id) return
+
+  const notificationStore = useNotificationStore()
+
+  try {
+    const machinesRes = await apiFetch<MachineLocations>(`/api/contact/${c_id}/machines`, { method: 'GET' })
+
+    if (machinesRes.ok) {
+      const { located, archived, sold } = machinesRes.data
+      const total = located.length + archived.length + sold.length
+
+      if (total > 0) {
+        // eslint-disable-next-line no-alert
+        const confirmed = window.confirm(
+          `This contact is linked to ${total} machine(s) (${located.length} located, ${archived.length} archived, ${sold.length} sold). Delete anyway?`
+        )
+        if (!confirmed) return
+      }
+    }
+
+    const res = await apiFetch<null>(`/api/contact/${c_id}`, { method: 'DELETE' })
+    if (!res.ok) return handleError(res.error, 'Error deleting contact')
+
+    notificationStore.pushNotification('success', 'Contact deleted successfully')
+    navigateTo('/')
+  }
+  catch (error: any) {
+    return handleError(error, 'Error deleting contact')
+  }
+}
+
 function handleError(error: any, defaultMessage: string) {
   const notificationStore = useNotificationStore()
   notificationStore.pushNotification('error', defaultMessage)

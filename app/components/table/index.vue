@@ -1,21 +1,26 @@
 <template>
-  <div class="flex flex-col gap-4 relative min-w-[1400px] overflow-x-auto print-table-only">
+  <div class="flex flex-col gap-4 relative min-w-350 overflow-x-auto print-table-only">
     <div class="flex justify-between items-end">
-      <div class="flex gap-4 w-[500px]">
+      <div class="flex gap-4 w-125">
         <NuxtLink to="/detail">
-          <Button class="!bg-green-600">
+          <Button class="bg-green-600!">
             Add Machine
           </Button>
         </NuxtLink>
-        <Button class="!bg-prima-yellow" @click="emit('clear')">
+        <NuxtLink to="/contact">
+          <Button class="bg-blue-600!">
+            Add Contact
+          </Button>
+        </NuxtLink>
+        <Button class="bg-prima-yellow!" @click="emit('clear')">
           Clear Filters
         </Button>
-        <Button v-if="filters.id" class="!bg-prima-red" @click="emit('restore')">
+        <Button v-if="filters.id" class="bg-prima-red!" @click="emit('restore')">
           Restore Search
         </Button>
       </div>
       <TablePagination v-if="pageSize !== 1" v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
-      <div class="w-[500px]" />
+      <div class="w-125" />
     </div>
 
     <div v-show="!machines">
@@ -24,7 +29,7 @@
         v-for="p in pageSize"
         :key="p"
         class="w-full top-0 odd:bg-gray-200 dark:odd:bg-gray-700 border-b border-x border-gray-400"
-        :class="displayFormat === 'oneLine' ? 'h-[33px]' : 'h-[66px]'"
+        :class="displayFormat === 'oneLine' ? 'h-8.25' : 'h-16.5'"
       />
     </div>
 

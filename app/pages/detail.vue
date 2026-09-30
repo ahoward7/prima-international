@@ -24,8 +24,8 @@
       <div class="flex flex-col w-full">
         <div class="grid grid-cols-2 gap-4">
           <InputContactSearch :contact="machine.contact" class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
-          <InputText v-model="machine.contact.name" label="Contact Name" placeholder="First Last" />
-          <InputText v-model="machine.contact.company" label="Company Name" placeholder="Company Inc." />
+          <InputText v-model="machine.contact.name" readonly label="Contact Name" placeholder="First Last" />
+          <InputText v-model="machine.contact.company" readonly label="Company Name" placeholder="Company Inc." />
           <div v-if="editingContact" class="col-span-2 flex items-center gap-2 indent-2 -mt-2">
             <span class="text-xs opacity-70">Contact has been edited</span>
             <button type="button" class="text-xs text-prima-red dark:text-prima-dark-accent hover:underline cursor-pointer" @click="undoContactEdit">

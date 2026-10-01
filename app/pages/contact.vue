@@ -37,10 +37,10 @@
 
       <DividerLine class="w-full" />
       <div class="w-full flex justify-end gap-4">
-        <ButtonConfirmation v-if="isExistingContact" class="bg-prima-yellow!" @confirm="saveContact(contact, true)">
+        <ButtonConfirmation v-if="isExistingContact" class="bg-prima-yellow!" @confirm="handleSaveContact(true)">
           Update Contact
         </ButtonConfirmation>
-        <ButtonConfirmation v-else class="bg-green-600!" @confirm="saveContact(contact, false)">
+        <ButtonConfirmation v-else class="bg-green-600!" @confirm="handleSaveContact(false)">
           Create Contact
         </ButtonConfirmation>
         <ButtonConfirmation v-if="isExistingContact" class="bg-red-600!" @confirm="deleteContact(contact.c_id)">
@@ -97,6 +97,14 @@ function fillContact(c: Contact) {
   contact.value = c
   originalContact.value = { name: c.name, company: c.company, c_id: c.c_id }
   originalContactSnapshot.value = JSON.stringify(c)
+}
+
+async function handleSaveContact(isUpdate: boolean) {
+  const success = await saveContact(contact.value, isUpdate)
+  if (success) {
+    leaveConfirmed.value = true
+    navigateTo('/')
+  }
 }
 
 function clearContact() {

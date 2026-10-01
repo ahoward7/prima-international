@@ -30,13 +30,17 @@ export async function saveContact(contact: ContactForm, isUpdate: boolean) {
       body: contact
     })
 
-    if (!res.ok) return handleError(res.error, `Error ${action} contact`)
+    if (!res.ok) {
+      handleError(res.error, `Error ${action} contact`)
+      return false
+    }
 
     notificationStore.pushNotification('success', `Contact ${isUpdate ? 'updated' : 'created'} successfully`)
-    navigateTo('/')
+    return true
   }
   catch (error: any) {
-    return handleError(error, `Error ${action} contact`)
+    handleError(error, `Error ${action} contact`)
+    return false
   }
 }
 

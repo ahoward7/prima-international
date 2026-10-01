@@ -34,7 +34,10 @@ export async function createMachine() {
       body: machine.value
     })
 
-    if (!res.ok) return handleError(res.error, 'Error creating machine')
+    if (!res.ok) {
+      handleError(res.error, 'Error creating machine')
+      return false
+    }
 
     notificationStore.pushNotification('success', 'Machine created successfully')
 
@@ -49,10 +52,11 @@ export async function createMachine() {
       filters.value.id = res.data?.machine?.m_id || ''
     }
     filters.value.search = ''
-    navigateTo('/')
+    return true
   }
   catch (error: any) {
-    return handleError(error, 'Error creating machine')
+    handleError(error, 'Error creating machine')
+    return false
   }
 }
 
@@ -65,7 +69,7 @@ export function selectMachine(id?: string) {
 }
 
 export async function updateMachine(id?: string) {
-  if (!id) return
+  if (!id) return false
 
   const { machine, archivedMachine, soldMachine, filters, filterStatus } = storeToRefs(useMachineStore())
   const notificationStore = useNotificationStore()
@@ -113,7 +117,10 @@ export async function updateMachine(id?: string) {
       query: { location },
       body: machineToUpdate
     })
-    if (!res.ok) return handleError(res.error, 'Error updating machine')
+    if (!res.ok) {
+      handleError(res.error, 'Error updating machine')
+      return false
+    }
 
     notificationStore.pushNotification('success', 'Machine updated successfully')
     
@@ -143,11 +150,12 @@ export async function updateMachine(id?: string) {
       filters.value.id = res.data?.machine?.m_id || res.data?.machine?.machine?.m_id || ''
     }
     filters.value.search = ''
-    
-    navigateTo('/')
+
+    return true
   }
   catch (error: any) {
-    return handleError(error, 'Error updating machine')
+    handleError(error, 'Error updating machine')
+    return false
   }
 }
 
@@ -161,13 +169,17 @@ export async function archiveMachine(machineFromTable?: Machine) {
       method: 'POST',
       body: machineToArchive
     })
-    if (!res.ok) return handleError(res.error, 'Error archiving machine')
+    if (!res.ok) {
+      handleError(res.error, 'Error archiving machine')
+      return false
+    }
 
     notificationStore.pushNotification('success', 'Machine added to archives successfully')
-    navigateTo('/')
+    return true
   }
   catch (error: any) {
-    return handleError(error, 'Error archiving machine')
+    handleError(error, 'Error archiving machine')
+    return false
   }
 }
 
@@ -183,18 +195,22 @@ export async function sellMachine() {
         sold: soldMachine
       }
     })
-    if (!res.ok) return handleError(res.error, 'Error selling machine')
+    if (!res.ok) {
+      handleError(res.error, 'Error selling machine')
+      return false
+    }
 
     notificationStore.pushNotification('success', 'Machine added to sold table successfully')
-    navigateTo('/')
+    return true
   }
   catch (error: any) {
-    return handleError(error, 'Error selling machine')
+    handleError(error, 'Error selling machine')
+    return false
   }
 }
 
 export async function deleteMachine(id?: string) {
-  if (!id) return
+  if (!id) return false
 
   const machineStore = useMachineStore()
   const notificationStore = useNotificationStore()
@@ -204,14 +220,18 @@ export async function deleteMachine(id?: string) {
       method: 'DELETE',
       query: { location: machineStore.filters.location }
     })
-    if (!res.ok) return handleError(res.error, 'Error deleting machine')
+    if (!res.ok) {
+      handleError(res.error, 'Error deleting machine')
+      return false
+    }
 
     machineStore.refreshMachines++
     notificationStore.pushNotification('success', 'Machine deleted successfully')
-    navigateTo('/')
+    return true
   }
   catch (error: any) {
-    return handleError(error, 'Error deleting machine')
+    handleError(error, 'Error deleting machine')
+    return false
   }
 }
 

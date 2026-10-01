@@ -7,11 +7,6 @@
             Add Machine
           </Button>
         </NuxtLink>
-        <NuxtLink to="/contact">
-          <Button class="bg-blue-600!">
-            Contacts
-          </Button>
-        </NuxtLink>
         <Button class="bg-prima-yellow!" @click="emit('clear')">
           Clear Filters
         </Button>
@@ -20,7 +15,13 @@
         </Button>
       </div>
       <TablePagination v-if="pageSize !== 1" v-model:page="page" :page-size="pageSize" :total="machines?.total || 0" />
-      <div class="w-125" />
+      <div class="w-125 flex justify-end">
+        <NuxtLink to="/contact">
+          <Button class="bg-blue-600!">
+            Contacts
+          </Button>
+        </NuxtLink>
+      </div>
     </div>
 
     <div v-show="!machines">

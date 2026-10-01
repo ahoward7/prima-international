@@ -91,16 +91,16 @@
             </div>
           </div>
           <div class="flex gap-4">
-            <ButtonConfirmation class="bg-prima-yellow!" @confirm="updateMachine(id as string)">
+            <ButtonConfirmation class="bg-prima-yellow!" @confirm="handleUpdateMachine(id as string)">
               Save
             </ButtonConfirmation>
             <Button v-if="location !== 'sold'" class="bg-green-600!" @click="sellingMachine = true">
               Sell
             </Button>
-            <ButtonConfirmation v-if="location !== 'archived'" class="bg-blue-600!" @confirm="archiveMachine()">
+            <ButtonConfirmation v-if="location !== 'archived'" class="bg-blue-600!" @confirm="handleArchiveMachine()">
               Archive
             </ButtonConfirmation>
-            <ButtonConfirmation class="bg-red-600!" @confirm="deleteMachine(id as string)">
+            <ButtonConfirmation class="bg-red-600!" @confirm="handleDeleteMachine(id as string)">
               Delete
             </ButtonConfirmation>
           </div>
@@ -111,13 +111,13 @@
         <ButtonConfirmation class="bg-red-600!" @confirm="sellingMachine = false">
           Cancel
         </ButtonConfirmation>
-        <ButtonConfirmation class="bg-green-600!" @confirm="sellMachine()">
+        <ButtonConfirmation class="bg-green-600!" @confirm="handleSellMachine()">
           Sell Machine
         </ButtonConfirmation>
       </div>
       
       <div v-else-if="!id" class="w-full flex justify-end">
-        <ButtonConfirmation class="bg-green-600!" @confirm="createMachine()">
+        <ButtonConfirmation class="bg-green-600!" @confirm="handleCreateMachine()">
           Create Machine
         </ButtonConfirmation>
       </div>
@@ -214,6 +214,33 @@ originalSoldSnapshot.value = JSON.stringify(soldMachine.value)
 function fillContact(c: Contact) {
   machine.value.contact = c
   machine.value.contactId = c.c_id
+}
+
+function navigateOnSuccess(success: boolean) {
+  if (success) {
+    leaveConfirmed.value = true
+    navigateTo('/')
+  }
+}
+
+async function handleCreateMachine() {
+  navigateOnSuccess(await createMachine())
+}
+
+async function handleUpdateMachine(id?: string) {
+  navigateOnSuccess(await updateMachine(id))
+}
+
+async function handleArchiveMachine() {
+  navigateOnSuccess(await archiveMachine())
+}
+
+async function handleSellMachine() {
+  navigateOnSuccess(await sellMachine())
+}
+
+async function handleDeleteMachine(id?: string) {
+  navigateOnSuccess(await deleteMachine(id))
 }
 
 function clearContact() {

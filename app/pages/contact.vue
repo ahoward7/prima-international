@@ -80,17 +80,16 @@ const editingContact = computed(() => {
   return nameChanged || companyChanged
 })
 
-onBeforeRouteLeave((to, from, next) => {
+onBeforeRouteLeave(() => {
   if (leaveConfirmed.value) {
-    next()
+    return true
   }
   else if (hasUnsavedChanges.value) {
     // eslint-disable-next-line no-alert
-    const confirmed = window.confirm('You have unsaved changes. Leave without saving?')
-    next(confirmed)
+    return window.confirm('You have unsaved changes. Leave without saving?')
   }
   else {
-    next()
+    return true
   }
 })
 

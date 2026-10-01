@@ -30,7 +30,9 @@ const defaultFilters: MachineFilters = {
   model: '',
   type: '',
   contactId: '',
-  id: ''
+  id: '',
+  lastModDateFrom: '',
+  lastModDateTo: ''
 }
 
 const emptySoldMachine: SoldMachineForm = {

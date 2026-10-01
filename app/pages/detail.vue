@@ -23,15 +23,9 @@
       
       <div class="flex flex-col w-full">
         <div class="grid grid-cols-2 gap-4">
-          <InputContactSearch :contact="machine.contact" class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
-          <InputText v-model="machine.contact.name" label="Contact Name" placeholder="First Last" />
-          <InputText v-model="machine.contact.company" label="Company Name" placeholder="Company Inc." />
-          <div v-if="editingContact" class="col-span-2 flex items-center gap-2 indent-2 -mt-2">
-            <span class="text-xs opacity-70">Contact has been edited</span>
-            <button type="button" class="text-xs text-prima-red dark:text-prima-dark-accent hover:underline cursor-pointer" @click="undoContactEdit">
-              Undo
-            </button>
-          </div>
+          <InputContactSearch :contact="machine.contact" :allow-new-contact="false" class="w-full col-span-2" @select="fillContact" @clear="clearContact" />
+          <InputText v-model="machine.contact.name" readonly label="Contact Name" placeholder="First Last" />
+          <InputText v-model="machine.contact.company" readonly label="Company Name" placeholder="Company Inc." />
         </div>
       </div>
       
@@ -97,16 +91,16 @@
             </div>
           </div>
           <div class="flex gap-4">
-            <ButtonConfirmation class="bg-prima-yellow!" @confirm="updateMachine(id as string)">
+            <ButtonConfirmation class="bg-prima-yellow!" @confirm="handleUpdateMachine(id as string)">
               Save
             </ButtonConfirmation>
             <Button v-if="location !== 'sold'" class="bg-green-600!" @click="sellingMachine = true">
               Sell
             </Button>
-            <ButtonConfirmation v-if="location !== 'archived'" class="bg-blue-600!" @confirm="archiveMachine()">
+            <ButtonConfirmation v-if="location !== 'archived'" class="bg-blue-600!" @confirm="handleArchiveMachine()">
               Archive
             </ButtonConfirmation>
-            <ButtonConfirmation class="bg-red-600!" @confirm="deleteMachine(id as string)">
+            <ButtonConfirmation class="bg-red-600!" @confirm="handleDeleteMachine(id as string)">
               Delete
             </ButtonConfirmation>
           </div>
@@ -117,13 +111,13 @@
         <ButtonConfirmation class="bg-red-600!" @confirm="sellingMachine = false">
           Cancel
         </ButtonConfirmation>
-        <ButtonConfirmation class="bg-green-600!" @confirm="sellMachine()">
+        <ButtonConfirmation class="bg-green-600!" @confirm="handleSellMachine()">
           Sell Machine
         </ButtonConfirmation>
       </div>
       
       <div v-else-if="!id" class="w-full flex justify-end">
-        <ButtonConfirmation class="bg-green-600!" @confirm="createMachine()">
+        <ButtonConfirmation class="bg-green-600!" @confirm="handleCreateMachine()">
           Create Machine
         </ButtonConfirmation>
       </div>
@@ -145,7 +139,6 @@ const machineLocations: Ref<MachineLocations> = ref({} as MachineLocations)
 const serialNumberMessage = ref('')
 const sellingMachine = ref(selling === '1')
 
-const originalContact = ref<Pick<Contact, 'name' | 'company' | 'c_id'> | undefined>()
 const originalMachineSnapshot = ref('')
 const originalSoldSnapshot = ref('')
 const leaveConfirmed = ref(false)
@@ -156,34 +149,22 @@ const hasUnsavedChanges = computed(() => {
   return false
 })
 
-const editingContact = computed(() => {
-  const current = machine.value?.contact as Partial<Contact> | undefined
-  if (!current) return false
-  if (current.c_id === 'new') return false
-  const original = originalContact.value
-  if (!original) return false
-  const nameChanged = (current.name ?? '') !== (original.name ?? '')
-  const companyChanged = (current.company ?? '') !== (original.company ?? '')
-  return nameChanged || companyChanged
-})
-
 machineStore.resetMachine()
 
 if (location && !['located', 'archived', 'sold'].includes(location as string)) {
   navigateTo('/')
 }
 
-onBeforeRouteLeave((to, from, next) => {
+onBeforeRouteLeave(() => {
   if (leaveConfirmed.value) {
-    next()
+    return true
   }
   else if (hasUnsavedChanges.value) {
     // eslint-disable-next-line no-alert
-    const confirmed = window.confirm('You have unsaved changes. Leave without saving?')
-    next(confirmed)
+    return window.confirm('You have unsaved changes. Leave without saving?')
   }
   else {
-    next()
+    return true
   }
 })
 
@@ -195,11 +176,6 @@ if (id) {
 
   if (dataMachine.value) {
     machineStore.setMachine(dataMachine.value, location as MachineLocationString)
-
-    const c = machine.value?.contact as Partial<Contact> | undefined
-    originalContact.value = c
-      ? { name: c.name, company: c.company, c_id: c.c_id as any }
-      : undefined
   }
 
   const { data: dataMachineLocatonsEnv } = await useFetch<FetchResponse<MachineLocations>>(
@@ -218,7 +194,6 @@ if (id) {
 }
 else {
   machineStore.resetMachine()
-  originalContact.value = undefined
 
   try {
     if (!ready.value) {
@@ -239,6 +214,33 @@ originalSoldSnapshot.value = JSON.stringify(soldMachine.value)
 function fillContact(c: Contact) {
   machine.value.contact = c
   machine.value.contactId = c.c_id
+}
+
+function navigateOnSuccess(success: boolean) {
+  if (success) {
+    leaveConfirmed.value = true
+    navigateTo('/')
+  }
+}
+
+async function handleCreateMachine() {
+  navigateOnSuccess(await createMachine())
+}
+
+async function handleUpdateMachine(id?: string) {
+  navigateOnSuccess(await updateMachine(id))
+}
+
+async function handleArchiveMachine() {
+  navigateOnSuccess(await archiveMachine())
+}
+
+async function handleSellMachine() {
+  navigateOnSuccess(await sellMachine())
+}
+
+async function handleDeleteMachine(id?: string) {
+  navigateOnSuccess(await deleteMachine(id))
 }
 
 function clearContact() {
@@ -275,17 +277,4 @@ const fetchLocations = useDebounceFn(async () => {
     serialNumberMessage.value = ''
   }
 }, 200)
-
-function undoContactEdit() {
-  if (!originalContact.value || !machine.value?.contact) return
-  const oc = originalContact.value
-
-  machine.value.contact = {
-    name: oc.name,
-    company: oc.company,
-    c_id: oc.c_id
-  }
-  
-  machine.value.contactId = oc.c_id
-}
 </script>

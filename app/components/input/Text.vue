@@ -3,15 +3,17 @@
     <label v-if="label" class="text-prima-red dark:text-prima-dark-accent font-semibold">{{ label || 'No Label' }}</label>
     <input
       v-model="model"
-      type="text"
+      :type="type"
       class="text-prima-red dark:text-prima-dark-accent bg-gray-100 dark:bg-gray-800 px-2 py-1 border border-prima-red dark:border-prima-dark-accent" :class="[
-        props.uppercase ? 'uppercase' : ''
+        uppercase ? 'uppercase' : '',
+        readonly ? 'pointer-events-none' : ''
       ]"
+      :readonly="readonly"
       :placeholder="placeholder"
       @focus="emit('focus')"
       @input="onInput"
     >
-    <InputMessage v-show="message" class="absolute top-[65px]">
+    <InputMessage v-show="message" class="absolute top-16.25">
       {{ message }}
     </InputMessage>
   </div>
@@ -23,8 +25,11 @@ const props = withDefaults(defineProps<{
   placeholder?: string
   message?: string
   uppercase?: boolean
+  readonly?: boolean
+  type?: string
 }>(), {
-  uppercase: false
+  uppercase: false,
+  type: 'text'
 })
 
 const emit = defineEmits(['focus', 'input'])

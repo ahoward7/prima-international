@@ -20,8 +20,8 @@
 </template>
 
 <script setup lang="ts">
-import { useNuxtApp } from '#app'
 import { computed, watch } from 'vue'
+import { useNuxtApp } from '#app'
 const nuxtApp = useNuxtApp()
 const colorMode = useColorMode()
 const { user, fetch: fetchUserSession } = useUserSession()

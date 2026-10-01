@@ -10,6 +10,8 @@ export interface MachineFilters {
   type?: string
   contactId?: string
   id?: string
+  lastModDateFrom?: string
+  lastModDateTo?: string
 }
 
 export interface MachineFilterStrings {

@@ -13,7 +13,9 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 
-const props = defineProps<{ contact?: Partial<Contact> }>()
+const props = withDefaults(defineProps<{ contact?: Partial<Contact>, allowNewContact?: boolean }>(), {
+  allowNewContact: true
+})
 const emit = defineEmits(['select', 'clear'])
 const selectedContact = ref('')
 
@@ -36,7 +38,7 @@ const debouncedSearch = useDebounceFn((value: string) => {
 }, 200)
 
 const mappedContacts = computed(() => {
-  const newContactOption = [{ label: 'NEW CONTACT', data: 'new' }]
+  const newContactOption = props.allowNewContact ? [{ label: 'NEW CONTACT', data: 'new' }] : []
 
   if (!contacts.value?.data) {
     return newContactOption

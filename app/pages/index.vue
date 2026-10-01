@@ -11,14 +11,23 @@
           <InputSelect v-model="filters.location" label="Loc/Sold/Arch" placeholder="Filter by location..." :options="filterOptions.location" width="w-52" :clearable="false" />
           <InputTextSelect v-model="filters.type" label="Type" placeholder="Filter by type..." :options="filterOptions.type" />
           <InputTextSelect v-model="filters.model" label="Model" placeholder="Filter by model..." :options="filterOptions.model" />
-          <InputContactSearch v-model="filters.contactId" class="!w-[440px]" />
+          <InputContactSearch v-model="filters.contactId" :allow-new-contact="false" class="w-110!" />
         </div>
       </div>
-      <div class="flex flex-col gap-2">
-        <HeaderSecondary>Table Display</HeaderSecondary>
-        <div class="flex gap-4">
-          <InputSelect v-model="displayFormat" label="Display Format" :options="filterOptions.displayFormat" :clearable="false" />
-          <InputSelect v-model="filters.pageSize" label="Page Size" :options="filterOptions.pageSize" :clearable="false" />
+      <div class="flex justify-between">
+        <div class="flex flex-col gap-2">
+          <HeaderSecondary>Table Display</HeaderSecondary>
+          <div class="flex gap-4">
+            <InputSelect v-model="displayFormat" label="Display Format" :options="filterOptions.displayFormat" :clearable="false" />
+            <InputSelect v-model="filters.pageSize" label="Page Size" :options="filterOptions.pageSize" :clearable="false" />
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <HeaderSecondary>Date Filters</HeaderSecondary>
+          <div class="flex gap-4">
+            <InputText v-model="filters.lastModDateFrom" class="w-60" type="date" label="Last Mod Date From" />
+            <InputText v-model="filters.lastModDateTo" class="w-60" type="date" label="Last Mod Date To" />
+          </div>
         </div>
       </div>
       <DividerLine />
@@ -51,7 +60,7 @@ watch(filters, (newFilters) => {
 }, { deep: true })
 
 watch(
-  () => [filters.value.location, filters.value.pageSize, filters.value.sortBy, filters.value.model, filters.value.type],
+  () => [filters.value.location, filters.value.pageSize, filters.value.sortBy, filters.value.model, filters.value.type, filters.value.lastModDateFrom, filters.value.lastModDateTo],
   () => {
     filters.value.page = 1
   }

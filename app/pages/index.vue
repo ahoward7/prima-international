@@ -11,7 +11,7 @@
           <InputSelect v-model="filters.location" label="Loc/Sold/Arch" placeholder="Filter by location..." :options="filterOptions.location" width="w-52" :clearable="false" />
           <InputTextSelect v-model="filters.type" label="Type" placeholder="Filter by type..." :options="filterOptions.type" />
           <InputTextSelect v-model="filters.model" label="Model" placeholder="Filter by model..." :options="filterOptions.model" />
-          <InputContactSearch v-model="filters.contactId" class="w-110!" />
+          <InputContactSearch v-model="filters.contactId" :allow-new-contact="false" class="w-110!" />
         </div>
       </div>
       <div class="flex flex-col gap-2">

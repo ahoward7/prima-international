@@ -9,34 +9,57 @@ interface PipelineOptions {
   page?: string
   defaultSortField?: string
   prefix?: string
+  sortLookup?: {
+    from: string
+    localField: string
+    foreignField: string
+    as: string
+  }
 }
 
 interface QueryOptions {
   fieldPrefix?: string
   searchable?: boolean
   defaultSortField?: string
+  sortLookup?: PipelineOptions['sortLookup']
 }
 
 /**
  * Builds an aggregation pipeline with filters, text score, null-sort handling, pagination, and sorting.
  */
-export function buildPipeline({ filters, sortBy, pageSize = '10', page = '1', defaultSortField, prefix = ''}: PipelineOptions): any[] {
+export function buildPipeline({ filters, sortBy, pageSize = '10', page = '1', defaultSortField, prefix = '', sortLookup}: PipelineOptions): any[] {
   const sortField = sortBy?.startsWith('-') ? sortBy.slice(1) : sortBy || defaultSortField || ''
   const sortDir = sortBy?.startsWith('-') ? -1 : 1
 
   const pipeline: any[] = [{ $match: filters }]
 
   if (sortField) {
+    const isContactCompanySort = sortField === 'contact.company' && sortLookup
+    const sortPath = isContactCompanySort ? '_sortCompany' : `${prefix}${sortField}`
+
+    if (isContactCompanySort) {
+      pipeline.push({
+        $lookup: {
+          ...sortLookup
+        }
+      })
+      pipeline.push({
+        $addFields: {
+          _sortCompany: { $arrayElemAt: [`$${sortLookup.as}.company`, 0] }
+        }
+      })
+    }
+
     pipeline.push({
       $addFields: {
         _sortNull: {
           $cond: [
             {
               $or: [
-                { $eq: [`$${prefix}${sortField}`, null] },
-                { $eq: [`$${prefix}${sortField}`, '' ] },
-                { $eq: [`$${prefix}${sortField}`, '0'] },
-                { $not: [`$${prefix}${sortField}`] }
+                { $eq: [`$${sortPath}`, null] },
+                { $eq: [`$${sortPath}`, '' ] },
+                { $eq: [`$${sortPath}`, '0'] },
+                { $not: [`$${sortPath}`] }
               ]
             },
             1,
@@ -49,9 +72,13 @@ export function buildPipeline({ filters, sortBy, pageSize = '10', page = '1', de
     pipeline.push({
       $sort: {
         _sortNull: 1,
-        [`${prefix}${sortField}`]: sortDir
+        [sortPath]: sortDir
       }
     })
+
+    if (isContactCompanySort && sortLookup) {
+      pipeline.push({ $unset: [sortLookup.as, '_sortCompany'] })
+    }
   }
 
   // If pageSize is '1', fetch all machines (do not paginate)
@@ -112,7 +139,8 @@ export async function buildQueryForSchema<T>(schema: any, machineFilters: Machin
     pageSize,
     page,
     defaultSortField,
-    prefix: fieldPrefix
+    prefix: fieldPrefix,
+    sortLookup: queryOptions.sortLookup
   })
 
   const countPipeline = [
@@ -129,4 +157,3 @@ export async function buildQueryForSchema<T>(schema: any, machineFilters: Machin
 
   return { data, total }
 }
-

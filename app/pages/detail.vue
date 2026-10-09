@@ -42,7 +42,7 @@
           <InputText v-model="machine.location" label="Location" placeholder="City, State, Country" class="col-span-4" />
           <InputTextSelect v-model="machine.salesman" label="Salesman" placeholder="Initials" :options="filterOptions.salesman" class="col-span-1" width="w-full" createable uppercase />
           <InputTextarea v-model="machine.notes" label="Notes" placeholder="Other information..." class="col-span-4" height="min-h-40" />
-          <InputImage v-model="machine.notes" label="Thumbnail" class="col-span-2" height="min-h-40" />
+          <InputImage v-model="machine.thumbnail" label="Thumbnail" class="col-span-2" height="min-h-40" />
         </div>
       </template>
       

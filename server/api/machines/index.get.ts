@@ -35,7 +35,13 @@ async function getArchivedMachines(filters: MachineFilterStrings) {
   const queryOptions = {
     searchable: true,
     defaultSortField: 'model',
-    fieldPrefix: filters.a_id ? '' : 'machine.'
+    fieldPrefix: filters.a_id ? '' : 'machine.',
+    sortLookup: {
+      from: ContactSchema.collection.name,
+      localField: 'machine.contactId',
+      foreignField: 'c_id',
+      as: '_sortContact'
+    }
   }
 
   const { data: archives, total } = await buildQueryForSchema<ArchivedMachine>(ArchiveSchema, filters, queryOptions)
@@ -58,7 +64,13 @@ async function getSoldMachines(filters: MachineFilterStrings) {
   const queryOptions = {
     searchable: true,
     defaultSortField: 'model',
-    fieldPrefix: filters.s_id ? '' : 'machine.'
+    fieldPrefix: filters.s_id ? '' : 'machine.',
+    sortLookup: {
+      from: ContactSchema.collection.name,
+      localField: 'machine.contactId',
+      foreignField: 'c_id',
+      as: '_sortContact'
+    }
   }
 
   const { data: soldMachines, total } = await buildQueryForSchema<SoldMachine>(SoldSchema, filters, queryOptions)
@@ -81,7 +93,13 @@ async function getLocatedMachines(filters: MachineFilterStrings) {
   const queryOptions = {
     searchable: true,
     defaultSortField: 'model',
-    fieldPrefix: filters.m_id ? '' : undefined
+    fieldPrefix: filters.m_id ? '' : undefined,
+    sortLookup: {
+      from: ContactSchema.collection.name,
+      localField: 'contactId',
+      foreignField: 'c_id',
+      as: '_sortContact'
+    }
   }
   const { data: machines, total } = await buildQueryForSchema<DBMachine>(
     MachineSchema,

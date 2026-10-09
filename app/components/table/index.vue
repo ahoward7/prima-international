@@ -112,7 +112,7 @@ const columns: TableColumnC[] = [
   { key: 'price', label: 'Price', sort: true },
   { key: 'lastModDate', label: 'Date', sort: true },
   { key: 'location', label: 'Location', sort: false },
-  { key: 'contact.company', label: 'Comp', sort: false },
+  { key: 'contact.company', label: 'Comp', sort: true },
   { key: 'notes', label: 'Notes', sort: false },
   { key: 'salesman', label: 'Sm', sort: false },
   { key: '', label: '', sort: false }

@@ -18,7 +18,8 @@ const emptyMachine: MachineForm = {
   description: '',
   createDate: undefined,
   lastModDate: undefined,
-  notes: ''
+  notes: '',
+  thumbnail: undefined
 }
 
 const defaultFilters: MachineFilters = {

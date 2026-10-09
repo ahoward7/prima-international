@@ -12,8 +12,8 @@
       class="h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800  border border-dashed border-prima-red dark:border-prima-dark-accent rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
       @click="triggerFileInput"
     >
-      <template v-if="preview">
-        <img :src="preview" alt="Image preview" class="max-h-32 rounded border border-prima-red dark:border-prima-dark-accent">
+      <template v-if="model">
+        <img :src="model" alt="Image preview" class="max-h-32 rounded border border-prima-red dark:border-prima-dark-accent">
       </template>
       <template v-else>
         <span class="text-prima-red dark:text-prima-dark-accent opacity-60">Click to select an image</span>
@@ -30,23 +30,18 @@ defineProps<{
   label?: string
   message?: string
 }>()
-const emit = defineEmits(['input', 'focus'])
-const preview = ref<string | null>(null)
+const model = defineModel<string>()
 const fileInput = ref<HTMLInputElement | null>(null)
 
 function triggerFileInput() {
   fileInput.value?.click()
 }
 
-function onFileChange(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0]
+async function onFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
   if (!file) return
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const base64 = e.target?.result as string
-    preview.value = base64
-    emit('input', base64)
-  }
-  reader.readAsDataURL(file)
+  model.value = await resizeImage(file)
+  input.value = ''
 }
 </script>

@@ -16,7 +16,8 @@ export const MachineSchema = defineMongooseModel<DBMachine>({
     lastModDate: { type: String, required: true },
     price: { type: Number, required: false },
     location: { type: String, required: false },
-    notes: { type: String, required: false }
+    notes: { type: String, required: false },
+    thumbnail: { type: String, required: false }
   },
   options: {
     // @ts-expect-error Indexes is correct here

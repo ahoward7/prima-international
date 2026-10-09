@@ -17,7 +17,8 @@ export const SoldSchema = defineMongooseModel<SoldMachine>({
       lastModDate: { type: String, required: true },
       price: { type: Number, required: false },
       location: { type: String, required: false },
-      notes: { type: String, required: false }
+      notes: { type: String, required: false },
+      thumbnail: { type: String, required: false }
     },
     dateSold: { type: String, required: false },
     truckingCompany: { type: String, required: false },

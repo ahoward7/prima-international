@@ -33,6 +33,7 @@ export interface DBMachine {
   price?: number
   location?: string
   notes?: string
+  thumbnail?: string
 }
 
 export interface Machine extends DBMachine {
